@@ -51,7 +51,7 @@ export default function SignUpPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${location.origin}/api/auth/callback`,
+          redirectTo: `${location.origin}/api/auth/callback?next=/onboard`,
         },
       });
       if (error) setError(error.message);
@@ -99,7 +99,7 @@ export default function SignUpPage() {
             </span>
           </Link>
           <p style={{ fontSize: "0.875rem", color: "#727973", marginTop: "0.25rem" }}>
-            Move Together. Age with Joy.
+            Find Your Person. Age with Joy.
           </p>
         </div>
 
@@ -127,26 +127,21 @@ export default function SignUpPage() {
             }}
           >
             <p style={{ fontSize: "1.125rem", marginBottom: "0.5rem", fontWeight: 600 }}>
-              🌻 You&apos;re in!
+              🌻 Welcome to Joyn!
             </p>
             <p style={{ fontSize: "1rem", opacity: 0.9 }}>
-              Check your email to confirm your account, then sign in to get started.
+              Check your email to confirm your account, then come back here to continue.
             </p>
             <Link
               href="/sign-in"
               style={{
-                display: "inline-block",
-                marginTop: "1.25rem",
-                backgroundColor: "#735C00",
-                color: "#FFFFFF",
-                padding: "0.75rem 1.5rem",
-                borderRadius: "3rem",
-                textDecoration: "none",
-                fontWeight: 600,
-                fontSize: "1rem",
+                display: "inline-block", marginTop: "1.25rem",
+                backgroundColor: "#173124", color: "#FFFFFF",
+                padding: "0.875rem 1.75rem", borderRadius: "3rem",
+                textDecoration: "none", fontWeight: 600, fontSize: "1rem",
               }}
             >
-              Go to Sign In
+              Sign In to Get Started →
             </Link>
           </div>
         ) : (

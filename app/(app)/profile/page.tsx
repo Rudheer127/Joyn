@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { Avatar } from "@/components/shared/Avatar";
 
 const arizonaCities = [
   "Phoenix", "Scottsdale", "Mesa", "Tempe", "Chandler", "Gilbert",
@@ -73,6 +74,12 @@ export default function ProfilePage() {
   const [availability, setAvailability] = useState<string[]>([]);
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Avatar / photo state
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [photoPublic, setPhotoPublic] = useState(true);
+  const [gender, setGender] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const supabase = createClient();
 
@@ -103,6 +110,10 @@ export default function ProfilePage() {
         if (profile.health_goals && profile.health_goals.length > 0) {
           setHealthGoals(profile.health_goals.join("\\n"));
         }
+        // New avatar fields
+        if (profile.avatar_url) setAvatarUrl(profile.avatar_url);
+        if (profile.gender) setGender(profile.gender);
+        if (typeof profile.photo_public === "boolean") setPhotoPublic(profile.photo_public);
       }
 
       const { data: userInterests } = await supabase
@@ -145,7 +156,6 @@ export default function ProfilePage() {
     if (!user) return;
 
     try {
-      // 1. Save main profile data
       await supabase.from("profiles").upsert({
         id: user.id,
         full_name: name || null,
@@ -155,6 +165,10 @@ export default function ProfilePage() {
         health_goals: healthGoals ? [healthGoals] : [],
         connection_preference: connectionPref,
         onboarding_completed: true,
+        // New fields
+        avatar_url: avatarUrl || null,
+        gender: gender || null,
+        photo_public: photoPublic,
         updated_at: new Date().toISOString(),
       });
 
@@ -202,6 +216,28 @@ export default function ProfilePage() {
     .toUpperCase()
     .slice(0, 2);
 
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const ext = file.name.split(".").pop();
+      const path = `${user.id}/avatar.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("avatars")
+        .upload(path, file, { upsert: true, contentType: file.type });
+      if (upErr) { alert("Upload failed: " + upErr.message); return; }
+      const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(path);
+      setAvatarUrl(publicUrl);
+      // Save immediately
+      await supabase.from("profiles").upsert({ id: user.id, avatar_url: publicUrl, updated_at: new Date().toISOString() });
+    } finally {
+      setUploading(false);
+    }
+  }
+
   return (
     <div
       suppressHydrationWarning
@@ -226,76 +262,73 @@ export default function ProfilePage() {
       </h1>
 
       <form onSubmit={handleSave}>
-        {/* Avatar — client-only to avoid SSR hydration mismatch */}
-        <div style={{ display: "flex", alignItems: "center", gap: "1.5rem", marginBottom: "2.5rem" }}>
-          {mounted && photoPreview ? (
-            <img
-              src={photoPreview}
-              alt="Profile photo preview"
-              style={{
-                width: "100px",
-                height: "100px",
-                borderRadius: "50%",
-                objectFit: "cover",
-                flexShrink: 0,
-                border: "3px solid #C2C8C2",
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                width: "100px",
-                height: "100px",
-                borderRadius: "50%",
-                backgroundColor: "#173124",
-                color: "#FFFFFF",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontFamily: "'Epilogue', serif",
-                fontWeight: 800,
-                fontSize: "1.75rem",
-                flexShrink: 0,
-              }}
-            >
-              {initials || "?"}
-            </div>
-          )}
-          <div>
-            <p style={{ fontWeight: 600, fontSize: "1rem", color: "#173124", marginBottom: "0.5rem" }}>
+        {/* Avatar section */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: "1.5rem", marginBottom: "2.5rem", flexWrap: "wrap" }}>
+
+          {/* Avatar preview using shared component */}
+          <Avatar
+            avatarUrl={avatarUrl}
+            photoPublic={photoPublic}
+            gender={gender}
+            name={name}
+            size={100}
+          />
+
+          <div style={{ flex: 1, minWidth: "200px" }}>
+            <p style={{ fontWeight: 700, fontSize: "1rem", color: "#173124", marginBottom: "0.75rem" }}>
               Profile Photo
             </p>
+
+            {/* Upload button */}
             <label
               htmlFor="photo-upload"
               style={{
                 display: "inline-block",
-                backgroundColor: "#E7E2D7",
+                backgroundColor: uploading ? "#D4C9A8" : "#E7E2D7",
                 border: "2px solid #C2C8C2",
                 borderRadius: "3rem",
                 padding: "0.5rem 1.25rem",
                 fontSize: "0.9rem",
                 fontWeight: 600,
                 color: "#173124",
-                cursor: "pointer",
+                cursor: uploading ? "wait" : "pointer",
+                marginBottom: "0.75rem",
+                marginRight: "0.625rem",
               }}
             >
-              {photoPreview ? "Change Photo" : "Upload Photo"}
+              {uploading ? "Uploading…" : avatarUrl ? "Change Photo" : "📷 Upload Photo"}
             </label>
             <input
               id="photo-upload"
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               style={{ display: "none" }}
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = () => {
-                  setPhotoPreview(reader.result as string);
-                };
-                reader.readAsDataURL(file);
-              }}
+              onChange={handlePhotoUpload}
             />
+
+            {/* Public / Private toggle */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "0.5rem" }}>
+              <button
+                type="button"
+                onClick={() => setPhotoPublic(!photoPublic)}
+                style={{
+                  display: "flex", alignItems: "center", gap: "0.5rem",
+                  backgroundColor: photoPublic ? "#E8F4EC" : "#F5F0E8",
+                  border: `2px solid ${photoPublic ? "#173124" : "#C2C8C2"}`,
+                  borderRadius: "3rem", padding: "0.375rem 1rem",
+                  fontSize: "0.875rem", fontWeight: 600,
+                  color: photoPublic ? "#173124" : "#727973",
+                  cursor: "pointer",
+                }}
+              >
+                <span>{photoPublic ? "🔓" : "🔒"}</span>
+                <span>{photoPublic ? "Photo visible to matches" : "Photo hidden (private)"}</span>
+              </button>
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "#727973", marginTop: "0.375rem" }}>
+              {photoPublic ? "Matches can see your photo. This builds trust." : "Only you can see your photo. Matches see a silhouette."}
+            </p>
           </div>
         </div>
 
@@ -337,6 +370,22 @@ export default function ProfilePage() {
             </div>
             <div>
               <label style={{ display: "block", fontWeight: 600, marginBottom: "0.5rem", fontSize: "1rem" }}>
+                I identify as
+              </label>
+              <select
+                className="input-base"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                style={{ cursor: "pointer" }}
+              >
+                <option value="">Prefer not to say</option>
+                <option value="female">Female</option>
+                <option value="male">Male</option>
+                <option value="non_binary">Non-binary</option>
+              </select>
+            </div>
+            <div>
+              <label style={{ display: "block", fontWeight: 600, marginBottom: "0.5rem", fontSize: "1rem" }}>
                 Age
               </label>
               <input
@@ -375,7 +424,7 @@ export default function ProfilePage() {
               className="input-base"
               value={bio}
               onChange={(e) => setBio(e.target.value)}
-              placeholder="Tell potential workout partners a little about yourself..."
+              placeholder="Tell us about yourself — your life, your story, what makes you smile."
               rows={4}
               style={{ resize: "vertical" }}
             />
@@ -691,10 +740,10 @@ export default function ProfilePage() {
               marginBottom: "0.5rem",
             }}
           >
-            Fitness Level
+            How Active Are You?
           </p>
           <p style={{ fontSize: "0.9rem", color: "#727973", marginBottom: "1.25rem" }}>
-            How would you describe your current activity level?
+            How would you describe your current activity level? (This is optional.)
           </p>
           <div style={{ display: "flex", gap: "0.875rem" }}>
             {fitnessLevels.map((level) => {
@@ -746,13 +795,13 @@ export default function ProfilePage() {
               marginBottom: "1.25rem",
             }}
           >
-            Health Goals
+            What Are You Hoping to Find?
           </p>
           <textarea
             className="input-base"
             value={healthGoals}
             onChange={(e) => setHealthGoals(e.target.value)}
-            placeholder="What health goals are you working toward? e.g., improve balance, reduce stress, stay social..."
+            placeholder="What matters most to you right now? e.g., someone to have coffee with, a person to call on hard days, a friend who gets what this stage of life is like."
             rows={3}
             style={{ resize: "vertical" }}
           />

@@ -6,10 +6,10 @@ import { createClient } from "@/lib/supabase/client";
 import { CompanionWidget } from "@/components/companion/CompanionWidget";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: "🏠" },
+  { href: "/dashboard", label: "Dashboard",  icon: "🏠" },
   { href: "/match",     label: "My Matches", icon: "👥" },
   { href: "/messages",  label: "Messages",   icon: "💬" },
-  { href: "/sessions",  label: "Meetups",     icon: "📅" },
+  { href: "/sessions",  label: "Catch-Ups",  icon: "📅" },
   { href: "/events",    label: "Events",     icon: "📍" },
   { href: "/profile",   label: "Profile",    icon: "👤" },
 ];

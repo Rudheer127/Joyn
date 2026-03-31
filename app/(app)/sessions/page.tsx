@@ -21,7 +21,7 @@ export default function SessionsPage() {
       partner: "Margaret",
       date: "Tomorrow",
       time: "10:00 AM",
-      activity: "Chair Yoga",
+      activity: "Morning Coffee Chat",
       status: "scheduled",
     },
     {
@@ -29,7 +29,7 @@ export default function SessionsPage() {
       partner: "Robert",
       date: "Thursday, April 3",
       time: "8:30 AM",
-      activity: "Morning Walk",
+      activity: "Watching Jeopardy Together",
       status: "scheduled",
     },
     {
@@ -37,7 +37,7 @@ export default function SessionsPage() {
       partner: "Dorothy",
       date: "Saturday, April 5",
       time: "9:00 AM",
-      activity: "Gentle Stretching",
+      activity: "Book Club Call",
       status: "scheduled",
     },
   ]);
@@ -54,7 +54,7 @@ export default function SessionsPage() {
       partner: "Margaret",
       date: "March 26",
       time: "10:00 AM",
-      activity: "Chair Yoga",
+      activity: "Phone Call Check-in",
       completed: true,
     },
     {
@@ -62,7 +62,7 @@ export default function SessionsPage() {
       partner: "Robert",
       date: "March 24",
       time: "8:30 AM",
-      activity: "Morning Walk",
+      activity: "Card Game Night",
       completed: true,
     },
     {
@@ -70,7 +70,7 @@ export default function SessionsPage() {
       partner: "Dorothy",
       date: "March 22",
       time: "9:00 AM",
-      activity: "Gentle Stretching",
+      activity: "Morning Coffee Chat",
       completed: true,
     },
   ];
@@ -119,7 +119,7 @@ export default function SessionsPage() {
             letterSpacing: "-0.02em",
           }}
         >
-          Your Meetups
+          Your Catch-Ups
         </h1>
         <button
           onClick={() => setScheduleModalOpen(true)}
@@ -135,7 +135,7 @@ export default function SessionsPage() {
             minHeight: "48px",
           }}
         >
-          + Plan a Meetup
+          + Schedule a Catch-Up
         </button>
       </div>
 
@@ -151,7 +151,7 @@ export default function SessionsPage() {
             marginBottom: "1.25rem",
           }}
         >
-          Upcoming Meetups
+          Upcoming Catch-Ups
         </p>
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           {upcomingSessions.map((session) => (
@@ -188,7 +188,7 @@ export default function SessionsPage() {
                 <button
                   onClick={() => router.push(`/sessions/${session.id}`)}
                   style={{
-                    backgroundColor: "#735C00",
+                    backgroundColor: "#173124",
                     color: "#FFFFFF",
                     fontWeight: 600,
                     padding: "0.625rem 1.25rem",
@@ -199,7 +199,7 @@ export default function SessionsPage() {
                     minHeight: "44px",
                   }}
                 >
-                  Join Meetup
+                  Join Catch-Up
                 </button>
                 <button
                   onClick={() =>
@@ -245,7 +245,7 @@ export default function SessionsPage() {
         {/* Streak card */}
         <div
           style={{
-            backgroundColor: "#735C00",
+            backgroundColor: "#173124",
             color: "#FFFFFF",
             borderRadius: "2rem",
             padding: "1.5rem 2rem",
@@ -255,7 +255,7 @@ export default function SessionsPage() {
             gap: "1.25rem",
           }}
         >
-          <span style={{ fontSize: "2.5rem" }}>🔥</span>
+          <span style={{ fontSize: "2.5rem" }}>🌻</span>
           <div>
             <p
               style={{
@@ -263,12 +263,13 @@ export default function SessionsPage() {
                 fontWeight: 800,
                 fontSize: "1.5rem",
                 marginBottom: "0.15rem",
+                color: "#E8C84A",
               }}
             >
-              3 Week Streak!
+              3 Weeks of Connection!
             </p>
             <p style={{ fontSize: "0.9rem", opacity: 0.85 }}>
-              You&apos;ve connected every week for 3 weeks. Keep it up!
+              You&apos;ve stayed in touch every week for 3 weeks. Keep it up!
             </p>
           </div>
         </div>
@@ -352,7 +353,7 @@ export default function SessionsPage() {
                 marginBottom: "1.5rem",
               }}
             >
-              Plan a Meetup
+              Schedule a Catch-Up
             </h2>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -405,7 +406,7 @@ export default function SessionsPage() {
                   type="text"
                   value={newActivity}
                   onChange={(e) => setNewActivity(e.target.value)}
-                  placeholder="e.g. Chair Yoga"
+                  placeholder="e.g. Morning Coffee Chat, Book Club Call, Watching Jeopardy"
                   style={{
                     width: "100%",
                     padding: "0.625rem 0.875rem",

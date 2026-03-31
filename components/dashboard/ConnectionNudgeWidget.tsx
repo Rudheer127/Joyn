@@ -80,7 +80,7 @@ export function ConnectionNudgeWidget({
             href={`/match/${companionId}`}
             style={{
               display: "inline-block",
-              backgroundColor: "#735C00",
+              backgroundColor: "#173124",
               color: "#FFFFFF",
               fontWeight: 600,
               padding: "0.625rem 1.25rem",

@@ -1,458 +1,493 @@
 "use client";
 
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, type UIMessage } from "ai";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
-const WELCOME_MESSAGE: UIMessage = {
-  id: "welcome",
-  role: "assistant",
-  parts: [
-    {
-      type: "text",
-      text: "Hi! I'm Jo 👋 I'm here to help you find the perfect workout partner. This will only take about 3 minutes. First — what's your name?",
-    },
-  ],
-};
+// ── Step 1 data ───────────────────────────────────────────────────────────
+const LONELINESS_REASONS = [
+  { id: "lost_partner",   emoji: "💔", label: "Lost a partner or spouse" },
+  { id: "moved_away",     emoji: "📦", label: "Moved to a new area" },
+  { id: "kids_left",      emoji: "🏠", label: "Children moved away" },
+  { id: "retired",        emoji: "👔", label: "Recently retired" },
+  { id: "lost_friends",   emoji: "🕊️", label: "Lost close friends" },
+  { id: "health",         emoji: "🏥", label: "Health limits getting out" },
+  { id: "just_lonely",    emoji: "🌙", label: "Just feeling lonely" },
+  { id: "new_friends",    emoji: "🌱", label: "Want to make new friends" },
+];
 
-const STEPS = ["About You", "Your Interests", "Get Matched"];
+// ── Step 2 data ───────────────────────────────────────────────────────────
+const CONNECTION_TYPES = [
+  { id: "phone",   emoji: "📞", label: "Phone calls",      desc: "A friendly voice to talk to" },
+  { id: "video",   emoji: "📹", label: "Video chats",      desc: "Face-to-face from home" },
+  { id: "coffee",  emoji: "☕", label: "Coffee meet-ups",  desc: "A relaxed chat in person" },
+  { id: "walks",   emoji: "🚶", label: "Walks together",   desc: "Gentle strolls and fresh air" },
+  { id: "events",  emoji: "📍", label: "Local events",     desc: "Classes, groups, activities" },
+  { id: "message", emoji: "💬", label: "Messages & texts", desc: "At your own pace" },
+];
 
-interface OnboardingProfile {
-  name?: string;
-  city?: string;
-  fitness_level?: string;
-  interests?: string[];
-  age?: number;
-  connection_preference?: string;
-  health_goals?: string[];
-  preferred_time?: string;
-}
+// ── Step 3 data ───────────────────────────────────────────────────────────
+const INTERESTS = [
+  "Gardening", "Reading", "Cooking", "Music", "Travel stories",
+  "Card games", "Birdwatching", "Painting", "Crosswords", "Knitting",
+  "Grandchildren", "Faith & spirituality", "History", "Movies & TV",
+  "Photography", "Walking", "Volunteering", "Crafts",
+];
+
+const CITIES = ["Phoenix", "Scottsdale", "Mesa", "Tempe", "Chandler", "Gilbert", "Tucson", "Other"];
+
+type Step = 1 | 2 | 3 | 4;
 
 export default function OnboardPage() {
   const router = useRouter();
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [inputValue, setInputValue] = useState("");
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState<Step>(1);
   const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState("");
-  // Prevent double-save if the effect fires twice
-  const hasSaved = useRef(false);
 
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({ api: "/api/ai/chat" }),
-    messages: [WELCOME_MESSAGE],
-  });
+  // Collected data
+  const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
+  const [selectedConnections, setSelectedConnections] = useState<string[]>([]);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
+  const [city, setCity] = useState("");
+  const [name, setName] = useState("");
 
-  // Auto-scroll + step tracker
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    const userCount = messages.filter((m) => m.role === "user").length;
-    if (userCount >= 4) setStep(2);
-    else if (userCount >= 2) setStep(1);
-    else setStep(0);
-  }, [messages]);
+  function toggleItem(id: string, list: string[], setList: (v: string[]) => void) {
+    setList(list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
+  }
 
-  // Detect completed profile JSON in the latest assistant message
-  useEffect(() => {
-    if (hasSaved.current) return;
-
-    const lastBot = [...messages].reverse().find((m) => m.role === "assistant");
-    if (!lastBot) return;
-
-    const text = lastBot.parts
-      .filter((p): p is { type: "text"; text: string } => p.type === "text")
-      .map((p) => p.text)
-      .join("");
-
-    const match = text.match(/<profile>([\s\S]*?)<\/profile>/);
-    if (!match) return;
-
-    let profileData: OnboardingProfile;
-    try {
-      profileData = JSON.parse(match[1].trim());
-    } catch {
-      return; // JSON not complete yet — wait for next message
-    }
-
-    hasSaved.current = true;
-    saveProfileAndEmbed(profileData);
-  }, [messages]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  async function saveProfileAndEmbed(data: OnboardingProfile) {
+  async function handleFinish() {
     setSaving(true);
-    setSaveError("");
-
     try {
       const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.push("/sign-in"); return; }
 
-      if (!user) {
-        setSaveError("Session expired. Please sign in again.");
-        setSaving(false);
-        hasSaved.current = false;
-        return;
-      }
-
-      // ── 1. Upsert core profile ───────────────────────────────────────
-      const { error: profileError } = await supabase.from("profiles").upsert({
+      await supabase.from("profiles").upsert({
         id: user.id,
-        full_name: data.name ?? null,
-        age: data.age ?? null,
-        city: data.city ?? null,
-        fitness_level: data.fitness_level?.toLowerCase() ?? null,
-        health_goals: data.health_goals ?? [],
-        connection_preference: data.connection_preference ?? "both",
+        full_name: name || null,
+        city: city || null,
+        connection_preference: selectedConnections.join(",") || "any",
+        health_goals: selectedReasons,
         onboarding_completed: true,
         updated_at: new Date().toISOString(),
       });
 
-      if (profileError) {
-        throw new Error(`Profile save failed: ${profileError.message}`);
-      }
-
-      // ── 2. Map interests → interest IDs and save junction rows ───────
-      if (Array.isArray(data.interests) && data.interests.length > 0) {
-        const { data: allInterests } = await supabase
-          .from("interests")
-          .select("id, name");
-
+      // Save interests if any match DB entries
+      if (selectedInterests.length > 0) {
+        const { data: allInterests } = await supabase.from("interests").select("id, name");
         if (allInterests) {
-          const lowerUserInterests = data.interests.map((i) => i.toLowerCase());
-          const junctionRows = allInterests
-            .filter((i) => lowerUserInterests.includes(i.name.toLowerCase()))
+          const lower = selectedInterests.map((i) => i.toLowerCase());
+          const rows = allInterests
+            .filter((i) => lower.includes(i.name.toLowerCase()))
             .map((i) => ({ user_id: user.id, interest_id: i.id }));
-
-          if (junctionRows.length > 0) {
-            // upsert so re-running onboarding doesn't create duplicates
-            await supabase
-              .from("user_interests")
-              .upsert(junctionRows, { onConflict: "user_id,interest_id" });
+          if (rows.length > 0) {
+            await supabase.from("user_interests").upsert(rows, { onConflict: "user_id,interest_id" });
           }
         }
       }
 
-      // ── 3. Generate semantic embedding for AI matching ────────────────
-      const embedRes = await fetch("/api/ai/match/embed", { method: "POST" });
-      if (!embedRes.ok) {
-        // Non-fatal — matching will generate the embedding on first visit
-        console.warn("[onboard] Embedding generation skipped:", await embedRes.text());
-      }
-
-      // ── 4. Go to dashboard ────────────────────────────────────────────
+      await fetch("/api/ai/match/embed", { method: "POST" }).catch(() => {});
       router.push("/dashboard");
     } catch (err) {
-      console.error("[onboard] Save error:", err);
-      setSaveError(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
-      );
+      console.error("Onboarding save error:", err);
       setSaving(false);
-      hasSaved.current = false;
     }
   }
 
-  function handleSend(e: React.FormEvent) {
-    e.preventDefault();
-    if (!inputValue.trim() || status !== "ready") return;
-    sendMessage({ text: inputValue });
-    setInputValue("");
-    inputRef.current?.focus();
-  }
+  const TOTAL_STEPS = 4;
+  const progress = (step / TOTAL_STEPS) * 100;
 
-  const isStreaming = status === "streaming" || status === "submitted";
+  const stepTitles: Record<Step, string> = {
+    1: "What brings you to Joyn?",
+    2: "How do you like to connect?",
+    3: "A little about you",
+    4: "You're in safe hands",
+  };
+  const stepSubs: Record<Step, string> = {
+    1: "Select all that apply",
+    2: "Choose everything that feels comfortable",
+    3: "This helps us find the right companions",
+    4: "Please read carefully",
+  };
 
-  // ── Saving overlay ────────────────────────────────────────────────────────
+  // ── Saving overlay ────────────────────────────────────────────────────
   if (saving) {
     return (
       <div style={{
-        minHeight: "100vh",
-        backgroundColor: "#FEF9ED",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "var(--font-lexend), sans-serif",
-        gap: "1.5rem",
-        padding: "2rem",
-        textAlign: "center",
+        minHeight: "100vh", backgroundColor: "#F5F0E8",
+        display: "flex", flexDirection: "column", alignItems: "center",
+        justifyContent: "center", fontFamily: "var(--font-lexend), sans-serif",
+        gap: "1.5rem", padding: "2rem", textAlign: "center",
       }}>
         <div style={{
-          width: "72px",
-          height: "72px",
-          borderRadius: "50%",
-          backgroundColor: "#173124",
-          color: "#FFFFFF",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          fontFamily: "var(--font-epilogue), serif",
-          fontWeight: 700,
-          fontSize: "1.25rem",
-          animation: "jo-pulse 1.8s ease-in-out infinite",
+          width: "72px", height: "72px", borderRadius: "50%",
+          backgroundColor: "#173124", color: "#FFFFFF",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontFamily: "var(--font-epilogue), serif", fontWeight: 700,
+          fontSize: "1.25rem", animation: "spin-slow 2s linear infinite",
         }}>
-          Jo
+          🌻
         </div>
-        <div>
-          <p style={{
-            fontFamily: "var(--font-epilogue), serif",
-            fontWeight: 700,
-            fontSize: "1.75rem",
-            color: "#173124",
-            letterSpacing: "-0.02em",
-            marginBottom: "0.5rem",
-          }}>
-            Setting up your profile…
-          </p>
-          <p style={{ fontSize: "1.0625rem", color: "#727973" }}>
-            Finding your best matches — this only takes a moment 🌻
-          </p>
-        </div>
-        <style>{`
-          @keyframes jo-pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(23,49,36,0.4); }
-            50% { box-shadow: 0 0 0 16px rgba(23,49,36,0); }
-          }
-        `}</style>
+        <p style={{ fontFamily: "var(--font-epilogue), serif", fontWeight: 700, fontSize: "1.75rem", color: "#173124" }}>
+          Setting up your profile…
+        </p>
+        <p style={{ fontSize: "1rem", color: "#727973" }}>
+          Finding your best companions — just a moment!
+        </p>
+        <style>{`@keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   return (
     <div style={{
-      minHeight: "100vh",
-      backgroundColor: "#FEF9ED",
-      display: "flex",
-      flexDirection: "column",
-      fontFamily: "var(--font-lexend), sans-serif",
+      minHeight: "100vh", backgroundColor: "#F5F0E8",
+      fontFamily: "var(--font-lexend), sans-serif", color: "#173124",
     }}>
 
-      {/* ── Header ── */}
-      <div style={{
-        backgroundColor: "#F8F3E8",
-        padding: "1.5rem 2.5rem",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        flexWrap: "wrap",
-        gap: "1rem",
-      }}>
-        <div>
-          <p className="label-meta" style={{ marginBottom: "0.25rem" }}>Getting Started</p>
-          <h1 style={{
-            fontFamily: "var(--font-epilogue), serif",
-            fontWeight: 700,
-            fontSize: "1.5rem",
-            color: "#173124",
-            letterSpacing: "-0.02em",
-            lineHeight: 1.1,
-          }}>
-            Meet Jo, your guide
-          </h1>
-        </div>
-
-        {/* Step tracker */}
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          {STEPS.map((label, i) => (
-            <div key={i} style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              backgroundColor: i <= step ? "#173124" : "#E7E2D7",
-              border: `2px solid ${i <= step ? "#173124" : "#C2C8C2"}`,
-              borderRadius: "3rem",
-              padding: "0.375rem 1rem",
-              transition: "all 0.3s ease",
-            }}>
-              <div style={{
-                width: "20px",
-                height: "20px",
-                borderRadius: "50%",
-                backgroundColor: i <= step ? "#735C00" : "#C2C8C2",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "0.7rem",
-                fontWeight: 700,
-                color: "#FFFFFF",
-                flexShrink: 0,
-              }}>
-                {i < step ? "✓" : i + 1}
-              </div>
-              <span style={{
-                fontSize: "0.8rem",
-                fontWeight: 600,
-                color: i <= step ? "#FFFFFF" : "#727973",
-                whiteSpace: "nowrap",
-              }}>
-                {label}
-              </span>
-            </div>
-          ))}
+      {/* ── Progress bar + step counter ── */}
+      <div style={{ backgroundColor: "#FEF9ED", borderBottom: "1px solid #E7E2D7", padding: "1.25rem 2rem" }}>
+        <div style={{ maxWidth: "640px", margin: "0 auto" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.625rem" }}>
+            <span style={{ fontFamily: "var(--font-epilogue), serif", fontWeight: 700, fontSize: "1.125rem", color: "#173124" }}>
+              JOYN
+            </span>
+            <span style={{ fontSize: "0.875rem", color: "#727973", fontWeight: 500 }}>
+              Step {step} of {TOTAL_STEPS}
+            </span>
+          </div>
+          {/* Multi-segment progress bar */}
+          <div style={{ display: "flex", gap: "4px" }}>
+            {Array.from({ length: TOTAL_STEPS }).map((_, i) => (
+              <div key={i} style={{ flex: 1, height: "6px", borderRadius: "3px", backgroundColor: i < step ? "#173124" : "#D4C9A8", transition: "background-color 0.3s" }} />
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ── Error banner ── */}
-      {saveError && (
-        <div style={{
-          backgroundColor: "#FEE2E2",
-          border: "1px solid #FCA5A5",
-          color: "#991B1B",
-          padding: "0.875rem 2.5rem",
-          fontSize: "0.95rem",
-          fontWeight: 500,
-        }}>
-          {saveError} — please refresh and try again.
+      {/* ── Content ── */}
+      <div style={{ maxWidth: "640px", margin: "0 auto", padding: "2.5rem 1.5rem" }}>
+
+        {/* Title */}
+        <div style={{ marginBottom: "1.75rem" }}>
+          <p style={{
+            fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase",
+            letterSpacing: "0.1em", color: "#727973", marginBottom: "0.5rem",
+          }}>
+            Step {step} of {TOTAL_STEPS}
+          </p>
+          <h1 style={{
+            fontFamily: "var(--font-epilogue), serif", fontWeight: 800,
+            fontSize: "1.875rem", color: "#173124", letterSpacing: "-0.02em",
+            lineHeight: 1.15, marginBottom: "0.375rem",
+          }}>
+            {stepTitles[step]}
+          </h1>
+          <p style={{ fontSize: "1rem", color: "#727973" }}>{stepSubs[step]}</p>
         </div>
-      )}
 
-      {/* ── Chat area ── */}
-      <div style={{
-        flex: 1,
-        overflowY: "auto",
-        padding: "2rem 2.5rem",
-        display: "flex",
-        flexDirection: "column",
-        gap: "1.5rem",
-        maxWidth: "800px",
-        width: "100%",
-        margin: "0 auto",
-        alignSelf: "center",
-      }}>
-        {messages.map((message) => {
-          const isBot = message.role === "assistant";
-          const rawText = message.parts
-            .filter((p): p is { type: "text"; text: string } => p.type === "text")
-            .map((p) => p.text)
-            .join("");
+        {/* Hint banner */}
+        <div style={{
+          backgroundColor: "#FFFBEA", border: "2px solid #E8C84A",
+          borderRadius: "0.75rem", padding: "0.75rem 1rem",
+          display: "flex", gap: "0.625rem", alignItems: "flex-start",
+          marginBottom: "1.75rem", fontSize: "0.9rem", color: "#735C00",
+        }}>
+          <span>💡</span>
+          <span>
+            {step === 1 && "Your reason stays private. It helps us find the right companion for you."}
+            {step === 2 && "You can always change your preferences later from your profile."}
+            {step === 3 && "These preferences help us find your best match nearby."}
+            {step === 4 && "You are always in control of your conversations."}
+          </span>
+        </div>
 
-          // Strip the <profile> block from displayed text — it's internal data
-          const displayText = rawText.replace(/<profile>[\s\S]*?<\/profile>/g, "").trim();
-          if (!displayText) return null;
+        {/* ── STEP 1: Why did you join? ── */}
+        {step === 1 && (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem", marginBottom: "2rem" }}>
+            {LONELINESS_REASONS.map((r) => {
+              const selected = selectedReasons.includes(r.id);
+              return (
+                <button
+                  key={r.id}
+                  onClick={() => toggleItem(r.id, selectedReasons, setSelectedReasons)}
+                  style={{
+                    backgroundColor: selected ? "#173124" : "#FFFFFF",
+                    color: selected ? "#FFFFFF" : "#173124",
+                    border: `2px solid ${selected ? "#173124" : "#D4C9A8"}`,
+                    borderRadius: "1.25rem",
+                    padding: "1.25rem 1rem",
+                    cursor: "pointer",
+                    textAlign: "center",
+                    fontFamily: "var(--font-lexend), sans-serif",
+                    transition: "all 0.15s",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    minHeight: "110px",
+                    justifyContent: "center",
+                  }}
+                >
+                  <span style={{ fontSize: "2rem" }}>{r.emoji}</span>
+                  <span style={{ fontSize: "0.9rem", fontWeight: 600, lineHeight: 1.3 }}>{r.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
 
-          return (
-            <div key={message.id} style={{
-              display: "flex",
-              gap: "1rem",
-              alignItems: "flex-end",
-              flexDirection: isBot ? "row" : "row-reverse",
-              animation: "fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both",
-            }}>
-              {isBot && (
-                <div style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "50%",
-                  backgroundColor: "#173124",
-                  color: "#FFFFFF",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontFamily: "var(--font-epilogue), serif",
-                  fontWeight: 700,
-                  fontSize: "0.9rem",
-                  flexShrink: 0,
-                  border: "2px solid #E5E0D5",
-                }}>
-                  Jo
-                </div>
-              )}
-              <div style={{
-                maxWidth: "72%",
-                backgroundColor: isBot ? "#E7E2D7" : "#173124",
-                color: isBot ? "#173124" : "#FFFFFF",
-                border: isBot ? "2px solid #C2C8C2" : "none",
-                borderRadius: isBot ? "0.5rem 2rem 2rem 2rem" : "2rem 0.5rem 2rem 2rem",
-                padding: "1.125rem 1.5rem",
-                fontSize: "1.0625rem",
-                lineHeight: 1.7,
-              }}>
-                {displayText}
+        {/* ── STEP 2: How do you like to connect? ── */}
+        {step === 2 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "2rem" }}>
+            {CONNECTION_TYPES.map((c) => {
+              const selected = selectedConnections.includes(c.id);
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => toggleItem(c.id, selectedConnections, setSelectedConnections)}
+                  style={{
+                    backgroundColor: selected ? "#173124" : "#FFFFFF",
+                    color: selected ? "#FFFFFF" : "#173124",
+                    border: `2px solid ${selected ? "#173124" : "#D4C9A8"}`,
+                    borderRadius: "1rem",
+                    padding: "1rem 1.25rem",
+                    cursor: "pointer",
+                    textAlign: "left",
+                    fontFamily: "var(--font-lexend), sans-serif",
+                    transition: "all 0.15s",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1rem",
+                    minHeight: "72px",
+                  }}
+                >
+                  <span style={{ fontSize: "1.75rem", flexShrink: 0 }}>{c.emoji}</span>
+                  <div>
+                    <p style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "0.1rem" }}>{c.label}</p>
+                    <p style={{ fontSize: "0.875rem", opacity: selected ? 0.8 : 0.6 }}>{c.desc}</p>
+                  </div>
+                  {selected && (
+                    <span style={{ marginLeft: "auto", fontSize: "1.25rem", flexShrink: 0 }}>✓</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── STEP 3: About you ── */}
+        {step === 3 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", marginBottom: "2rem" }}>
+
+            {/* Name */}
+            <div>
+              <label style={{ display: "block", fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.5rem", color: "#173124" }}>
+                Your first name (optional)
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. Margaret"
+                style={{
+                  width: "100%", border: "2px solid #D4C9A8", borderRadius: "0.75rem",
+                  padding: "0.875rem 1rem", fontSize: "1rem", color: "#173124",
+                  backgroundColor: "#FFFFFF", fontFamily: "var(--font-lexend), sans-serif",
+                  outline: "none", boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            {/* City */}
+            <div>
+              <label style={{ display: "block", fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.5rem", color: "#173124" }}>
+                Your city in Arizona
+              </label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.625rem" }}>
+                {CITIES.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setCity(c)}
+                    style={{
+                      backgroundColor: city === c ? "#173124" : "#FFFFFF",
+                      color: city === c ? "#FFFFFF" : "#173124",
+                      border: `2px solid ${city === c ? "#173124" : "#D4C9A8"}`,
+                      borderRadius: "3rem", padding: "0.5rem 1.25rem",
+                      fontSize: "0.95rem", fontWeight: 500, cursor: "pointer",
+                      fontFamily: "var(--font-lexend), sans-serif", transition: "all 0.15s",
+                      minHeight: "44px",
+                    }}
+                  >
+                    {c}
+                  </button>
+                ))}
               </div>
             </div>
-          );
-        })}
 
-        {/* Typing indicator */}
-        {isStreaming && (
-          <div style={{ display: "flex", gap: "1rem", alignItems: "flex-end" }}>
-            <div style={{
-              width: "48px",
-              height: "48px",
-              borderRadius: "50%",
-              backgroundColor: "#173124",
-              color: "#FFFFFF",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontFamily: "var(--font-epilogue), serif",
-              fontWeight: 700,
-              fontSize: "0.9rem",
-              flexShrink: 0,
-              border: "2px solid #E5E0D5",
-            }}>
-              Jo
-            </div>
-            <div style={{
-              backgroundColor: "#E7E2D7",
-              border: "2px solid #C2C8C2",
-              borderRadius: "0.5rem 2rem 2rem 2rem",
-              padding: "1.125rem 1.5rem",
-              display: "flex",
-              gap: "0.4rem",
-              alignItems: "center",
-            }}>
-              {[0, 1, 2].map((i) => (
-                <div key={i} style={{
-                  width: "8px",
-                  height: "8px",
-                  borderRadius: "50%",
-                  backgroundColor: "#727973",
-                  animation: `fade-in 0.6s ease ${i * 0.2}s infinite alternate`,
-                }} />
-              ))}
+            {/* Interests */}
+            <div>
+              <label style={{ display: "block", fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.5rem", color: "#173124" }}>
+                Things you enjoy (optional)
+              </label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.625rem" }}>
+                {INTERESTS.map((interest) => {
+                  const selected = selectedInterests.includes(interest);
+                  return (
+                    <button
+                      key={interest}
+                      onClick={() => toggleItem(interest, selectedInterests, setSelectedInterests)}
+                      style={{
+                        backgroundColor: selected ? "#173124" : "#FFFFFF",
+                        color: selected ? "#FFFFFF" : "#173124",
+                        border: `2px solid ${selected ? "#173124" : "#D4C9A8"}`,
+                        borderRadius: "3rem", padding: "0.5rem 1.25rem",
+                        fontSize: "0.9rem", fontWeight: 500, cursor: "pointer",
+                        fontFamily: "var(--font-lexend), sans-serif", transition: "all 0.15s",
+                        minHeight: "40px",
+                      }}
+                    >
+                      {interest}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
 
-        <div ref={bottomRef} />
-      </div>
+        {/* ── STEP 4: Trust & Safety ── */}
+        {step === 4 && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "1rem", marginBottom: "2rem" }}>
+            {[
+              {
+                icon: "🤝",
+                title: "This is real companionship",
+                desc: "Your companion is a real person, not a therapist or professional. They're here to listen, talk, and be a friend.",
+              },
+              {
+                icon: "🚨",
+                title: "Not for emergencies",
+                desc: "If you're in crisis, please call 988 (Suicide & Crisis Lifeline) or 911. We'll always show you these resources.",
+              },
+              {
+                icon: "🔒",
+                title: "You're in control",
+                desc: "End conversations anytime. Set your own boundaries. Your privacy is protected until you choose to share.",
+              },
+              {
+                icon: "👨‍👩‍👧",
+                title: "Family can help too",
+                desc: "If a family member set this up for you, they can support you — but your conversations are always yours.",
+              },
+            ].map((item) => (
+              <div
+                key={item.title}
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  border: "2px solid #D4C9A8",
+                  borderRadius: "1rem",
+                  padding: "1.125rem 1.25rem",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "1rem",
+                }}
+              >
+                <div style={{
+                  width: "44px", height: "44px", borderRadius: "50%",
+                  backgroundColor: "#E8F4EC", display: "flex", alignItems: "center",
+                  justifyContent: "center", fontSize: "1.25rem", flexShrink: 0,
+                }}>
+                  {item.icon}
+                </div>
+                <div>
+                  <p style={{ fontWeight: 700, fontSize: "1rem", color: "#173124", marginBottom: "0.2rem" }}>{item.title}</p>
+                  <p style={{ fontSize: "0.9rem", color: "#555F5A", lineHeight: 1.6 }}>{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
-      {/* ── Input bar ── */}
-      <div style={{ backgroundColor: "#F8F3E8", padding: "1.5rem 2.5rem" }}>
-        <form onSubmit={handleSend} style={{
-          display: "flex",
-          gap: "1rem",
-          maxWidth: "800px",
-          margin: "0 auto",
-        }}>
-          <input
-            ref={inputRef}
-            type="text"
-            className="input-base"
-            placeholder={isStreaming ? "Jo is thinking..." : "Type your message..."}
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            disabled={isStreaming}
-            style={{ flex: 1 }}
-          />
-          <button
-            type="submit"
-            disabled={isStreaming || !inputValue.trim()}
-            className="btn-primary"
-            style={{
-              padding: "0 1.75rem",
-              opacity: isStreaming || !inputValue.trim() ? 0.5 : 1,
-              cursor: isStreaming || !inputValue.trim() ? "not-allowed" : "pointer",
-              flexShrink: 0,
-            }}
-          >
-            Send
-          </button>
-        </form>
+        {/* ── Navigation buttons ── */}
+        <div style={{ display: "flex", gap: "0.875rem", justifyContent: "space-between" }}>
+          {step > 1 ? (
+            <button
+              onClick={() => setStep((s) => (s - 1) as Step)}
+              style={{
+                backgroundColor: "transparent",
+                border: "2px solid #D4C9A8",
+                borderRadius: "3rem",
+                padding: "0.875rem 1.75rem",
+                fontSize: "1rem",
+                fontWeight: 600,
+                color: "#173124",
+                cursor: "pointer",
+                fontFamily: "var(--font-lexend), sans-serif",
+                minHeight: "52px",
+              }}
+            >
+              ← Back
+            </button>
+          ) : (
+            <div />
+          )}
+
+          {step < TOTAL_STEPS ? (
+            <button
+              onClick={() => setStep((s) => (s + 1) as Step)}
+              disabled={step === 1 && selectedReasons.length === 0}
+              style={{
+                backgroundColor: step === 1 && selectedReasons.length === 0 ? "#D4C9A8" : "#173124",
+                color: "#FFFFFF",
+                border: "none",
+                borderRadius: "3rem",
+                padding: "0.875rem 2rem",
+                fontSize: "1rem",
+                fontWeight: 700,
+                cursor: step === 1 && selectedReasons.length === 0 ? "not-allowed" : "pointer",
+                fontFamily: "var(--font-lexend), sans-serif",
+                minHeight: "52px",
+                transition: "background-color 0.15s",
+              }}
+            >
+              Continue →
+            </button>
+          ) : (
+            <button
+              onClick={handleFinish}
+              style={{
+                backgroundColor: "#173124",
+                color: "#FFFFFF",
+                border: "none",
+                borderRadius: "3rem",
+                padding: "0.875rem 2rem",
+                fontSize: "1rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                fontFamily: "var(--font-lexend), sans-serif",
+                minHeight: "52px",
+              }}
+            >
+              Find My Companions 🌻
+            </button>
+          )}
+        </div>
+
+        {/* Skip link */}
+        {step < 4 && (
+          <p style={{ textAlign: "center", marginTop: "1.25rem", fontSize: "0.9rem", color: "#727973" }}>
+            <button
+              onClick={() => setStep((s) => (s + 1) as Step)}
+              style={{
+                background: "none", border: "none", color: "#727973",
+                cursor: "pointer", textDecoration: "underline", fontSize: "0.9rem",
+                fontFamily: "var(--font-lexend), sans-serif",
+              }}
+            >
+              Skip this step
+            </button>
+          </p>
+        )}
       </div>
     </div>
   );
