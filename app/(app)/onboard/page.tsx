@@ -168,21 +168,37 @@ export default function OnboardPage() {
       <div style={{ maxWidth: "640px", margin: "0 auto", padding: "2.5rem 1.5rem" }}>
 
         {/* Title */}
-        <div style={{ marginBottom: "1.75rem" }}>
-          <p style={{
-            fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase",
-            letterSpacing: "0.1em", color: "#727973", marginBottom: "0.5rem",
-          }}>
-            Step {step} of {TOTAL_STEPS}
-          </p>
-          <h1 style={{
-            fontFamily: "var(--font-epilogue), serif", fontWeight: 800,
-            fontSize: "1.875rem", color: "#173124", letterSpacing: "-0.02em",
-            lineHeight: 1.15, marginBottom: "0.375rem",
-          }}>
-            {stepTitles[step]}
-          </h1>
-          <p style={{ fontSize: "1rem", color: "#727973" }}>{stepSubs[step]}</p>
+        <div style={{ marginBottom: "1.75rem", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <p style={{
+              fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase",
+              letterSpacing: "0.1em", color: "#727973", marginBottom: "0.5rem",
+            }}>
+              Step {step} of {TOTAL_STEPS}
+            </p>
+            <h1 style={{
+              fontFamily: "var(--font-epilogue), serif", fontWeight: 800,
+              fontSize: "1.875rem", color: "#173124", letterSpacing: "-0.02em",
+              lineHeight: 1.15, marginBottom: "0.375rem",
+            }}>
+              {stepTitles[step]}
+            </h1>
+            <p style={{ fontSize: "1rem", color: "#727973" }}>{stepSubs[step]}</p>
+          </div>
+          
+          {step === 1 && (
+            <button
+              onClick={() => router.push("/onboard/voice")}
+              style={{
+                backgroundColor: "#F2C94C", color: "#173124", border: "none",
+                borderRadius: "2rem", padding: "0.5rem 1rem", fontSize: "0.875rem",
+                fontWeight: 700, display: "flex", alignItems: "center", gap: "0.5rem",
+                cursor: "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.05)"
+              }}
+            >
+              🎤 Voice Setup
+            </button>
+          )}
         </div>
 
         {/* Hint banner */}

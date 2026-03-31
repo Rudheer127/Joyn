@@ -1,6 +1,6 @@
 # JOYN — Move Together. Age with Joy.
 
-> Arizona's senior connection platform — pairing retired adults with compatible workout partners and building real friendships through consistent movement.
+> Arizona's high-empathy companionship platform — combating loneliness for adults 60+ by fostering genuine friendships, local event discovery, and meaningful conversations.
 
 **Live Demo**: [https://joyn-two.vercel.app](https://joyn-two.vercel.app)
 
@@ -12,20 +12,20 @@
 *(University of Michigan National Poll on Healthy Aging, 2023)*
 
 Social isolation among older adults is a public health crisis. Research shows:
-- Regular physical activity reduces dementia risk by **41–45%**
+- Regular physical activity and social interaction reduce dementia risk by **41–45%**
 - Strong social connections improve survival odds by **50%**
-- Yet most existing fitness apps are built for younger, tech-savvy users and ignore the social dimension entirely
+- Yet most digital platforms are built for younger, tech-savvy users and ignore the deep need for accessible, empathetic companionship.
 
-Seniors in Arizona don't need another app that tracks steps — they need a **workout buddy and a friend**.
+Seniors don't just need another social network — they need a **trusted companion and a safe space to connect**.
 
 ---
 
 ## The Solution
 
-Joyn is a matchmaking platform built specifically for retired adults. We use AI to pair seniors with a compatible workout partner based on fitness level, shared interests, location, and preferred schedule — then give them the tools to move and connect consistently.
+Joyn is an empathetic, AI-driven companionship platform built specifically for older adults. We use conversational AI to understand users' unique feelings of loneliness, and pair them with compatible friends based on shared interests, life experiences, and preferred connection styles.
 
-```
-Tell us about yourself → Get matched → Move together → Build real friendship
+```text
+Share your story via Voice/Text → Get matched with peers → Discover local events → Build real friendship
 ```
 
 ---
@@ -34,13 +34,13 @@ Tell us about yourself → Get matched → Move together → Build real friendsh
 
 | Feature | Description |
 |---|---|
-| 🤖 **AI Onboarding (Jo)** | A warm 3-minute conversational onboarding with Jo, Joyn's AI guide. No forms — just a friendly chat. |
-| 🤝 **Smart Matching** | AI-powered semantic matching using embeddings. Paired by fitness level, interests, schedule, and connection preference. |
-| 📹 **Virtual Sessions** | Chair yoga, stretching, walking, and light resistance — together on video call. No gym required. |
-| 📅 **Streak Scheduler** | Built-in calendar with streaks, reminders, and milestone celebrations. |
-| 📍 **Arizona Events** | Curated local events — walking groups, community classes, social gatherings — surfaced by AI. |
-| 💬 **Jo Companion** | An always-available, empathetic AI companion for users who just want to chat. Safety-aware. |
-| 🔐 **Secure Auth** | Email/password and magic link auth via Supabase. Session-aware routing. |
+| 🎙️ **Voice-Assisted Onboarding** | Hands-free and accessible profile setup using browser Speech-to-Text and Text-to-Speech to assist low-vision or typing-averse users. |
+| 🤖 **AI Consultation (Jo)** | An empathetic conversational interface that helps users identify their feelings of loneliness and provides tailored suggestions. |
+| 🤝 **Smart Companionship Matching** | Paired by shared interests, life experiences, and connection preferences (calls, coffee, walks). |
+| 🖼️ **Trust & Privacy Profiles** | User-controlled profile photos with privacy toggles and gender-differentiated avatars for a safe community feel. |
+| 📍 **Local Event Discovery** | Curated local events — community classes, social gatherings, support groups — surfaced by AI. |
+| 💬 **Secure Messaging** | An easy-to-use, high-contrast messaging interface for connecting with matches. |
+| 🔐 **Accessible Auth** | Simple Email/Password and Google OAuth integration via Supabase. |
 
 ---
 
@@ -145,12 +145,12 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
-## How the AI Matching Works
+## How the AI Companionship Works
 
-1. **Onboarding** — Jo (the AI) collects the user's name, city, fitness level, interests, age, connection preference, preferred exercise time, and health goals via conversation.
-2. **Profile Save** — The collected data is saved to the `profiles` and `user_interests` tables in Supabase.
-3. **Embedding** — A semantic vector embedding is generated from the user's profile and stored for similarity search.
-4. **Matching** — When a user visits `/match`, the embedding is used to find the most compatible other users via cosine similarity — factoring in fitness level, interests, location, and schedule alignment.
+1. **AI Consultation** — Jo (the AI) creates a warm, empathetic environment to learn about the user's current social needs and feelings of loneliness, using either text or voice.
+2. **Profile & Privacy** — The collected data is safely stored in Supabase. Users fully control their identity with public/private photo toggles.
+3. **Smart Matching** — We connect users with highly compatible peers based on semantic profile matching, aiming to bridge the gap of social isolation.
+4. **Local Integration** — The AI dynamically recommends true-to-life local community events (e.g., in Arizona) as comfortable first-meeting spots.
 
 ---
 
