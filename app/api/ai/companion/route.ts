@@ -69,7 +69,16 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { messages, pageContext }: { messages: UIMessage[]; pageContext?: string } = body;
+    const { messages, pageContext, isDemo }: { messages: UIMessage[]; pageContext?: string; isDemo?: boolean } = body;
+
+    // Skip auth for demo mode
+    if (!isDemo) {
+      const supabase = await createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        return new Response("Unauthorized", { status: 401 });
+      }
+    }
 
     const result = streamText({
       model: COMPANION_MODEL,

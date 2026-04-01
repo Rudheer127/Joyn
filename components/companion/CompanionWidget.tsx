@@ -4,6 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { isDemoMode } from "@/lib/demo/demoData";
 
 // ─── Page-aware context labels ────────────────────────────────────────────────
 const PAGE_CONTEXT: Record<string, { label: string; hint: string }> = {
@@ -45,10 +46,15 @@ export function CompanionWidget() {
   const [inputValue, setInputValue] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  useEffect(() => {
+    setDemoMode(isDemoMode());
+  }, []);
 
   const WELCOME_MESSAGE: UIMessage = {
     id: "companion-welcome",
@@ -63,7 +69,7 @@ export function CompanionWidget() {
     id: pathname,
     transport: new DefaultChatTransport({
       api: "/api/ai/companion",
-      body: { pageContext: pageHint },
+      body: { pageContext: pageHint, isDemo: demoMode },
     }),
     messages: [WELCOME_MESSAGE],
   });
