@@ -37,6 +37,18 @@ const QUICK_ACTIONS = [
   { label: "I need help",          text: "I need help with something",          nav: null },
 ];
 
+// ─── Client-side user intent → navigation ───────────────────────────────────
+// Two-part match: msg needs a NAV verb AND a page keyword (anywhere in sentence)
+const NAV_INTENT = /\b(go|open|take|show|find|navigate|view|see|bring|load|visit|check)\b/i;
+const USER_NAV_PATTERNS: { keyword: RegExp; route: string }[] = [
+  { keyword: /\bevents?\b/i,                               route: "/events"   },
+  { keyword: /\bmatches\b/i,                               route: "/match"    },
+  { keyword: /\bmessages?\b|\binbox\b|\bconversations?\b/i, route: "/messages" },
+  { keyword: /\bprofile\b/i,                               route: "/profile"  },
+  { keyword: /\bdashboard\b|\bhome\s+page\b/i,             route: "/dashboard"},
+  { keyword: /\bcatch.?ups?\b|\bsessions?\b|\bschedule\b/i, route: "/sessions" },
+];
+
 export function CompanionWidget() {
   const pathname = usePathname();
   const router = useRouter();
@@ -166,6 +178,20 @@ export function CompanionWidget() {
   function handleSend(text?: string) {
     const msg = (text ?? inputValue).trim();
     if (!msg || isStreaming) return;
+
+    // ── Client-side navigation intercept ──
+    // Jo sends the message to AI AND navigates immediately if intent is clear
+    if (NAV_INTENT.test(msg)) {
+      for (const { keyword, route } of USER_NAV_PATTERNS) {
+        if (keyword.test(msg) && pathname !== route) {
+          sendMessage({ text: msg });
+          setInputValue("");
+          setTimeout(() => { router.push(route); setIsOpen(false); }, 700);
+          return;
+        }
+      }
+    }
+
     sendMessage({ text: msg });
     setInputValue("");
     inputRef.current?.focus();
@@ -354,8 +380,14 @@ export function CompanionWidget() {
                     padding: "0.875rem 1.125rem",
                     fontSize: "1rem",
                     lineHeight: 1.65,
+                    // hide the bubble entirely if it has no content yet (streaming dots cover it)
+                    display: (!text && isBot && index === messages.length - 1 && isStreaming) ? "none" : undefined,
                   }}>
-                    {text || ((message as any).parts?.some((p: any) => p.type === "tool-invocation") ? "Navigating you now..." : "")}
+                    {text || (
+                      (message as any).parts?.some((p: any) => p.type === "tool-invocation")
+                        ? "🌻 Taking you there now…"
+                        : isBot ? "🌻 One moment…" : ""
+                    )}
                   </div>
                 </div>
 
