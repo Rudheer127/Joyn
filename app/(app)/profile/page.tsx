@@ -238,7 +238,8 @@ export default function ProfilePage() {
         fontFamily: "'Lexend', sans-serif",
         color: "#173124",
         padding: "2.5rem",
-        maxWidth: "760px",
+        maxWidth: "1100px",
+        margin: "0 auto",
       }}
     >
       <h1
@@ -424,6 +425,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
+        {/* ── Two-column panel grid ── */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "1.5rem", alignItems: "start" }}>
+
         {/* Interests */}
         <div
           style={{
@@ -539,7 +543,7 @@ export default function ProfilePage() {
           <p style={{ fontSize: "0.9rem", color: "#727973", marginBottom: "1.25rem" }}>
             What kind of social setting feels most comfortable to you?
           </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.625rem" }}>
             {socialComfortOptions.map((opt) => {
               const isSelected = socialComfort === opt.value;
               return (
@@ -852,6 +856,8 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+
+        </div>{/* end two-column grid */}
 
         {/* Save button */}
         <button

@@ -20,7 +20,7 @@ You are having an initial consultation with the user. Your main goal is to under
 
 STRICT RULES:
 1. Speak with deep empathy and warmth. Use simple language (Grade 6 level) and short sentences.
-2. Ask ONE question at a time to keep them from feeling overwhelmed.
+2. Ask ONE question at a time to keep them from feeling overwhelmed. Never use numbered lists or bullet points to present choices; simply weave them gently into the conversation.
 3. Once you feel you understand their story and goals, you MUST call the 'updateSupabaseProfile' tool to save those goals into their profile.
 4. After saving their profile, suggest a local real-world event/activity using the 'suggestLocalEvents' tool, or suggest that they can now view their matches.
 5. Do NOT list out all things they can do; let the conversation flow naturally.
@@ -57,6 +57,9 @@ export async function POST(req: NextRequest) {
     const result = streamText({
       model: CONSULTATION_MODEL,
       system: buildSystemPrompt(userName),
+      // @ts-ignore: Backwards compatibility for multi-step tool calls
+      maxSteps: 4,
+      maxToolRoundtrips: 4,
       messages: await convertToModelMessages(messages),
       tools: {
         updateSupabaseProfile: tool({

@@ -27,13 +27,13 @@ function getPageContext(pathname: string) {
 
 // ─── Quick action chips ────────────────────────────────────────────────────
 const QUICK_ACTIONS = [
-  { label: "Show my matches",         text: "Show me my matches", nav: "/match" },
-  { label: "Go to messages",          text: "Take me to my messages", nav: "/messages" },
-  { label: "Help me finish setup",    text: "Help me finish my setup", nav: "/onboard" },
-  { label: "Update my profile",       text: "I want to update my profile", nav: "/profile" },
-  { label: "Find events near me",     text: "Find events near me", nav: "/events" },
-  { label: "I feel lonely",           text: "I feel lonely today", nav: null },
-  { label: "I need help",             text: "I need help", nav: null },
+  { label: "I feel lonely",        text: "I feel lonely today",               nav: null },
+  { label: "I feel weak",          text: "I've been feeling weak lately",      nav: null },
+  { label: "Show my matches",      text: "Show me my matches",                  nav: "/match" },
+  { label: "Go to messages",       text: "Take me to my messages",              nav: "/messages" },
+  { label: "Find events",          text: "Find events near me",                 nav: "/events" },
+  { label: "Update my profile",    text: "I want to update my profile",         nav: "/profile" },
+  { label: "I need help",          text: "I need help with something",          nav: null },
 ];
 
 export function CompanionWidget() {
@@ -323,26 +323,37 @@ export function CompanionWidget() {
 
                 {/* Inline Quick Questions after the very first welcome message */}
                 {index === 0 && messages.length < 3 && (
-                  <div style={{ paddingLeft: "42px", display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", marginTop: "-0.25rem" }}>
-                    <p style={{ width: "100%", fontSize: "0.75rem", fontWeight: 600, color: "#727973", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 0.25rem 0" }}>Quick Questions</p>
-                    {QUICK_ACTIONS.map((action) => (
-                      <button
-                        key={action.label}
-                        onClick={() => handleQuickAction(action)}
-                        style={{
-                          backgroundColor: "#FFFFFF", border: "1px solid #C2C8C2",
-                          borderRadius: "1rem", padding: "0.625rem 1rem",
-                          fontSize: "0.9rem", color: "#173124", cursor: "pointer",
-                          fontFamily: "var(--font-lexend), sans-serif", fontWeight: 500,
-                          textAlign: "left", transition: "background-color 0.15s, border-color 0.15s",
-                          width: "fit-content"
-                        }}
-                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#F8F3E8"; e.currentTarget.style.borderColor = "#173124"; }}
-                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#FFFFFF"; e.currentTarget.style.borderColor = "#C2C8C2"; }}
-                      >
-                        {action.label}
-                      </button>
-                    ))}
+                  <div style={{ paddingLeft: "42px", marginTop: "0.5rem" }}>
+                    <p style={{
+                      fontSize: "0.7rem", fontWeight: 700, color: "#727973",
+                      textTransform: "uppercase", letterSpacing: "0.06em",
+                      margin: "0 0 0.5rem 0"
+                    }}>Quick questions</p>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
+                      {QUICK_ACTIONS.map((action) => (
+                        <button
+                          key={action.label}
+                          onClick={() => handleQuickAction(action)}
+                          style={{
+                            backgroundColor: "#FFFFFF",
+                            border: "1.5px solid #C2C8C2",
+                            borderRadius: "2rem",
+                            padding: "0.35rem 0.85rem",
+                            fontSize: "0.85rem",
+                            color: "#173124",
+                            cursor: "pointer",
+                            fontFamily: "var(--font-lexend), sans-serif",
+                            fontWeight: 500,
+                            whiteSpace: "nowrap",
+                            transition: "background-color 0.15s, border-color 0.15s",
+                          }}
+                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#F8F3E8"; e.currentTarget.style.borderColor = "#173124"; }}
+                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#FFFFFF"; e.currentTarget.style.borderColor = "#C2C8C2"; }}
+                        >
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

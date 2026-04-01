@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Mic, Square, Check, ArrowRight } from "lucide-react";
 
-type SetupStep = 1 | 2 | 3 | 4 | 5 | 6;
+type SetupStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 type SpeechRecognitionCtor = { new(): SpeechRecognition };
 
 const STEPS = {
@@ -26,10 +26,18 @@ const STEPS = {
     key: "city"
   },
   5: {
+    question: "Got it. Could you please tell me your age?",
+    key: "age"
+  },
+  6: {
+    question: "Thank you. And how do you identify your gender?",
+    key: "gender"
+  },
+  7: {
     question: "And finally, what is your full name?",
     key: "name"
   },
-  6: {
+  8: {
     question: "Thank you! I'm saving your profile now. Hang tight for just a moment.",
     key: "done"
   }
@@ -48,6 +56,8 @@ export default function VoiceOnboardingPage() {
     connections: "",
     interests: "",
     city: "",
+    age: "",
+    gender: "",
     name: ""
   });
 
@@ -79,6 +89,9 @@ export default function VoiceOnboardingPage() {
         id: user.id,
         full_name: data.name || null,
         city: data.city || null,
+        age: parseInt(data.age.replace(/\D/g, "")) || null,
+        gender: data.gender.toLowerCase().includes("woman") || data.gender.toLowerCase().includes("female") ? "female" 
+           : data.gender.toLowerCase().includes("man") || data.gender.toLowerCase().includes("male") ? "male" : "other",
         connection_preference: data.connections || "any",
         health_goals: data.reason ? [data.reason] : [],
         onboarding_completed: true,
@@ -128,10 +141,10 @@ export default function VoiceOnboardingPage() {
 
   // Speak the question when the step changes
   useEffect(() => {
-    if (step < 6) {
+    if (step < 8) {
       speak(STEPS[step].question);
-    } else if (step === 6) {
-      speak(STEPS[6].question);
+    } else if (step === 8) {
+      speak(STEPS[8].question);
       saveProfile();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -224,7 +237,7 @@ export default function VoiceOnboardingPage() {
 
         {/* Step Indicator */}
         <div style={{ marginBottom: "2rem", color: "#727973", fontWeight: 600, fontSize: "1.1rem" }}>
-          Step {step} of 5
+          Step {Math.min(step, 7)} of 7
         </div>
 
         {/* Question Text */}
@@ -234,7 +247,7 @@ export default function VoiceOnboardingPage() {
           color: isSpeaking ? "#173124" : "#4A554E",
           marginBottom: "3rem", transition: "color 0.3s"
         }}>
-          &ldquo;{STEPS[step as 1|2|3|4|5].question}&rdquo;
+          &ldquo;{STEPS[step as 1|2|3|4|5|6|7|8].question}&rdquo;
         </h1>
 
         {/* Live Transcript Box */}

@@ -58,6 +58,7 @@ const ACTION_CARDS = [
 
 export default function DashboardPage() {
   const [firstName, setFirstName] = useState("");
+  const [feelingText, setFeelingText] = useState("");
   const [greeting] = useState(() => {
     if (typeof window === "undefined") return "Good day";
     const hour = new Date().getHours();
@@ -142,99 +143,6 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Mood + Jo input merged card */}
-        <div
-          style={{
-            backgroundColor: "#FFFFFF",
-            border: "2px solid #E7E2D7",
-            borderRadius: "1.5rem",
-            padding: "2rem",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
-            marginBottom: "2.5rem",
-          }}
-        >
-          <h2 style={{ fontSize: "1.375rem", fontWeight: 700, marginBottom: "0.5rem" }}>
-            How are you feeling today?
-          </h2>
-          <p style={{ fontSize: "1rem", color: "#727973", marginBottom: "1.25rem" }}>
-            Pick an emoji, then share more if you'd like — Jo will respond.
-          </p>
-          <MoodWidget />
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const val = (e.currentTarget.elements.namedItem("feeling") as HTMLInputElement).value;
-              window.location.href = val ? `/consultation?q=${encodeURIComponent(val)}` : "/consultation";
-            }}
-            style={{ marginTop: "1.25rem" }}
-          >
-            <textarea
-              name="feeling"
-              placeholder="Want to share more? (optional) — e.g. I'm feeling a bit lonely today..."
-              rows={3}
-              style={{
-                width: "100%",
-                padding: "1rem",
-                borderRadius: "1rem",
-                border: "2px solid #C2C8C2",
-                fontSize: "1.0625rem",
-                fontFamily: "inherit",
-                resize: "none",
-                marginBottom: "1rem",
-                boxSizing: "border-box",
-              }}
-            />
-            <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1rem" }}>
-              {["I just want to talk", "Find people near me", "Suggest an activity", "I feel overwhelmed"].map((preset) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => { window.location.href = `/consultation?q=${encodeURIComponent(preset)}`; }}
-                  style={{
-                    backgroundColor: "#FEF9ED", border: "1px solid #C2C8C2",
-                    borderRadius: "2rem", padding: "0.5rem 1rem",
-                    fontSize: "0.95rem", color: "#173124", cursor: "pointer",
-                  }}
-                >
-                  {preset}
-                </button>
-              ))}
-            </div>
-            <button
-              type="submit"
-              style={{
-                width: "100%", backgroundColor: "#173124", color: "#FFFFFF",
-                fontWeight: 600, fontSize: "1.125rem", padding: "1rem",
-                borderRadius: "3rem", border: "none", cursor: "pointer",
-              }}
-            >
-              Let's Chat with Jo →
-            </button>
-          </form>
-        </div>
-
-        <div
-          style={{
-            backgroundColor: "#FFFBEA",
-            border: "2px solid #E8C84A",
-            borderRadius: "1rem",
-            padding: "0.875rem 1.25rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.75rem",
-            marginBottom: "2rem",
-            fontSize: "0.95rem",
-            color: "#735C00",
-            fontWeight: 500,
-          }}
-        >
-          <span style={{ fontSize: "1.125rem" }}>💡</span>
-          <span>
-            <strong>Tip:</strong> A simple &ldquo;hello&rdquo; message is all it takes to start a
-            great friendship. Your matches are waiting!
-          </span>
-        </div>
-
         {/* Action cards */}
         <div
           style={{
@@ -287,6 +195,100 @@ export default function DashboardPage() {
           ))}
         </div>
 
+        {/* Mood + Jo input merged card */}
+        <div
+          style={{
+            backgroundColor: "#FFFFFF",
+            border: "2px solid #E7E2D7",
+            borderRadius: "1.5rem",
+            padding: "2rem",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+            marginBottom: "2.5rem",
+          }}
+        >
+          <h2 style={{ fontSize: "1.375rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+            How are you feeling today?
+          </h2>
+          <p style={{ fontSize: "1rem", color: "#727973", marginBottom: "1.25rem" }}>
+            Pick an emoji, then share more if you'd like — Jo will respond.
+          </p>
+          <MoodWidget />
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const val = (e.currentTarget.elements.namedItem("feeling") as HTMLInputElement).value;
+              window.location.href = val ? `/consultation?q=${encodeURIComponent(val)}` : "/consultation";
+            }}
+            style={{ marginTop: "1.25rem" }}
+          >
+            <textarea
+              name="feeling"
+              value={feelingText}
+              onChange={(e) => setFeelingText(e.target.value)}
+              placeholder="Want to share more? (optional) — e.g. I'm feeling a bit lonely today..."
+              rows={3}
+              style={{
+                width: "100%",
+                padding: "1rem",
+                borderRadius: "1rem",
+                border: "2px solid #C2C8C2",
+                fontSize: "1.0625rem",
+                fontFamily: "inherit",
+                resize: "none",
+                marginBottom: "1rem",
+                boxSizing: "border-box",
+              }}
+            />
+            <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+              {["I just want to talk", "Find people near me", "Suggest an activity", "I feel overwhelmed"].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => setFeelingText(preset)}
+                  style={{
+                    backgroundColor: "#FEF9ED", border: "1px solid #C2C8C2",
+                    borderRadius: "2rem", padding: "0.5rem 1rem",
+                    fontSize: "0.95rem", color: "#173124", cursor: "pointer",
+                  }}
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
+            <button
+              type="submit"
+              style={{
+                width: "100%", backgroundColor: "#173124", color: "#FFFFFF",
+                fontWeight: 600, fontSize: "1.125rem", padding: "1rem",
+                borderRadius: "3rem", border: "none", cursor: "pointer",
+              }}
+            >
+              Let's Chat with Jo →
+            </button>
+          </form>
+        </div>
+
+        <div
+          style={{
+            backgroundColor: "#FFFBEA",
+            border: "2px solid #E8C84A",
+            borderRadius: "1rem",
+            padding: "0.875rem 1.25rem",
+            display: "flex",
+            alignItems: "center",
+            gap: "0.75rem",
+            marginBottom: "2rem",
+            fontSize: "0.95rem",
+            color: "#735C00",
+            fontWeight: 500,
+          }}
+        >
+          <span style={{ fontSize: "1.125rem" }}>💡</span>
+          <span>
+            <strong>Tip:</strong> A simple &ldquo;hello&rdquo; message is all it takes to start a
+            great friendship. Your matches are waiting!
+          </span>
+        </div>
 
       </div>
     </div>
