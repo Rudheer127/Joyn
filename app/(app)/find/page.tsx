@@ -90,28 +90,47 @@ function ProgressDots({ current }: { current: Step }) {
 function AgeRangeSlider({ min, max, onChange }: { min: number; max: number; onChange: (min: number, max: number) => void }) {
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.5rem" }}>
-        <span style={{ fontWeight: 600, fontSize: "0.95rem", color: "#173124" }}>{min} years</span>
-        <span style={{ fontWeight: 600, fontSize: "0.95rem", color: "#173124" }}>{max} years</span>
+      <style>{`
+        input[type=range].joyn-slider {
+          -webkit-appearance: none; appearance: none;
+          width: 100%; height: 6px;
+          border-radius: 3px; background: #C2C8C2;
+          outline: none; cursor: pointer;
+        }
+        input[type=range].joyn-slider::-webkit-slider-thumb {
+          -webkit-appearance: none; appearance: none;
+          width: 26px; height: 26px; border-radius: 50%;
+          background: #173124; cursor: pointer;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          border: 3px solid #FFFFFF;
+        }
+        input[type=range].joyn-slider::-moz-range-thumb {
+          width: 26px; height: 26px; border-radius: 50%;
+          background: #173124; cursor: pointer;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+          border: 3px solid #FFFFFF;
+        }
+      `}</style>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+        <span style={{ fontWeight: 700, fontSize: "1.05rem", color: "#173124" }}>{min} yrs</span>
+        <span style={{ fontWeight: 700, fontSize: "1.05rem", color: "#173124" }}>{max} yrs</span>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
         <div>
-          <label style={{ fontSize: "0.8rem", color: "#727973", display: "block", marginBottom: "0.25rem" }}>Minimum age</label>
-          <input type="range" min={55} max={90} value={min}
+          <label style={{ fontSize: "0.85rem", color: "#727973", display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Minimum age</label>
+          <input type="range" className="joyn-slider" min={55} max={90} value={min}
             onChange={e => onChange(Math.min(Number(e.target.value), max - 1), max)}
-            style={{ width: "100%", accentColor: "#173124" }}
           />
         </div>
         <div>
-          <label style={{ fontSize: "0.8rem", color: "#727973", display: "block", marginBottom: "0.25rem" }}>Maximum age</label>
-          <input type="range" min={55} max={95} value={max}
+          <label style={{ fontSize: "0.85rem", color: "#727973", display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Maximum age</label>
+          <input type="range" className="joyn-slider" min={55} max={95} value={max}
             onChange={e => onChange(min, Math.max(Number(e.target.value), min + 1))}
-            style={{ width: "100%", accentColor: "#173124" }}
           />
         </div>
       </div>
-      <p style={{ fontSize: "0.85rem", color: "#4A5C50", marginTop: "0.5rem" }}>
-        Showing companions aged <strong>{min}–{max}</strong>
+      <p style={{ fontSize: "0.9rem", color: "#4A5C50", marginTop: "0.875rem", fontWeight: 600 }}>
+        Showing companions aged <strong style={{ color: "#173124" }}>{min}–{max}</strong>
       </p>
     </div>
   );
@@ -247,7 +266,11 @@ export default function FindCompanionPage() {
         {stepSub && <p style={{ fontSize: "0.95rem", color: "#727973", marginTop: "0.375rem" }}>{stepSub}</p>}
       </div>
 
-      <div style={{ padding: "2rem 2.5rem", maxWidth: step === "results" ? "none" : "820px" }}>
+      <div style={{
+        padding: "2rem 2.5rem",
+        maxWidth: step === "results" ? "none" : "960px",
+        margin: "0 auto",
+      }}>
         {step !== "results" && <ProgressDots current={step} />}
 
         {/* ── Step 1: Situation ─────────────────────────────────────────── */}
@@ -338,30 +361,46 @@ export default function FindCompanionPage() {
         {/* ── Step 3: Fine-tune filters ─────────────────────────────────── */}
         {step === "filters" && (
           <>
-            <StepCard title="Gender preference">
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.625rem" }}>
-                {GENDER_PREFS.map(o => (
-                  <Pill key={o.v} label={o.label} selected={genderPref === o.v} onClick={() => setGenderPref(o.v)} />
-                ))}
+            {/* Gender + Frequency side-by-side */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.25rem" }}>
+              {/* Gender */}
+              <div style={{ backgroundColor: "#FFFFFF", border: "2px solid #E7E2D7", borderRadius: "1.5rem", padding: "2rem" }}>
+                <p style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#735C00", marginBottom: "1rem" }}>Gender preference</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+                  {GENDER_PREFS.map(o => (
+                    <button key={o.v} onClick={() => setGenderPref(o.v)} style={{
+                      padding: "0.75rem 1.25rem", borderRadius: "3rem", fontSize: "1rem",
+                      fontWeight: genderPref === o.v ? 700 : 500,
+                      border: `2px solid ${genderPref === o.v ? "#173124" : "#C2C8C2"}`,
+                      backgroundColor: genderPref === o.v ? "#173124" : "#FFFFFF",
+                      color: genderPref === o.v ? "#FFFFFF" : "#173124",
+                      cursor: "pointer", transition: "all 0.15s", textAlign: "left",
+                    }}>{o.label}</button>
+                  ))}
+                </div>
               </div>
-            </StepCard>
 
-            <StepCard title="How often would you like to connect?" subtitle="Think of this as your ideal rhythm — not a schedule.">
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                {FREQ_PREFS.map(o => (
-                  <button key={o.v} onClick={() => setFreqPref(o.v)} style={{
-                    border: `2px solid ${freqPref === o.v ? "#173124" : "#C2C8C2"}`,
-                    backgroundColor: freqPref === o.v ? "#F8F3E8" : "#FFFFFF",
-                    borderRadius: "1rem", padding: "0.875rem 1.25rem",
-                    textAlign: "left", cursor: "pointer", transition: "all 0.15s",
-                  }}>
-                    <p style={{ fontWeight: freqPref === o.v ? 700 : 600, fontSize: "1rem", color: "#173124", margin: 0 }}>{o.label}</p>
-                    <p style={{ fontSize: "0.85rem", color: "#727973", margin: "0.25rem 0 0 0" }}>{o.desc}</p>
-                  </button>
-                ))}
+              {/* Frequency */}
+              <div style={{ backgroundColor: "#FFFFFF", border: "2px solid #E7E2D7", borderRadius: "1.5rem", padding: "2rem" }}>
+                <p style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#735C00", marginBottom: "0.375rem" }}>How often to connect?</p>
+                <p style={{ fontSize: "0.85rem", color: "#727973", marginBottom: "1rem" }}>Your ideal rhythm — not a schedule</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.625rem" }}>
+                  {FREQ_PREFS.map(o => (
+                    <button key={o.v} onClick={() => setFreqPref(o.v)} style={{
+                      border: `2px solid ${freqPref === o.v ? "#173124" : "#C2C8C2"}`,
+                      backgroundColor: freqPref === o.v ? "#F8F3E8" : "#FFFFFF",
+                      borderRadius: "0.875rem", padding: "0.625rem 1rem",
+                      textAlign: "left", cursor: "pointer", transition: "all 0.15s",
+                    }}>
+                      <p style={{ fontWeight: freqPref === o.v ? 700 : 600, fontSize: "0.9rem", color: "#173124", margin: 0 }}>{o.label}</p>
+                      <p style={{ fontSize: "0.78rem", color: "#727973", margin: "0.15rem 0 0 0" }}>{o.desc}</p>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </StepCard>
+            </div>
 
+            {/* Distance full width */}
             <StepCard title="Distance">
               <div style={{ display: "flex", flexWrap: "wrap", gap: "0.625rem" }}>
                 {DISTANCE_OPTS.map(o => (
