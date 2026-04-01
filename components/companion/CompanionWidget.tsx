@@ -110,26 +110,58 @@ export function CompanionWidget() {
 
   const lastNavRef = useRef<string | null>(null);
 
+  // ── Text-based navigation keywords (fallback if tool call doesn't fire) ──
+  const NAV_KEYWORDS: { patterns: RegExp[]; route: string }[] = [
+    { patterns: [/\bmatches\b/i, /\/match\b/i], route: "/match" },
+    { patterns: [/\bmessages\b/i, /\/messages\b/i], route: "/messages" },
+    { patterns: [/\bevents\b/i, /\/events\b/i], route: "/events" },
+    { patterns: [/\bprofile\b/i, /\/profile\b/i], route: "/profile" },
+    { patterns: [/\bcatch.?ups?\b/i, /\bsessions\b/i, /\/sessions\b/i], route: "/sessions" },
+    { patterns: [/\bdashboard\b/i, /\bhome\b/i, /\/dashboard\b/i], route: "/dashboard" },
+  ];
+
   useEffect(() => {
     const lastMessage = messages[messages.length - 1] as any;
     if (!lastMessage || lastMessage.role !== "assistant") return;
+    if (lastMessage.id === lastNavRef.current) return;
 
+    // ── Primary: tool-invocation detection ──
     const toolParts = lastMessage.parts?.filter((p: any) => p.type === "tool-invocation") || [];
-    
-    if (toolParts.length > 0 && lastMessage.id !== lastNavRef.current) {
-      const navCallPart = toolParts.find((p: any) => p.toolInvocation?.toolName === "navigateTo");
-      if (navCallPart && "result" in navCallPart.toolInvocation) {
-        lastNavRef.current = lastMessage.id;
-        const route = navCallPart.toolInvocation.args?.route;
-        if (route) {
-          setTimeout(() => {
-            router.push(route);
-            setIsOpen(false);
-          }, 1500);
+    if (toolParts.length > 0) {
+      const navPart = toolParts.find((p: any) => p.toolInvocation?.toolName === "navigateTo");
+      if (navPart) {
+        const inv = navPart.toolInvocation;
+        // SDK v6: state === 'result';  older: 'result' key exists
+        const isDone = inv?.state === "result" || (inv && "result" in inv);
+        if (isDone) {
+          const route = inv.args?.route;
+          if (route) {
+            lastNavRef.current = lastMessage.id;
+            setTimeout(() => { router.push(route); setIsOpen(false); }, 800);
+            return;
+          }
         }
       }
     }
-  }, [messages, router]);
+
+    // ── Fallback: keyword scan in message text ──
+    const text = (lastMessage.parts ?? [])
+      .filter((p: any) => p.type === "text")
+      .map((p: any) => p.text ?? "")
+      .join(" ");
+
+    // Only act on navigation-intent phrases (avoid false positives)
+    const isNavIntent = /taking you|heading (there|over)|opening|navigating|going to|let.?s go/i.test(text);
+    if (isNavIntent) {
+      for (const { patterns, route } of NAV_KEYWORDS) {
+        if (patterns.some((rx) => rx.test(text)) && pathname !== route) {
+          lastNavRef.current = lastMessage.id;
+          setTimeout(() => { router.push(route); setIsOpen(false); }, 1200);
+          return;
+        }
+      }
+    }
+  }, [messages, router, pathname]);
 
   function handleSend(text?: string) {
     const msg = (text ?? inputValue).trim();
