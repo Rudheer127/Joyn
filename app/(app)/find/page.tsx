@@ -448,7 +448,7 @@ export default function FindCompanionPage() {
               <div style={{ width: "1px", height: "24px", backgroundColor: "#E7E2D7" }} />
               <span style={{ fontSize: "0.78rem", fontWeight: 700, color: "#727973", textTransform: "uppercase", letterSpacing: "0.06em" }}>Activity</span>
               {[{ v: "any", l: "Any" }, { v: "gentle", l: "Gentle" }, { v: "moderate", l: "Moderate" }, { v: "active", l: "Active" }].map(o => (
-                <ToolPill key={o.v} label={o.l} active={filterActivity === o.v} onClick={() => setFilterActivity(o.v)} />
+                <ToolPill key={o.v} label={o.l} active={filterActivity === o.v} onClick={() => setFilterActivity(filterActivity === o.v && o.v !== "any" ? "any" : o.v)} />
               ))}
 
               <div style={{ width: "1px", height: "24px", backgroundColor: "#E7E2D7" }} />

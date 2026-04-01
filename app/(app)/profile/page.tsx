@@ -411,20 +411,38 @@ export default function ProfilePage() {
               ))}
             </select>
           </div>
+        </div>
 
-          <div>
-            <label style={{ display: "block", fontWeight: 600, marginBottom: "0.5rem", fontSize: "1rem" }}>
-              About You
-            </label>
-            <textarea
-              className="input-base"
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              placeholder="Tell us about yourself — your life, your story, what makes you smile."
-              rows={4}
-              style={{ resize: "vertical" }}
-            />
-          </div>
+        {/* About Me — full-width standalone card */}
+        <div
+          style={{
+            backgroundColor: "#E7E2D7",
+            border: "2px solid #C2C8C2",
+            borderRadius: "2.5rem",
+            padding: "2rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "0.875rem", fontWeight: 600,
+              textTransform: "uppercase", letterSpacing: "0.05em",
+              color: "#735C00", marginBottom: "0.375rem",
+            }}
+          >
+            About Me
+          </p>
+          <p style={{ fontSize: "0.9rem", color: "#727973", marginBottom: "1rem" }}>
+            This is what companions see on your profile — share your story, what you enjoy, and what you&apos;re looking for.
+          </p>
+          <textarea
+            className="input-base"
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            placeholder="e.g. Retired nurse from Scottsdale who loves gardening, long walks and a good cup of tea. I recently moved closer to my grandchildren and I'm looking forward to making new friends in the area..."
+            rows={7}
+            style={{ resize: "vertical", width: "100%", boxSizing: "border-box", fontSize: "1.05rem", lineHeight: 1.7 }}
+          />
         </div>
 
         {/* ── Two-column panel grid ── */}
