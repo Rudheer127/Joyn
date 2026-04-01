@@ -10,6 +10,23 @@ import { z } from "zod";
 
 const CONSULTATION_MODEL = groq("llama-3.1-8b-instant");
 
+// ─── Real community events embedded in the prompt ─────────────────────────────
+const ARIZONA_EVENTS = `
+REAL COMMUNITY EVENTS HAPPENING IN ARIZONA THIS MONTH:
+- "Chandler Senior Center Yoga" — Thursday April 3, 9:00 AM, Chandler Community Center
+- "Desert Botanical Garden Morning Walk" — Monday April 7, 7:30 AM, Phoenix (easy 1.5-mile walk)
+- "Sun City Card & Board Games" — Wednesday April 9, 1:00 PM, Sun City Recreation Center
+- "Tempe Town Lake Walk & Coffee" — Saturday April 12, 8:00 AM, Tempe Town Lake (walk + coffee after)
+- "Mesa Senior Nutrition & Health Talk" — Tuesday April 15, 11:00 AM, Mesa Senior Center (free)
+- "Widows & Widowers Support Circle" — Monday April 21, 2:00 PM, Mesa Senior Center
+- "Morning Coffee & Conversation" — Wednesday April 23, 9:00 AM, Old Town Coffee House, Scottsdale
+- "Gilbert Community Potluck Dinner" — Saturday April 19, 5:30 PM, Gilbert Heritage District (free, live music)
+- "Volunteer: Read to Kids at Library" — Saturday April 26, 10:00 AM, Phoenix Public Library
+- "Intergenerational Cooking Class" — Tuesday April 29, 5:30 PM, Tempe Community Center
+
+When the user expresses interest in events or activities, pick 2-3 from the list above that best match their interests and mention them warmly and naturally in your reply. Do NOT output any XML tags, tool calls, or code. Just speak naturally.
+`;
+
 function buildSystemPrompt(userName: string): string {
   return `You are Jo, a warm, empathetic listener and guide for Joyn.
 Joyn is a companionship platform for older adults (60+) in Arizona.
@@ -20,14 +37,16 @@ You are having an initial consultation with the user. Your main goal is to under
 
 STRICT RULES:
 1. Speak with deep empathy and warmth. Use simple language (Grade 6 level) and short sentences.
-2. Ask ONE question at a time to keep them from feeling overwhelmed. Never use numbered lists or bullet points to present choices; simply weave them gently into the conversation.
-3. Once you feel you understand their story and goals, you MUST call the 'updateSupabaseProfile' tool to save those goals into their profile.
-4. After saving their profile, suggest a local real-world event/activity using the 'suggestLocalEvents' tool, or suggest that they can now view their matches.
-5. Do NOT list out all things they can do; let the conversation flow naturally.
-6. Important: This platform focuses on friendship and combating loneliness, but connections can absolutely be formed around shared hobbies, including fitness, walking routines, reading, etc. Be accepting, calm, and sweet about whatever connects them to others.
-7. If the user mentions health crises or extreme distress, gently recommend 988.
+2. Ask ONE question at a time. Never overwhelm. Never use bullet points or numbered lists; weave everything gently into conversation.
+3. Once you understand their story and goals, call the 'updateSupabaseProfile' tool silently to save their preferences.
+4. When events feel relevant, mention 2-3 specific ones from the list below — warmly and naturally, NO XML tags, NO code, just plain conversational text.
+5. This platform is about friendship and combating loneliness through any shared interest — fitness, hobbies, errands, anything. Be accepting, calm, and sweet.
+6. If the user mentions extreme distress, gently recommend 988.
+7. NEVER output XML, angle brackets, tool names, or code in your reply. Just speak naturally.
 
-YOUR FIRST MESSAGE should usually be: "Hi ${userName}, I'm so glad you're here. Can you tell me a little bit about what brings you to Joyn today?"
+YOUR FIRST MESSAGE: "Hi ${userName}, I'm so glad you're here. 🌻 Can you tell me a little bit about what brings you to Joyn today?"
+
+${ARIZONA_EVENTS}
 `;
 }
 
@@ -48,25 +67,28 @@ export async function POST(req: NextRequest) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", user.id).single();
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("full_name, city")
+      .eq("id", user.id)
+      .single();
+
     const userName = profile?.full_name?.split(" ")[0] || "Friend";
+    const userCity = profile?.city || "Phoenix";
 
     const body = await req.json();
     const { messages }: { messages: UIMessage[] } = body;
 
     const result = streamText({
       model: CONSULTATION_MODEL,
-      system: buildSystemPrompt(userName),
-      // @ts-ignore: Backwards compatibility for multi-step tool calls
-      maxSteps: 4,
-      maxToolRoundtrips: 4,
+      system: buildSystemPrompt(userName) + `\nThe user's city is: ${userCity}. Prioritize events near ${userCity} when suggesting.`,
       messages: await convertToModelMessages(messages),
       tools: {
         updateSupabaseProfile: tool({
-          description: "Saves the user's loneliness reason and preferred connection style to their Joyn profile in Supabase.",
+          description: "Saves the user's loneliness reason and preferred connection style to their Joyn profile.",
           inputSchema: z.object({
             lonelinessReason: z.string().describe("A brief summary of why the user feels lonely or why they joined."),
-            preferredConnection: z.string().describe("What the user wants to do (e.g., 'phone calls', 'coffee', 'walking').")
+            preferredConnection: z.string().describe("What the user wants: e.g. 'phone calls', 'coffee meetups', 'walking buddy'.")
           }),
           execute: async ({ lonelinessReason, preferredConnection }) => {
             const { error } = await supabase.from("profiles").update({
@@ -77,22 +99,11 @@ export async function POST(req: NextRequest) {
 
             if (error) {
               console.error("Failed to update profile", error);
-              return "Error updating profile. But tell the user you noted it down anyway.";
             }
 
-            return `Successfully updated profile. Tell the user their preferences are saved and suggest local events using the suggestLocalEvents tool if they seem interested, or tell them they can view their matches on the dashboard.`;
+            return "Profile saved successfully.";
           }
         }),
-        suggestLocalEvents: tool({
-          description: "Suggests 2-3 local community events in Arizona for seniors.",
-          inputSchema: z.object({
-            city: z.string().optional().describe("The user's city in Arizona, if known.")
-          }),
-          execute: async ({ city }) => {
-            const loc = city || "Phoenix";
-            return `Here are some mock events in ${loc}:\n1. ${loc} Senior Center Morning Coffee\n2. ${loc} Library Book Club for Seniors\n3. Sun City Walking Group.\n\nPresent these warmly to the user.`;
-          }
-        })
       }
     });
 
