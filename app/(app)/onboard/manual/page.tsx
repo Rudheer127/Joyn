@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { isDemoMode } from "@/lib/demo/demoData";
 
 // ── Step 1 data ───────────────────────────────────────────────────────────
 const LONELINESS_REASONS = [
@@ -60,6 +61,12 @@ export default function OnboardPage() {
   async function handleFinish() {
     setSaving(true);
     try {
+      // Demo mode: skip all Supabase calls, go straight to dashboard
+      if (isDemoMode()) {
+        router.push("/dashboard");
+        return;
+      }
+
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/sign-in"); return; }

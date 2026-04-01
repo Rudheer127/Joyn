@@ -10,7 +10,8 @@ export default function DemoEntryPage() {
   useEffect(() => {
     // Clear any previous demo state, then set fresh
     startDemo();
-    router.replace("/dashboard");
+    // Start at onboarding so the demo shows the full first-time user flow
+    router.replace("/onboard/manual");
   }, [router]);
 
   return (
@@ -25,7 +26,7 @@ export default function DemoEntryPage() {
           Starting your demo…
         </p>
         <p style={{ fontSize: "0.95rem", color: "#727973", marginTop: "0.5rem" }}>
-          You&apos;ll be logged in as Margaret, a first-time Joyn member.
+          You&apos;ll set up a profile just like a real first-time user.
         </p>
       </div>
     </div>
