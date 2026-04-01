@@ -60,6 +60,7 @@ export function CompanionWidget() {
   };
 
   const { messages, sendMessage, status } = useChat({
+    id: pathname,
     transport: new DefaultChatTransport({
       api: "/api/ai/companion",
       body: { pageContext: pageHint },
@@ -266,6 +267,7 @@ export function CompanionWidget() {
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.2)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"; }}
             >
+              ×
             </button>
           </div>
 
@@ -321,8 +323,8 @@ export function CompanionWidget() {
 
                 {/* Inline Quick Questions after the very first welcome message */}
                 {index === 0 && messages.length < 3 && (
-                  <div style={{ paddingLeft: "42px", display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "-0.25rem" }}>
-                    <p style={{ fontSize: "0.75rem", fontWeight: 600, color: "#727973", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 0.25rem 0" }}>Quick Questions</p>
+                  <div style={{ paddingLeft: "42px", display: "flex", flexDirection: "row", flexWrap: "wrap", gap: "0.5rem", marginTop: "-0.25rem" }}>
+                    <p style={{ width: "100%", fontSize: "0.75rem", fontWeight: 600, color: "#727973", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 0.25rem 0" }}>Quick Questions</p>
                     {QUICK_ACTIONS.map((action) => (
                       <button
                         key={action.label}

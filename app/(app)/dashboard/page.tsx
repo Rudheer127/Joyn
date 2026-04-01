@@ -164,7 +164,7 @@ export default function DashboardPage() {
             onSubmit={(e) => {
               e.preventDefault();
               const val = (e.currentTarget.elements.namedItem("feeling") as HTMLInputElement).value;
-              if (val) window.location.href = `/consultation?q=${encodeURIComponent(val)}`;
+              window.location.href = val ? `/consultation?q=${encodeURIComponent(val)}` : "/consultation";
             }}
             style={{ marginTop: "1.25rem" }}
           >

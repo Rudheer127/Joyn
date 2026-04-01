@@ -11,6 +11,7 @@ const navItems = [
   { href: "/messages",  label: "Messages",   icon: "💬" },
   { href: "/sessions",  label: "Catch-Ups",  icon: "📅" },
   { href: "/events",    label: "Events",     icon: "📍" },
+  { href: "/consultation", label: "Chat with Jo", icon: "🌻" },
   { href: "/profile",   label: "Profile",    icon: "👤" },
 ];
 

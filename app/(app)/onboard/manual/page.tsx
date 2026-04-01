@@ -6,14 +6,14 @@ import { createClient } from "@/lib/supabase/client";
 
 // ── Step 1 data ───────────────────────────────────────────────────────────
 const LONELINESS_REASONS = [
-  { id: "lost_partner",   emoji: "💔", label: "Lost a partner or spouse" },
-  { id: "moved_away",     emoji: "📦", label: "Moved to a new area" },
-  { id: "kids_left",      emoji: "🏠", label: "Children moved away" },
-  { id: "retired",        emoji: "👔", label: "Recently retired" },
-  { id: "lost_friends",   emoji: "🕊️", label: "Lost close friends" },
-  { id: "health",         emoji: "🏥", label: "Health limits getting out" },
-  { id: "just_lonely",    emoji: "🌙", label: "Just feeling lonely" },
-  { id: "new_friends",    emoji: "🌱", label: "Want to make new friends" },
+  { id: "looking_for_friend",  emoji: "👋", label: "I'm looking for a friend to chat with" },
+  { id: "walking_buddy",       emoji: "🚶", label: "I'd love a walking buddy" },
+  { id: "new_to_area",         emoji: "📦", label: "I'm new to the area" },
+  { id: "share_hobbies",       emoji: "🎨", label: "Someone to share hobbies with" },
+  { id: "stay_active",         emoji: "🌱", label: "I want to stay active socially" },
+  { id: "just_chat",           emoji: "☕", label: "Just looking for good conversation" },
+  { id: "expand_circle",       emoji: "🌍", label: "Want to expand my social circle" },
+  { id: "support_system",      emoji: "🤝", label: "Looking for a supportive connection" },
 ];
 
 // ── Step 2 data ───────────────────────────────────────────────────────────
@@ -49,6 +49,8 @@ export default function OnboardPage() {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [city, setCity] = useState("");
   const [name, setName] = useState("");
+  const [age, setAge] = useState<number | "">("");
+  const [gender, setGender] = useState("");
 
   function toggleItem(id: string, list: string[], setList: (v: string[]) => void) {
     setList(list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
@@ -65,6 +67,8 @@ export default function OnboardPage() {
         id: user.id,
         full_name: name || null,
         city: city || null,
+        age: age || null,
+        gender: gender || null,
         connection_preference: selectedConnections.join(",") || "any",
         health_goals: selectedReasons,
         onboarding_completed: true,
@@ -311,6 +315,47 @@ export default function OnboardPage() {
                   outline: "none", boxSizing: "border-box",
                 }}
               />
+            </div>
+
+            {/* Age & Gender Row */}
+            <div style={{ display: "flex", gap: "1rem" }}>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: "block", fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.5rem", color: "#173124" }}>
+                  Age (optional)
+                </label>
+                <input
+                  type="number"
+                  value={age}
+                  onChange={(e) => setAge(e.target.value ? parseInt(e.target.value, 10) : "")}
+                  placeholder="e.g. 65"
+                  style={{
+                    width: "100%", border: "2px solid #D4C9A8", borderRadius: "0.75rem",
+                    padding: "0.875rem 1rem", fontSize: "1rem", color: "#173124",
+                    backgroundColor: "#FFFFFF", fontFamily: "var(--font-lexend), sans-serif",
+                    outline: "none", boxSizing: "border-box",
+                  }}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label style={{ display: "block", fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.5rem", color: "#173124" }}>
+                  Gender (optional)
+                </label>
+                <select
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  style={{
+                    width: "100%", border: "2px solid #D4C9A8", borderRadius: "0.75rem",
+                    padding: "0.875rem 1rem", fontSize: "1rem", color: "#173124",
+                    backgroundColor: "#FFFFFF", fontFamily: "var(--font-lexend), sans-serif",
+                    outline: "none", boxSizing: "border-box", appearance: "none"
+                  }}
+                >
+                  <option value="">Select...</option>
+                  <option value="female">Female</option>
+                  <option value="male">Male</option>
+                  <option value="other">Other / Prefer not to say</option>
+                </select>
+              </div>
             </div>
 
             {/* City */}
