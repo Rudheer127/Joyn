@@ -41,12 +41,12 @@ const QUICK_ACTIONS = [
 // Two-part match: msg needs a NAV verb AND a page keyword (anywhere in sentence)
 const NAV_INTENT = /\b(go|open|take|show|find|navigate|view|see|bring|load|visit|check)\b/i;
 const USER_NAV_PATTERNS: { keyword: RegExp; route: string }[] = [
-  { keyword: /\bevents?\b/i,                               route: "/events"   },
-  { keyword: /\bmatches\b/i,                               route: "/match"    },
-  { keyword: /\bmessages?\b|\binbox\b|\bconversations?\b/i, route: "/messages" },
-  { keyword: /\bprofile\b/i,                               route: "/profile"  },
-  { keyword: /\bdashboard\b|\bhome\s+page\b/i,             route: "/dashboard"},
-  { keyword: /\bcatch.?ups?\b|\bsessions?\b|\bschedule\b/i, route: "/sessions" },
+  { keyword: /\bevents?\b/i,                                        route: "/events"   },
+  { keyword: /\bmatches\b|\bcompanions?\b|\bcompanion\s+page\b/i,   route: "/match"    },
+  { keyword: /\bmessages?\b|\binbox\b|\bconversations?\b/i,         route: "/messages" },
+  { keyword: /\bprofile\b/i,                                        route: "/profile"  },
+  { keyword: /\bdashboard\b|\bhome\s+page\b/i,                      route: "/dashboard"},
+  { keyword: /\bcatch.?ups?\b|\bsessions?\b|\bschedule\b/i,         route: "/sessions" },
 ];
 
 export function CompanionWidget() {
@@ -124,12 +124,13 @@ export function CompanionWidget() {
 
   // ── Text-based navigation keywords (fallback if tool call doesn't fire) ──
   const NAV_KEYWORDS: { patterns: RegExp[]; route: string }[] = [
-    { patterns: [/\bmatches\b/i, /\/match\b/i], route: "/match" },
-    { patterns: [/\bmessages\b/i, /\/messages\b/i], route: "/messages" },
-    { patterns: [/\bevents\b/i, /\/events\b/i], route: "/events" },
-    { patterns: [/\bprofile\b/i, /\/profile\b/i], route: "/profile" },
-    { patterns: [/\bcatch.?ups?\b/i, /\bsessions\b/i, /\/sessions\b/i], route: "/sessions" },
-    { patterns: [/\bdashboard\b/i, /\bhome\b/i, /\/dashboard\b/i], route: "/dashboard" },
+    { patterns: [/\bmatches\b/i, /\bcompanions?\b/i, /\/match\b/i],  route: "/match" },
+    { patterns: [/\bmessages\b/i, /\/messages\b/i],                   route: "/messages" },
+    { patterns: [/\bevents\b/i, /\/events\b/i],                       route: "/events" },
+    { patterns: [/\bprofile\b/i, /\/profile\b/i],                     route: "/profile" },
+    { patterns: [/\bcatch.?ups?\b/i, /\bsessions\b/i],                route: "/sessions" },
+    // NOTE: dashboard intentionally last and no broad /home/ to avoid false positives
+    { patterns: [/\bdashboard\b/i, /\/dashboard\b/i],                 route: "/dashboard" },
   ];
 
   useEffect(() => {
