@@ -29,25 +29,9 @@ export default function SignInPage() {
 
   const isLocalhost = typeof window !== "undefined" && window.location.hostname === "localhost";
 
-  async function handleDemoLogin() {
+  function handleDemoLogin() {
     setDemoLoading(true);
-    setError("");
-    try {
-      const supabase = createClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: "demo@joyn.app",
-        password: "Demo1234!",
-      });
-      if (signInError) {
-        setError("Demo account not set up yet. Please sign up with email first.");
-      } else {
-        router.push("/consultation");
-      }
-    } catch {
-      setError("Could not load demo account.");
-    } finally {
-      setDemoLoading(false);
-    }
+    router.push("/demo");
   }
 
   const formatPhoneDisplay = (p: string) => {

@@ -222,8 +222,12 @@ export function isDemoMode(): boolean {
 
 export function startDemo(): void {
   localStorage.setItem(DEMO_KEY, "true");
+  // Also set a cookie so the server-side proxy can detect demo mode
+  document.cookie = `${DEMO_KEY}=true; path=/; max-age=86400; SameSite=Lax`;
 }
 
 export function exitDemo(): void {
   localStorage.removeItem(DEMO_KEY);
+  // Clear the cookie too
+  document.cookie = `${DEMO_KEY}=; path=/; max-age=0; SameSite=Lax`;
 }

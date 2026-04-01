@@ -61,9 +61,9 @@ export default function OnboardPage() {
   async function handleFinish() {
     setSaving(true);
     try {
-      // Demo mode: skip all Supabase calls, go straight to dashboard
+      // Demo mode: skip all Supabase calls, go straight to find companions
       if (isDemoMode()) {
-        router.push("/dashboard");
+        router.push("/find");
         return;
       }
 
@@ -99,7 +99,7 @@ export default function OnboardPage() {
       }
 
       await fetch("/api/ai/match/embed", { method: "POST" }).catch(() => {});
-      router.push("/dashboard");
+      router.push("/find");
     } catch (err) {
       console.error("Onboarding save error:", err);
       setSaving(false);

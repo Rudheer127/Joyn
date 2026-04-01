@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { MOCK_PROFILES, type MatchCandidate } from "@/lib/ai/matching";
+import { DEMO_MATCHES } from "@/lib/demo/demoData";
 
 export default function MatchProfilePage({
   params,
@@ -11,14 +12,21 @@ export default function MatchProfilePage({
 }) {
   const { id } = use(params);
 
-  const [profile, setProfile] = useState<MatchCandidate | null>(() => MOCK_PROFILES[id] ?? null);
+  const [profile, setProfile] = useState<MatchCandidate | null>(() => {
+    // If it's a demo mode ID, check DEMO_MATCHES first
+    if (id.startsWith("dm-")) {
+      const demoMatch = DEMO_MATCHES.find((m) => m.id === id);
+      if (demoMatch) return demoMatch as unknown as MatchCandidate;
+    }
+    return MOCK_PROFILES[id] ?? null;
+  });
   const [matchReason, setMatchReason] = useState<string>("");
   const [reasonLoading, setReasonLoading] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
 
-  // Load profile from Supabase only if not a mock profile
+  // Load profile from Supabase only if not a mock profile and not a demo profile
   useEffect(() => {
-    if (MOCK_PROFILES[id]) return;
+    if (MOCK_PROFILES[id] || id.startsWith("dm-")) return;
 
     // Real Supabase profile — fetch via the candidates list and find by id
     fetch("/api/ai/match/candidates")

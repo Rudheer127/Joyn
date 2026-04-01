@@ -34,6 +34,7 @@ export async function proxy(request: NextRequest) {
     path.startsWith("/dashboard") ||
     path.startsWith("/onboard") ||
     path.startsWith("/profile") ||
+    path.startsWith("/find") ||
     path.startsWith("/match") ||
     path.startsWith("/sessions") ||
     path.startsWith("/events") ||
@@ -42,7 +43,9 @@ export async function proxy(request: NextRequest) {
   const isAuthRoute =
     path.startsWith("/sign-in") || path.startsWith("/sign-up");
 
-  if (!user && isAppRoute) {
+  const isDemoMode = request.cookies.get("joyn_demo_mode")?.value === "true";
+
+  if (!user && isAppRoute && !isDemoMode) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
   if (user && isAuthRoute) {

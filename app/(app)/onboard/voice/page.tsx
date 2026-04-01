@@ -99,7 +99,7 @@ export default function VoiceOnboardingPage() {
       });
 
       await fetch("/api/ai/match/embed", { method: "POST" }).catch(() => {});
-      router.push("/dashboard");
+      router.push("/find");
     } catch (err) {
       console.error("Voice Onboarding save error:", err);
     }

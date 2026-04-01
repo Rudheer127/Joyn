@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { use, useEffect, useRef, useState } from "react";
+import { DEMO_MATCHES } from "@/lib/demo/demoData";
 
 const mockPartners: Record<string, { name: string; initials: string; bio?: string }> = {
   "1": { name: "Margaret", initials: "MW", bio: "Retired schoolteacher in Phoenix. Loves gardening, reading, and long conversations over tea." },
@@ -94,7 +95,14 @@ function MicButton({ onTranscript }: { onTranscript: (t: string) => void }) {
 
 export default function ThreadPage({ params }: { params: Promise<{ matchId: string }> }) {
   const { matchId } = use(params);
-  const partner = mockPartners[matchId] ?? { name: "Your Match", initials: "?" };
+  let partner = mockPartners[matchId];
+  if (!partner && matchId.startsWith("dm-")) {
+    const demoMatch = DEMO_MATCHES.find((m) => m.id === matchId);
+    if (demoMatch) {
+      partner = { name: demoMatch.name, initials: demoMatch.name.slice(0, 2).toUpperCase(), bio: demoMatch.bio };
+    }
+  }
+  partner = partner ?? { name: "Your Match", initials: "?" };
   const [messages, setMessages] = useState<Message[]>(initialMessages[matchId] ?? []);
   const [inputValue, setInputValue] = useState("");
   const [showProfile, setShowProfile] = useState(false);
