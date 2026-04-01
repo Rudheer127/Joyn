@@ -106,7 +106,7 @@ export default function SignInPage() {
           .select("onboarding_completed")
           .eq("id", data.session.user.id)
           .single();
-        if (profile && profile.onboarding_completed === false) {
+        if (!profile || !profile.onboarding_completed) {
           router.push("/onboard");
         } else {
           router.push("/consultation");
@@ -142,7 +142,7 @@ export default function SignInPage() {
           .select("onboarding_completed")
           .eq("id", data.session.user.id)
           .single();
-        if (profile && profile.onboarding_completed === false) {
+        if (!profile || !profile.onboarding_completed) {
           router.push("/onboard");
         } else {
           router.push("/consultation");

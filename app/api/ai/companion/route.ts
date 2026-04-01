@@ -1,5 +1,5 @@
 import { groq } from "@ai-sdk/groq";
-import { streamText, convertToModelMessages, UIMessage } from "ai";
+import { streamText, convertToModelMessages, UIMessage, tool } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
@@ -32,7 +32,8 @@ STRICT RULES:
 - Use warm, simple language (Grade 6 reading level). No jargon.
 - Use gentle emojis occasionally (🌻 ☀️ 😊) — not on every message.
 - Suggest one concrete action when appropriate: "Would you like to say hello to one of your matches?"
-- Never mention "fitness," "workout partners," or exercise as Joyn's purpose.
+- Suggest one concrete action when appropriate: "Would you like to say hello to one of your matches?"
+- Be accepting of any hobbies or interests the user mentions, including fitness and working out. Anything that fosters connection is great.
 - Never write long paragraphs.
 
 PAGE-SPECIFIC BEHAVIOR:
@@ -47,6 +48,8 @@ SAFETY (non-negotiable):
 - Never diagnose medical conditions or provide therapy.
 - You are a caring friend, not a medical professional.`;
 }
+
+import { z } from "zod";
 
 export async function POST(req: NextRequest) {
   try {
@@ -72,6 +75,18 @@ export async function POST(req: NextRequest) {
       model: COMPANION_MODEL,
       system: buildSystemPrompt(pageContext),
       messages: await convertToModelMessages(messages),
+      tools: {
+        navigateTo: tool({
+          description: "Navigates the user to a specific page within the Joyn app when they ask to go somewhere.",
+          inputSchema: z.object({
+            route: z.enum(["/dashboard", "/match", "/messages", "/profile", "/events", "/sessions", "/onboard"])
+              .describe("The route to navigate the user to based on their request.")
+          }),
+          execute: async ({ route }) => {
+            return `Redirecting user to ${route}... Tell them you're taking them there now.`;
+          }
+        })
+      }
     });
 
     return result.toUIMessageStreamResponse();

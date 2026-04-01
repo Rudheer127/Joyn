@@ -101,6 +101,29 @@ export function CompanionWidget() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
+  const lastNavRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1] as any;
+    if (!lastMessage || lastMessage.role !== "assistant") return;
+
+    const toolParts = lastMessage.parts?.filter((p: any) => p.type === "tool-invocation") || [];
+    
+    if (toolParts.length > 0 && lastMessage.id !== lastNavRef.current) {
+      const navCallPart = toolParts.find((p: any) => p.toolInvocation?.toolName === "navigateTo");
+      if (navCallPart && "result" in navCallPart.toolInvocation) {
+        lastNavRef.current = lastMessage.id;
+        const route = navCallPart.toolInvocation.args?.route;
+        if (route) {
+          setTimeout(() => {
+            router.push(route);
+            setIsOpen(false);
+          }, 1500);
+        }
+      }
+    }
+  }, [messages, router]);
+
   function handleSend(text?: string) {
     const msg = (text ?? inputValue).trim();
     if (!msg || isStreaming) return;
@@ -243,44 +266,6 @@ export function CompanionWidget() {
               onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.2)"; }}
               onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"; }}
             >
-              ×
-            </button>
-          </div>
-
-          {/* Quick action chips — always visible at top */}
-          <div style={{
-            padding: "0.75rem 1rem",
-            display: "flex", gap: "0.5rem", flexWrap: "wrap",
-            borderBottom: "1px solid #E7E2D7", backgroundColor: "#F8F3E8", flexShrink: 0,
-          }}>
-            {QUICK_ACTIONS.slice(0, 5).map((action) => (
-              <button
-                key={action.label}
-                onClick={() => handleQuickAction(action)}
-                style={{
-                  backgroundColor: "#E7E2D7", border: "2px solid #C2C8C2",
-                  borderRadius: "3rem", padding: "0.375rem 0.875rem",
-                  fontSize: "0.8rem", color: "#173124", cursor: "pointer",
-                  fontFamily: "var(--font-lexend), sans-serif", fontWeight: 500,
-                  whiteSpace: "nowrap", transition: "background-color 0.15s",
-                  minHeight: "36px",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#D4C9A8"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#E7E2D7"; }}
-              >
-                {action.label}
-              </button>
-            ))}
-            <button
-              onClick={() => handleSend("I feel lonely today")}
-              style={{
-                backgroundColor: "#173124", border: "none", borderRadius: "3rem",
-                padding: "0.375rem 0.875rem", fontSize: "0.8rem", color: "#FFFFFF",
-                cursor: "pointer", fontFamily: "var(--font-lexend), sans-serif",
-                fontWeight: 500, whiteSpace: "nowrap", minHeight: "36px",
-              }}
-            >
-              I feel lonely
             </button>
           </div>
 
@@ -293,7 +278,7 @@ export function CompanionWidget() {
               display: "flex", flexDirection: "column", gap: "1rem",
             }}
           >
-            {messages.map((message) => {
+            {messages.map((message, index) => {
               const isBot = message.role === "assistant";
               const text = message.parts
                 .filter((p): p is { type: "text"; text: string } => p.type === "text")
@@ -301,9 +286,9 @@ export function CompanionWidget() {
                 .join("");
 
               return (
-                <div
-                  key={message.id}
-                  style={{
+                <div key={message.id} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                  <div
+                    style={{
                     display: "flex",
                     flexDirection: isBot ? "row" : "row-reverse",
                     alignItems: "flex-end", gap: "0.5rem",
@@ -330,9 +315,35 @@ export function CompanionWidget() {
                     fontSize: "1rem",
                     lineHeight: 1.65,
                   }}>
-                    {text}
+                    {text || ((message as any).parts?.some((p: any) => p.type === "tool-invocation") ? "Navigating you now..." : "")}
                   </div>
                 </div>
+
+                {/* Inline Quick Questions after the very first welcome message */}
+                {index === 0 && messages.length < 3 && (
+                  <div style={{ paddingLeft: "42px", display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "-0.25rem" }}>
+                    <p style={{ fontSize: "0.75rem", fontWeight: 600, color: "#727973", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 0.25rem 0" }}>Quick Questions</p>
+                    {QUICK_ACTIONS.map((action) => (
+                      <button
+                        key={action.label}
+                        onClick={() => handleQuickAction(action)}
+                        style={{
+                          backgroundColor: "#FFFFFF", border: "1px solid #C2C8C2",
+                          borderRadius: "1rem", padding: "0.625rem 1rem",
+                          fontSize: "0.9rem", color: "#173124", cursor: "pointer",
+                          fontFamily: "var(--font-lexend), sans-serif", fontWeight: 500,
+                          textAlign: "left", transition: "background-color 0.15s, border-color 0.15s",
+                          width: "fit-content"
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#F8F3E8"; e.currentTarget.style.borderColor = "#173124"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#FFFFFF"; e.currentTarget.style.borderColor = "#C2C8C2"; }}
+                      >
+                        {action.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
               );
             })}
 

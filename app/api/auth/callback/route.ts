@@ -44,7 +44,7 @@ export async function GET(request: Request) {
           .eq("id", session.user.id)
           .single();
         
-        if (profile && profile.onboarding_completed === false) {
+        if (!profile || !profile.onboarding_completed) {
           nextPath = "/onboard";
         }
       } catch (err) {

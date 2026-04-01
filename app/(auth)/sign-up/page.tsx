@@ -27,13 +27,15 @@ export default function SignUpPage() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: { data: { full_name: fullName } },
       });
       if (signUpError) {
         setError(signUpError.message);
+      } else if (data.session) {
+        window.location.href = "/onboard";
       } else {
         setSuccess(true);
       }
