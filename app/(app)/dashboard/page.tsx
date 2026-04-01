@@ -7,7 +7,7 @@ import { MoodWidget } from "@/components/dashboard/MoodWidget";
 
 const ACTION_CARDS = [
   {
-    href: "/match",
+    href: "/find",
     emoji: "🤝",
     bg: "#E8F4EC",
     iconBg: "#173124",

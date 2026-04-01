@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 const allEvents = [
   {
@@ -159,11 +160,40 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
 
 export default function EventsPage() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [userCity, setUserCity] = useState<string>("Phoenix");
+  const [cityFilter, setCityFilter] = useState("All");
 
-  const filteredEvents =
-    activeCategory === "All"
-      ? allEvents
-      : allEvents.filter((e) => e.category === activeCategory);
+  // Load the signed-in user's city from their profile
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase.from("profiles").select("city").eq("id", user.id).single()
+        .then(({ data }) => {
+          if (data?.city) {
+            setUserCity(data.city);
+            // Don't auto-set cityFilter — let user choose
+          }
+        });
+    });
+  }, []);
+
+  // Unique AZ cities present in events
+  const eventCities = ["All", ...Array.from(new Set(allEvents.map(e => {
+    const parts = e.location.split(",");
+    return parts.length >= 2 ? parts[parts.length - 2].trim() : "";
+  }).filter(Boolean)))];
+
+  // Events "near" the user's saved city
+  const nearbyEvents = allEvents.filter(e =>
+    e.location.toLowerCase().includes(userCity.toLowerCase())
+  );
+
+  const filteredEvents = allEvents.filter(e => {
+    const matchCategory = activeCategory === "All" || e.category === activeCategory;
+    const matchCity = cityFilter === "All" || e.location.toLowerCase().includes(cityFilter.toLowerCase());
+    return matchCategory && matchCity;
+  });
 
   return (
     <div
@@ -186,40 +216,77 @@ export default function EventsPage() {
       >
         Events Near You in Arizona
       </h1>
-      <p style={{ fontSize: "1.125rem", color: "#727973", marginBottom: "2rem" }}>
+      <p style={{ fontSize: "1.125rem", color: "#727973", marginBottom: "1.5rem" }}>
         Community activities, fitness classes, and social gatherings across the Valley.
       </p>
 
-      {/* Filter tabs */}
-      <div
-        style={{
-          display: "flex",
-          gap: "0.625rem",
-          marginBottom: "2rem",
-          flexWrap: "wrap",
-        }}
-      >
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            style={{
-              padding: "0.625rem 1.5rem",
-              borderRadius: "3rem",
-              fontSize: "1rem",
-              fontWeight: 600,
-              border: "2px solid",
-              cursor: "pointer",
-              minHeight: "44px",
-              transition: "all 0.15s",
-              borderColor: activeCategory === cat ? "#173124" : "#C2C8C2",
-              backgroundColor: activeCategory === cat ? "#173124" : "transparent",
-              color: activeCategory === cat ? "#FFFFFF" : "#173124",
-            }}
-          >
-            {cat}
-          </button>
-        ))}
+      {/* Near You banner */}
+      {nearbyEvents.length > 0 && (
+        <div style={{
+          backgroundColor: "#FFFBEA", border: "2px solid #E8C84A",
+          borderRadius: "1.25rem", padding: "1.25rem 1.5rem", marginBottom: "2rem"
+        }}>
+          <p style={{
+            fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase",
+            letterSpacing: "0.1em", color: "#735C00", marginBottom: "0.75rem"
+          }}>📍 Near you · {userCity}</p>
+          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+            {nearbyEvents.map(e => (
+              <button
+                key={e.id}
+                onClick={() => setCityFilter(userCity)}
+                style={{
+                  backgroundColor: "#FFFFFF", border: "2px solid #E8C84A",
+                  borderRadius: "2rem", padding: "0.5rem 1.125rem",
+                  fontSize: "0.95rem", fontWeight: 600, color: "#173124",
+                  cursor: "pointer", textAlign: "left"
+                }}
+              >
+                {e.name} · {e.date}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* City + Category filters */}
+      <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem", flexWrap: "wrap", alignItems: "center" }}>
+        <select
+          value={cityFilter}
+          onChange={e => setCityFilter(e.target.value)}
+          style={{
+            padding: "0.625rem 1.25rem", borderRadius: "3rem", border: "2px solid #C2C8C2",
+            fontSize: "1rem", fontWeight: 600, color: "#173124", backgroundColor: "#FFFFFF",
+            cursor: "pointer", outline: "none"
+          }}
+        >
+          {eventCities.map(c => (
+            <option key={c} value={c}>{c === "All" ? "All cities" : c}</option>
+          ))}
+        </select>
+        <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap" }}>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              style={{
+                padding: "0.625rem 1.5rem",
+                borderRadius: "3rem",
+                fontSize: "1rem",
+                fontWeight: 600,
+                border: "2px solid",
+                cursor: "pointer",
+                minHeight: "44px",
+                transition: "all 0.15s",
+                borderColor: activeCategory === cat ? "#173124" : "#C2C8C2",
+                backgroundColor: activeCategory === cat ? "#173124" : "transparent",
+                color: activeCategory === cat ? "#FFFFFF" : "#173124",
+              }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Events grid */}

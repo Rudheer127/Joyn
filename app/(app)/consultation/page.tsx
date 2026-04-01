@@ -17,11 +17,13 @@ function ConsultationInner() {
 
   const [inputValue, setInputValue] = useState("");
   const [isListening, setIsListening] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const { messages, status, sendMessage } = useChat({
     transport: new DefaultChatTransport({ api: "/api/ai/consultation" }),
     onFinish: ({ message }) => {
+      if (!voiceEnabled) return;   // only speak if user opted in
       const text = message.parts
         .filter((p): p is { type: "text"; text: string } => p.type === "text")
         .map((p) => p.text)
@@ -117,16 +119,33 @@ function ConsultationInner() {
             Chat with Jo
           </span>
         </div>
-        <button
-          onClick={() => router.push("/dashboard")}
-          style={{
-            color: "#FFFFFF", background: "rgba(255,255,255,0.2)",
-            border: "none", padding: "0.5rem 1rem", borderRadius: "2rem",
-            cursor: "pointer", fontSize: "0.9rem", fontWeight: 600
-          }}
-        >
-          Skip to Dashboard
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <button
+            onClick={() => {
+              const next = !voiceEnabled;
+              setVoiceEnabled(next);
+              if (!next) window.speechSynthesis?.cancel();
+            }}
+            title={voiceEnabled ? "Voice is ON — click to turn off" : "Voice is OFF — click to turn on"}
+            style={{
+              color: "#FFFFFF", background: voiceEnabled ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.12)",
+              border: "1.5px solid rgba(255,255,255,0.4)", padding: "0.4rem 0.9rem", borderRadius: "2rem",
+              cursor: "pointer", fontSize: "0.85rem", fontWeight: 600, display: "flex", alignItems: "center", gap: "0.4rem"
+            }}
+          >
+            {voiceEnabled ? "🔊 Voice On" : "🔇 Voice Off"}
+          </button>
+          <button
+            onClick={() => router.push("/dashboard")}
+            style={{
+              color: "#FFFFFF", background: "rgba(255,255,255,0.2)",
+              border: "none", padding: "0.5rem 1rem", borderRadius: "2rem",
+              cursor: "pointer", fontSize: "0.9rem", fontWeight: 600
+            }}
+          >
+            Skip to Dashboard
+          </button>
+        </div>
       </div>
 
       {/* Consent Notice */}

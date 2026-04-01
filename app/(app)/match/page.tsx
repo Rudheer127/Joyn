@@ -67,13 +67,13 @@ export default function MatchesPage() {
 
         {/* Real cards */}
         {!loading && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", maxWidth: "800px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.25rem" }}>
             {matches.map((match) => (
               <div key={match.id} style={{
                 backgroundColor: "#E7E2D7",
                 border: "2px solid #C2C8C2",
-                borderRadius: "2rem",
-                padding: "1.75rem 2rem",
+                borderRadius: "1.5rem",
+                padding: "1.25rem 1.5rem",
                 transition: "box-shadow 0.15s",
               }}>
                 {/* Top row: avatar + name + match % */}
@@ -85,13 +85,13 @@ export default function MatchesPage() {
                     photoPublic={match.photoPublic !== false}
                     gender={match.gender}
                     name={match.name}
-                    size={72}
+                    size={56}
                   />
 
                   <div style={{ flex: 1 }}>
                     <p style={{
                       fontFamily: "var(--font-epilogue), serif", fontWeight: 700,
-                      fontSize: "1.5rem", color: "#173124", letterSpacing: "-0.02em", lineHeight: 1.1,
+                      fontSize: "1.2rem", color: "#173124", letterSpacing: "-0.02em", lineHeight: 1.1,
                     }}>
                       {match.name}, {match.age}
                     </p>
