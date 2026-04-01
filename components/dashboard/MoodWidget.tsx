@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 
 const MOOD_OPTIONS = [
@@ -25,24 +25,19 @@ function getTodayISO() {
 }
 
 export function MoodWidget() {
-  const [selectedMood, setSelectedMood] = useState<string | null>(null);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
+  const [selectedMood, setSelectedMood] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null;
     try {
       const raw = localStorage.getItem("joyn_mood");
       if (raw) {
         const { mood, date } = JSON.parse(raw) as { mood: string; date: string };
-        if (date === getTodayISO()) {
-          setSelectedMood(mood);
-        }
+        if (date === getTodayISO()) return mood;
       }
     } catch {
-      // localStorage unavailable — show prompt
+      // localStorage unavailable
     }
-    setLoaded(true);
-  }, []);
-
+    return null;
+  });
   function handleSelect(label: string) {
     setSelectedMood(label);
     try {
@@ -51,8 +46,6 @@ export function MoodWidget() {
       // ignore
     }
   }
-
-  if (!loaded) return null;
 
   const isLow = selectedMood
     ? (MOOD_OPTIONS.find((m) => m.label === selectedMood)?.low ?? false)

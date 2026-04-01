@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { MoodWidget } from "@/components/dashboard/MoodWidget";
 
 const ACTION_CARDS = [
   {
@@ -57,14 +58,15 @@ const ACTION_CARDS = [
 
 export default function DashboardPage() {
   const [firstName, setFirstName] = useState("");
-  const [greeting, setGreeting] = useState("Good day");
+  const [greeting] = useState(() => {
+    if (typeof window === "undefined") return "Good day";
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    return "Good evening";
+  });
 
   useEffect(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) setGreeting("Good morning");
-    else if (hour < 17) setGreeting("Good afternoon");
-    else setGreeting("Good evening");
-
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
@@ -173,13 +175,13 @@ export default function DashboardPage() {
           </span>
         </div>
 
-        {/* 6-card grid */}
+        {/* Action cards */}
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-            gap: "1.25rem",
-            marginBottom: "2.5rem",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: "1rem",
+            marginBottom: "2rem",
           }}
         >
           {ACTION_CARDS.map((card) => (
@@ -188,57 +190,36 @@ export default function DashboardPage() {
               href={card.href}
               style={{
                 backgroundColor: card.bg,
-                border: "2px solid rgba(0,0,0,0.06)",
                 borderRadius: "1.5rem",
-                padding: "1.5rem",
+                padding: "1.25rem",
                 textDecoration: "none",
                 color: "#173124",
                 display: "flex",
                 flexDirection: "column",
-                gap: "0.875rem",
-                transition: "transform 0.15s, box-shadow 0.15s",
-                minHeight: "150px",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = "translateY(-3px)";
-                (e.currentTarget as HTMLElement).style.boxShadow =
-                  "0 8px 24px rgba(0,0,0,0.10)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
-                (e.currentTarget as HTMLElement).style.boxShadow = "none";
+                gap: "0.75rem",
+                border: "2px solid rgba(0,0,0,0.04)",
+                transition: "transform 0.15s",
               }}
             >
-              {/* Icon */}
               <div
                 style={{
-                  width: "52px",
-                  height: "52px",
-                  borderRadius: "1rem",
+                  width: "44px",
+                  height: "44px",
+                  borderRadius: "50%",
                   backgroundColor: card.iconBg,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "1.5rem",
+                  fontSize: "1.25rem",
                 }}
               >
                 {card.emoji}
               </div>
-
-              {/* Text */}
               <div>
-                <p
-                  style={{
-                    fontFamily: "var(--font-epilogue), serif",
-                    fontWeight: 700,
-                    fontSize: "1.125rem",
-                    color: "#173124",
-                    marginBottom: "0.25rem",
-                  }}
-                >
+                <p style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "0.25rem" }}>
                   {card.title}
                 </p>
-                <p style={{ fontSize: "0.9rem", color: "#555F5A", lineHeight: 1.5 }}>
+                <p style={{ fontSize: "0.875rem", color: "#727973", lineHeight: 1.4 }}>
                   {card.desc}
                 </p>
               </div>
@@ -246,53 +227,91 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* ── Ready to connect CTA ── */}
+        {/* Mood check-in */}
+        <div style={{ marginBottom: "2rem" }}>
+          <MoodWidget />
+        </div>
+
+        {/* Simple AI input */}
         <div
           style={{
-            backgroundColor: "#173124",
+            backgroundColor: "#FFFFFF",
+            border: "2px solid #E7E2D7",
             borderRadius: "1.5rem",
-            padding: "1.75rem 2rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: "1rem",
-            flexWrap: "wrap",
+            padding: "2rem",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+            marginBottom: "2.5rem",
           }}
         >
-          <div>
-            <p
-              style={{
-                fontFamily: "var(--font-epilogue), serif",
-                fontWeight: 700,
-                fontSize: "1.25rem",
-                color: "#FFFFFF",
-                marginBottom: "0.25rem",
-              }}
-            >
-              🌻 Ready to connect?
-            </p>
-            <p style={{ fontSize: "0.95rem", color: "rgba(255,255,255,0.7)" }}>
-              Say hello to a match — it only takes a moment.
-            </p>
-          </div>
-          <Link
-            href="/match"
-            style={{
-              backgroundColor: "#E8C84A",
-              color: "#173124",
-              fontWeight: 700,
-              fontSize: "1rem",
-              padding: "0.875rem 1.75rem",
-              borderRadius: "3rem",
-              textDecoration: "none",
-              whiteSpace: "nowrap",
-              minHeight: "48px",
-              display: "inline-flex",
-              alignItems: "center",
+          <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1rem" }}>
+            How are you feeling today?
+          </h2>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const val = (e.currentTarget.elements.namedItem("feeling") as HTMLInputElement).value;
+              if (val) window.location.href = `/consultation?q=${encodeURIComponent(val)}`;
             }}
           >
-            Get Started →
-          </Link>
+            <textarea
+              name="feeling"
+              placeholder="E.g., I'm feeling a bit lonely today and would love to just talk to someone, or maybe find an activity nearby..."
+              rows={4}
+              style={{
+                width: "100%",
+                padding: "1rem",
+                borderRadius: "1rem",
+                border: "2px solid #C2C8C2",
+                fontSize: "1.0625rem",
+                fontFamily: "inherit",
+                resize: "none",
+                marginBottom: "1rem",
+              }}
+            />
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
+              {[
+                "I just want to talk",
+                "Find people near me",
+                "Suggest an activity",
+                "I feel overwhelmed",
+              ].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => {
+                    window.location.href = `/consultation?q=${encodeURIComponent(preset)}`;
+                  }}
+                  style={{
+                    backgroundColor: "#FEF9ED",
+                    border: "1px solid #C2C8C2",
+                    borderRadius: "2rem",
+                    padding: "0.5rem 1rem",
+                    fontSize: "0.95rem",
+                    color: "#173124",
+                    cursor: "pointer",
+                  }}
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
+            <button
+              type="submit"
+              style={{
+                width: "100%",
+                backgroundColor: "#173124",
+                color: "#FFFFFF",
+                fontWeight: 600,
+                fontSize: "1.125rem",
+                padding: "1rem",
+                borderRadius: "3rem",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Continue to Consultation
+            </button>
+          </form>
         </div>
       </div>
     </div>

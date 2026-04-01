@@ -94,7 +94,6 @@ export default function OnboardPage() {
   }
 
   const TOTAL_STEPS = 4;
-  const progress = (step / TOTAL_STEPS) * 100;
 
   const stepTitles: Record<Step, string> = {
     1: "What brings you to Joyn?",

@@ -41,7 +41,7 @@ export default function SignInPage() {
       if (signInError) {
         setError("Demo account not set up yet. Please sign up with email first.");
       } else {
-        router.push("/dashboard");
+        router.push("/consultation");
       }
     } catch {
       setError("Could not load demo account.");
@@ -101,7 +101,7 @@ export default function SignInPage() {
       if (verifyError) {
         setError(verifyError.message);
       } else {
-        router.push("/dashboard");
+        router.push("/consultation");
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -128,7 +128,7 @@ export default function SignInPage() {
       if (signInError) {
         setError(signInError.message);
       } else {
-        router.push("/dashboard");
+        router.push("/consultation");
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -462,7 +462,7 @@ export default function SignInPage() {
                 borderRadius: "0.875rem", padding: "0.75rem 1rem",
                 fontSize: "0.85rem", color: "#735C00", lineHeight: 1.5,
               }}>
-                <strong>⚠️ Localhost note:</strong> Google Sign-In requires your Supabase project's
+                <strong>⚠️ Localhost note:</strong> Google Sign-In requires your Supabase project&apos;s
                 redirect URL to include <code>http://localhost:3000/**</code>.
                 Go to <a href="https://supabase.com/dashboard/project/wbxrsdjetrmykllymwoh/auth/url-configuration" target="_blank" rel="noreferrer" style={{ color: "#735C00" }}>Supabase Auth Settings</a> to add it.
                 Use the demo button above or email login for now.

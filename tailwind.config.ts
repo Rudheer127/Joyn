@@ -3,4 +3,5 @@
 // All design tokens (colors, fonts, spacing, border-radius) are defined in
 // app/globals.css using the @theme inline directive.
 
-export default {};
+const config = {};
+export default config;

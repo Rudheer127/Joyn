@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Mic, Square, Check, ArrowRight } from "lucide-react";
 
 type SetupStep = 1 | 2 | 3 | 4 | 5 | 6;
+type SpeechRecognitionCtor = { new(): SpeechRecognition };
 
 const STEPS = {
   1: {
@@ -40,7 +41,7 @@ export default function VoiceOnboardingPage() {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [isSpeaking, setIsSpeaking] = useState(false);
-  
+
   // Collected data
   const [data, setData] = useState({
     reason: "",
@@ -50,36 +51,78 @@ export default function VoiceOnboardingPage() {
     name: ""
   });
 
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  function speak(text: string) {
+    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9; // Slightly slower for elderly
+    utterance.pitch = 1;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+
+    window.speechSynthesis.speak(utterance);
+  }
+
+  async function saveProfile() {
+    try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { router.push("/sign-in"); return; }
+
+      await supabase.from("profiles").upsert({
+        id: user.id,
+        full_name: data.name || null,
+        city: data.city || null,
+        connection_preference: data.connections || "any",
+        health_goals: data.reason ? [data.reason] : [],
+        onboarding_completed: true,
+        updated_at: new Date().toISOString(),
+      });
+
+      await fetch("/api/ai/match/embed", { method: "POST" }).catch(() => {});
+      router.push("/dashboard");
+    } catch (err) {
+      console.error("Voice Onboarding save error:", err);
+    }
+  }
 
   // Initialize speech recognition
   useEffect(() => {
     if (typeof window !== "undefined" && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = true;
-      recognitionRef.current.interimResults = true;
+      const w = window as Window & { SpeechRecognition?: SpeechRecognitionCtor; webkitSpeechRecognition?: SpeechRecognitionCtor };
+      const SR = w.SpeechRecognition ?? w.webkitSpeechRecognition;
+      if (SR) {
+        recognitionRef.current = new SR();
+        recognitionRef.current.continuous = true;
+        recognitionRef.current.interimResults = true;
 
-      recognitionRef.current.onresult = (event: any) => {
-        let finalTranscript = "";
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTranscript += event.results[i][0].transcript;
+        recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
+          let finalTranscript = "";
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript;
+            }
           }
-        }
-        if (finalTranscript) {
-          setTranscript((prev) => prev + " " + finalTranscript);
-        }
-      };
+          if (finalTranscript) {
+            setTranscript((prev) => prev + " " + finalTranscript);
+          }
+        };
 
-      recognitionRef.current.onerror = (event: any) => {
-        console.error("Speech recognition error", event.error);
-        setIsListening(false);
-      };
+        recognitionRef.current.onerror = (event: SpeechRecognitionErrorEvent) => {
+          console.error("Speech recognition error", event.error);
+          setIsListening(false);
+        };
 
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-      };
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+        };
+      }
     }
   }, []);
 
@@ -91,23 +134,8 @@ export default function VoiceOnboardingPage() {
       speak(STEPS[6].question);
       saveProfile();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
-
-  function speak(text: string) {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
-    
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.9; // Slightly slower for elderly
-    utterance.pitch = 1;
-    
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    
-    window.speechSynthesis.speak(utterance);
-  }
 
   function startListening() {
     window.speechSynthesis.cancel();
@@ -134,44 +162,15 @@ export default function VoiceOnboardingPage() {
 
   function confirmAnswer() {
     stopListening();
-    
+
     // Save the transcript to the current step's key
     if (step < 6) {
       const key = STEPS[step as 1|2|3|4|5].key;
       setData(prev => ({ ...prev, [key]: transcript.trim() }));
-      
+
       // Move to next step
       setTranscript("");
       setStep((prev) => (prev + 1) as SetupStep);
-    }
-  }
-
-  async function saveProfile() {
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/sign-in"); return; }
-
-      await supabase.from("profiles").upsert({
-        id: user.id,
-        full_name: data.name || null,
-        city: data.city || null,
-        connection_preference: data.connections || "any",
-        health_goals: data.reason ? [data.reason] : [],
-        onboarding_completed: true,
-        updated_at: new Date().toISOString(),
-      });
-
-      // Save raw interest text as a single user interest if provided
-      if (data.interests) {
-         // It might be better to just save it to profiles somehow, or insert as a custom interest
-         // We will just let the match page embedding text capture it later since there's an embed endpoint
-      }
-
-      await fetch("/api/ai/match/embed", { method: "POST" }).catch(() => {});
-      router.push("/dashboard");
-    } catch (err) {
-      console.error("Voice Onboarding save error:", err);
     }
   }
 
@@ -213,7 +212,7 @@ export default function VoiceOnboardingPage() {
         <span style={{ fontFamily: "var(--font-epilogue), serif", fontWeight: 700, fontSize: "1.25rem" }}>
           JOYN Voice Setup
         </span>
-        <button 
+        <button
           onClick={() => router.push("/onboard")}
           style={{ fontSize: "0.9rem", color: "#727973", textDecoration: "underline", background: "none", border: "none", cursor: "pointer" }}
         >
@@ -222,7 +221,7 @@ export default function VoiceOnboardingPage() {
       </div>
 
       <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem", maxWidth: "800px", margin: "0 auto", width: "100%" }}>
-        
+
         {/* Step Indicator */}
         <div style={{ marginBottom: "2rem", color: "#727973", fontWeight: 600, fontSize: "1.1rem" }}>
           Step {step} of 5
@@ -235,7 +234,7 @@ export default function VoiceOnboardingPage() {
           color: isSpeaking ? "#173124" : "#4A554E",
           marginBottom: "3rem", transition: "color 0.3s"
         }}>
-          "{STEPS[step as 1|2|3|4|5].question}"
+          &ldquo;{STEPS[step as 1|2|3|4|5].question}&rdquo;
         </h1>
 
         {/* Live Transcript Box */}
@@ -305,10 +304,10 @@ export default function VoiceOnboardingPage() {
             </button>
           )}
         </div>
-        
+
         {/* Replay voice button */}
         {!isListening && (
-           <button 
+           <button
              onClick={() => speak(STEPS[step as 1|2|3|4|5].question)}
              style={{ marginTop: "2rem", color: "#735C00", backgroundColor: "transparent", border: "none", fontSize: "1rem", fontWeight: 600, textDecoration: "underline", cursor: "pointer" }}
            >

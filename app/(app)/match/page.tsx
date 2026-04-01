@@ -77,9 +77,9 @@ export default function MatchesPage() {
 
                   {/* Avatar — shows photo if available, gender silhouette otherwise */}
                   <Avatar
-                    avatarUrl={(match as any).avatarUrl}
-                    photoPublic={(match as any).photoPublic !== false}
-                    gender={(match as any).gender}
+                    avatarUrl={match.avatarUrl}
+                    photoPublic={match.photoPublic !== false}
+                    gender={match.gender}
                     name={match.name}
                     size={72}
                   />

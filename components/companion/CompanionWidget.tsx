@@ -48,7 +48,7 @@ export function CompanionWidget() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   const WELCOME_MESSAGE: UIMessage = {
     id: "companion-welcome",
@@ -124,9 +124,11 @@ export function CompanionWidget() {
   }
 
   function toggleMic() {
-    const SpeechAPI = (typeof window !== "undefined")
-      ? ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
+    type SpeechRecognitionCtor = { new(): SpeechRecognition };
+    const w = (typeof window !== "undefined")
+      ? window as Window & { SpeechRecognition?: SpeechRecognitionCtor; webkitSpeechRecognition?: SpeechRecognitionCtor }
       : null;
+    const SpeechAPI = w?.SpeechRecognition ?? w?.webkitSpeechRecognition;
     if (!SpeechAPI) { alert("Voice input requires Chrome or Edge."); return; }
 
     if (isListening) {
@@ -135,11 +137,11 @@ export function CompanionWidget() {
       return;
     }
 
-    const recognition: any = new SpeechAPI();
+    const recognition = new SpeechAPI();
     recognition.lang = "en-US";
     recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       const transcript: string = event.results[0][0].transcript;
       setInputValue((prev) => prev + (prev ? " " : "") + transcript);
       setIsListening(false);

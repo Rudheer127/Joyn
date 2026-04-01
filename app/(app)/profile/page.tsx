@@ -67,12 +67,11 @@ export default function ProfilePage() {
   const [emergencyName, setEmergencyName] = useState("");
   const [emergencyPhone, setEmergencyPhone] = useState("");
   const [saved, setSaved] = useState(false);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [lifeStage, setLifeStage] = useState("");
   const [socialComfort, setSocialComfort] = useState("");
   const [lookingFor, setLookingFor] = useState<string[]>([]);
   const [availability, setAvailability] = useState<string[]>([]);
-  const [mounted, setMounted] = useState(false);
+  const [mounted] = useState(true);
   const [loading, setLoading] = useState(true);
   // Avatar / photo state
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -84,7 +83,6 @@ export default function ProfilePage() {
   const supabase = createClient();
 
   useEffect(() => {
-    setMounted(true);
     async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -122,7 +120,9 @@ export default function ProfilePage() {
         .eq("user_id", user.id);
         
       if (userInterests) {
-        const interests = userInterests.map((ui: any) => ui.interests?.name).filter(Boolean);
+        const interests = (userInterests as unknown as { interests: { name: string } | null }[])
+          .map((ui) => ui.interests?.name)
+          .filter((n): n is string => Boolean(n));
         setSelectedInterests(interests);
       }
       setLoading(false);
@@ -208,13 +208,6 @@ export default function ProfilePage() {
       </div>
     );
   }
-
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
 
   async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

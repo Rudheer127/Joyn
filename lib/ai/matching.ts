@@ -36,6 +36,9 @@ export interface MatchCandidate {
   connectionSuggestion?: "coffee" | "phone" | "video" | "events" | "message";
   /** Distance context label */
   distanceLabel?: string;
+  avatarUrl?: string;
+  photoPublic?: boolean;
+  gender?: string;
 }
 
 // ---------------------------------------------------------------------------

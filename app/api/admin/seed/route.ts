@@ -6,6 +6,7 @@ export async function POST() {
     const supabase = await createClient();
 
     // Run the migration SQL
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error: e1 } = await supabase.rpc("exec_sql" as any, {
       sql: `
         ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS avatar_url TEXT;

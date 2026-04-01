@@ -38,15 +38,16 @@ const QUICK_REPLIES: Record<string, string[]> = {
   "3": ["I'd love to see them! Let's schedule a video call.", "What do you paint most?", "Tell me about Tucson — I've always been curious."],
 };
 
+type SpeechRecognitionCtor = { new(): SpeechRecognition };
+
 // Voice-to-text mic button
 function MicButton({ onTranscript }: { onTranscript: (t: string) => void }) {
   const [listening, setListening] = useState(false);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   function toggleMic() {
-    const SpeechAPI = (typeof window !== "undefined")
-      ? ((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition)
-      : null;
+    const w = window as Window & { SpeechRecognition?: SpeechRecognitionCtor; webkitSpeechRecognition?: SpeechRecognitionCtor };
+    const SpeechAPI = w.SpeechRecognition ?? w.webkitSpeechRecognition;
     if (!SpeechAPI) { alert("Voice input is not supported in this browser. Please use Chrome or Edge."); return; }
 
     if (listening) {
@@ -55,11 +56,11 @@ function MicButton({ onTranscript }: { onTranscript: (t: string) => void }) {
       return;
     }
 
-    const recognition: any = new SpeechAPI();
+    const recognition = new SpeechAPI();
     recognition.lang = "en-US";
     recognition.continuous = false;
     recognition.interimResults = false;
-    recognition.onresult = (event: any) => {
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
       const transcript: string = event.results[0][0].transcript;
       onTranscript(transcript);
       setListening(false);
@@ -99,6 +100,7 @@ export default function ThreadPage({ params }: { params: Promise<{ matchId: stri
   const [showProfile, setShowProfile] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const msgCounterRef = useRef(0);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -107,8 +109,9 @@ export default function ThreadPage({ params }: { params: Promise<{ matchId: stri
   function handleSend(text?: string) {
     const content = (text ?? inputValue).trim();
     if (!content) return;
+    msgCounterRef.current += 1;
     const newMsg: Message = {
-      id: String(Date.now()),
+      id: `msg-${msgCounterRef.current}`,
       content,
       fromMe: true,
       time: new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),

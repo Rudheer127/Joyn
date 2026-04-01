@@ -8,7 +8,6 @@
  * Call this once after onboarding completes, and again after profile edits.
  */
 
-import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildProfileText, generateEmbedding } from "@/lib/ai/matching";
 

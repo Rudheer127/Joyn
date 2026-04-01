@@ -36,7 +36,9 @@ export async function proxy(request: NextRequest) {
     path.startsWith("/profile") ||
     path.startsWith("/match") ||
     path.startsWith("/sessions") ||
-    path.startsWith("/events");
+    path.startsWith("/events") ||
+    path.startsWith("/messages") ||
+    path.startsWith("/consultation");
   const isAuthRoute =
     path.startsWith("/sign-in") || path.startsWith("/sign-up");
 

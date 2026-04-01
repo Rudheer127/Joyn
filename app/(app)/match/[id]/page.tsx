@@ -11,18 +11,14 @@ export default function MatchProfilePage({
 }) {
   const { id } = use(params);
 
-  const [profile, setProfile] = useState<MatchCandidate | null>(null);
+  const [profile, setProfile] = useState<MatchCandidate | null>(() => MOCK_PROFILES[id] ?? null);
   const [matchReason, setMatchReason] = useState<string>("");
   const [reasonLoading, setReasonLoading] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
 
-  // Load profile — try mock first (covers "1","2","3"), then Supabase UUID
+  // Load profile from Supabase only if not a mock profile
   useEffect(() => {
-    const mock = MOCK_PROFILES[id];
-    if (mock) {
-      setProfile(mock);
-      return;
-    }
+    if (MOCK_PROFILES[id]) return;
 
     // Real Supabase profile — fetch via the candidates list and find by id
     fetch("/api/ai/match/candidates")
@@ -37,26 +33,32 @@ export default function MatchProfilePage({
   // Once we have the profile, generate the match reason
   useEffect(() => {
     if (!profile) return;
-    setReasonLoading(true);
 
-    fetch("/api/ai/match/reason", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        matchName: profile.name,
-        matchAge: profile.age,
-        matchCity: profile.city,
-        matchFitness: profile.fitness,
-        matchInterests: profile.interests,
-        matchBio: profile.bio,
-      }),
-    })
-      .then((r) => r.json())
-      .then((data) => {
+    async function fetchReason() {
+      setReasonLoading(true);
+      try {
+        const r = await fetch("/api/ai/match/reason", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            matchName: profile!.name,
+            matchAge: profile!.age,
+            matchCity: profile!.city,
+            matchFitness: profile!.fitness,
+            matchInterests: profile!.interests,
+            matchBio: profile!.bio,
+          }),
+        });
+        const data = await r.json();
         if (data.reason) setMatchReason(data.reason);
-      })
-      .catch(() => {})
-      .finally(() => setReasonLoading(false));
+      } catch {
+        // ignore fetch errors
+      } finally {
+        setReasonLoading(false);
+      }
+    }
+
+    fetchReason();
   }, [profile]);
 
   if (!profile) {

@@ -51,7 +51,7 @@ export default function SignUpPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${location.origin}/api/auth/callback?next=/onboard`,
+          redirectTo: `${location.origin}/api/auth/callback?next=/consultation`,
         },
       });
       if (error) setError(error.message);

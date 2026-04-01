@@ -15,7 +15,6 @@
  * the mock profiles are returned so the UI is never empty.
  */
 
-import { NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import {
   buildProfileText,

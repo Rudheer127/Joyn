@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 interface AvatarProps {
   avatarUrl?: string | null;
   photoPublic?: boolean;
@@ -50,12 +52,12 @@ export function Avatar({ avatarUrl, photoPublic = true, gender, name, size = 72,
 
   if (showPhoto) {
     return (
-      <img
+      <Image
         src={avatarUrl}
         alt={name ? `${name}'s profile photo` : "Profile photo"}
+        width={size}
+        height={size}
         style={{
-          width: size,
-          height: size,
           borderRadius: "50%",
           objectFit: "cover",
           flexShrink: 0,
