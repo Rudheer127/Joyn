@@ -47,26 +47,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <Link
             href="/dashboard"
             title="Go to Dashboard"
-            style={{
-              textDecoration: "none",
-              display: "inline-block",
-              borderRadius: "0.5rem",
-              transition: "opacity 0.15s",
-            }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.opacity = "0.8"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.opacity = "1"; }}
+            style={{ textDecoration: "none", display: "inline-block" }}
           >
-            <p style={{
-              fontFamily: "var(--font-epilogue), serif",
-              fontWeight: 900,
-              fontSize: "2.25rem",
-              color: "#FFFFFF",
-              letterSpacing: "-0.04em",
-              lineHeight: 1,
-              cursor: "pointer",
-            }}>
-              JOYN
-            </p>
+            <img src="/joyn-logo.svg" alt="JOYN" style={{ height: "40px", filter: "brightness(0) invert(1)" }} />
           </Link>
           <p style={{ fontSize: "0.75rem", color: "#E8C84A", fontWeight: 500, marginTop: "0.375rem", letterSpacing: "0.02em" }}>
             Connect. Belong. Age with Joy.

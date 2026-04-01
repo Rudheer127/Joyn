@@ -93,15 +93,24 @@ export default function SignInPage() {
     try {
       const supabase = createClient();
       const digits = phone.replace(/\D/g, "");
-      const { error: verifyError } = await supabase.auth.verifyOtp({
+      const { data, error: verifyError } = await supabase.auth.verifyOtp({
         phone: `+1${digits}`,
         token: code,
         type: "sms",
       });
       if (verifyError) {
         setError(verifyError.message);
-      } else {
-        router.push("/consultation");
+      } else if (data.session) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("id", data.session.user.id)
+          .single();
+        if (profile && profile.onboarding_completed === false) {
+          router.push("/onboard");
+        } else {
+          router.push("/consultation");
+        }
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -124,11 +133,20 @@ export default function SignInPage() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
       if (signInError) {
         setError(signInError.message);
-      } else {
-        router.push("/consultation");
+      } else if (data.session) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("id", data.session.user.id)
+          .single();
+        if (profile && profile.onboarding_completed === false) {
+          router.push("/onboard");
+        } else {
+          router.push("/consultation");
+        }
       }
     } catch {
       setError("Something went wrong. Please try again.");
@@ -188,20 +206,11 @@ export default function SignInPage() {
         maxWidth: "520px",
         boxShadow: "0 0 60px 0 rgba(23,49,36,0.08)",
       }}>
-        {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <Link href="/">
-            <span style={{
-              fontFamily: "var(--font-epilogue), serif",
-              fontWeight: 800,
-              fontSize: "2rem",
-              color: "#173124",
-              letterSpacing: "-0.02em",
-            }}>
-              JOYN
-            </span>
+          <Link href="/" style={{ display: "inline-block" }}>
+            <img src="/joyn-logo.svg" alt="JOYN" style={{ height: "48px" }} />
           </Link>
-          <p style={{ fontSize: "0.9rem", color: "#727973", marginTop: "0.25rem" }}>
+          <p style={{ fontSize: "0.9rem", color: "#727973", marginTop: "0.5rem" }}>
             Find Your Person. Age with Joy.
           </p>
         </div>
@@ -221,6 +230,9 @@ export default function SignInPage() {
         </p>
 
         {/* Demo login button */}
+        <p style={{ fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#727973", textAlign: "center", marginBottom: "0.5rem" }}>
+          For Visitors / Demo
+        </p>
         <button
           onClick={handleDemoLogin}
           disabled={demoLoading}
@@ -246,9 +258,9 @@ export default function SignInPage() {
           {demoLoading ? "Loading..." : "🌻 Try the Demo Account"}
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", marginBottom: "1.5rem" }}>
+        <div style={{ display: "flex", alignItems: "center", margin: "2rem 0 1.5rem 0" }}>
           <div style={{ flex: 1, height: "1px", backgroundColor: "#C2C8C2" }}></div>
-          <span style={{ padding: "0 1rem", color: "#727973", fontSize: "0.875rem", fontWeight: 500 }}>OR SIGN IN</span>
+          <span style={{ padding: "0 1rem", color: "#727973", fontSize: "0.875rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>Or sign in to your account</span>
           <div style={{ flex: 1, height: "1px", backgroundColor: "#C2C8C2" }}></div>
         </div>
 

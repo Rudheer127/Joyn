@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 160">
+  <!-- J, Y, N Letters -->
+  <g fill="none" stroke="#1E7564" stroke-width="24" stroke-linecap="butt" stroke-linejoin="miter">
+    <!-- J -->
+    <path d="M 70,30 L 70,110 A 30,30 0 0,1 10,110" />
+    
+    <!-- Y -->
+    <path d="M 190,30 L 230,85 M 270,30 L 230,85 L 230,140" />
+    
+    <!-- N -->
+    <path d="M 310,140 L 310,30 L 370,140 L 370,30" />
+  </g>
+
+  <!-- O (Smiley Face) -->
+  <g fill="#1E7564">
+    <!-- Outer Ring -->
+    <circle cx="130" cy="85" r="38" fill="none" stroke="#1E7564" stroke-width="24" />
+    <!-- Eyes -->
+    <circle cx="112" cy="70" r="7" />
+    <circle cx="148" cy="70" r="7" />
+    <!-- Smile -->
+    <path d="M 110,95 A 22,22 0 0,0 150,95" fill="none" stroke="#1E7564" stroke-width="8" stroke-linecap="round" />
+  </g>
+</svg>

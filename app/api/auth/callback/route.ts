@@ -33,9 +33,25 @@ export async function GET(request: Request) {
       }
     );
     
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+    const { data: { session }, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error && session) {
+      // Check if user has completed onboarding
+      let nextPath = next;
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("id", session.user.id)
+          .single();
+        
+        if (profile && profile.onboarding_completed === false) {
+          nextPath = "/onboard";
+        }
+      } catch (err) {
+        console.error("Error fetching profile on callback:", err);
+      }
+      
+      return NextResponse.redirect(`${origin}${nextPath}`);
     }
   }
 

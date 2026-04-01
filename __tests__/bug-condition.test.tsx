@@ -52,25 +52,26 @@ test('1a — /match route: app/(app)/match/page.tsx exists', () => {
 })
 
 // ─── Test 1b: Schedule modal opens ───────────────────────────────────────────
-test('1b — Schedule modal: clicking "+ Schedule New Session" shows a modal', async () => {
+test('1b — Schedule modal: clicking "+ Plan a Meetup" shows a modal', async () => {
   const { default: SessionsPage } = await import('../app/(app)/sessions/page')
   const user = userEvent.setup()
   render(React.createElement(SessionsPage))
 
-  const scheduleBtn = screen.getByRole('button', { name: /schedule new session/i })
+  const scheduleBtn = screen.getByRole('button', { name: /plan a meetup|schedule new session|schedule a catch-up/i })
   await user.click(scheduleBtn)
 
-  // The modal renders "Schedule a Session" heading when open
-  expect(screen.getByText(/schedule a session/i)).toBeInTheDocument()
+  // The modal renders a heading when open
+  const modal = screen.queryByText(/plan a meetup|schedule a session/i)
+  expect(modal).not.toBeNull()
 })
 
 // ─── Test 1c: Join session navigates ─────────────────────────────────────────
-test('1c — Join session: clicking "Join Session" triggers navigation', async () => {
+test('1c — Join session: clicking "Join Meetup/Catch-Up" triggers navigation', async () => {
   const { default: SessionsPage } = await import('../app/(app)/sessions/page')
   const user = userEvent.setup()
   render(React.createElement(SessionsPage))
 
-  const joinBtns = screen.getAllByRole('button', { name: /join session/i })
+  const joinBtns = screen.getAllByRole('button', { name: /join meetup|join session|join catch-up/i })
   await user.click(joinBtns[0])
 
   expect(pushMock).toHaveBeenCalled()

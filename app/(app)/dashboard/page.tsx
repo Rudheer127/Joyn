@@ -103,17 +103,7 @@ export default function DashboardPage() {
           justifyContent: "space-between",
         }}
       >
-        <span
-          style={{
-            fontFamily: "var(--font-epilogue), serif",
-            fontWeight: 800,
-            fontSize: "1.5rem",
-            color: "#173124",
-            letterSpacing: "-0.02em",
-          }}
-        >
-          JOYN
-        </span>
+        <img src="/joyn-logo.svg" alt="JOYN" style={{ height: "32px" }} />
         <Link
           href="/profile"
           style={{
@@ -152,7 +142,77 @@ export default function DashboardPage() {
           </p>
         </div>
 
-        {/* Tip banner */}
+        {/* Mood + Jo input merged card */}
+        <div
+          style={{
+            backgroundColor: "#FFFFFF",
+            border: "2px solid #E7E2D7",
+            borderRadius: "1.5rem",
+            padding: "2rem",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
+            marginBottom: "2.5rem",
+          }}
+        >
+          <h2 style={{ fontSize: "1.375rem", fontWeight: 700, marginBottom: "0.5rem" }}>
+            How are you feeling today?
+          </h2>
+          <p style={{ fontSize: "1rem", color: "#727973", marginBottom: "1.25rem" }}>
+            Pick an emoji, then share more if you'd like — Jo will respond.
+          </p>
+          <MoodWidget />
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const val = (e.currentTarget.elements.namedItem("feeling") as HTMLInputElement).value;
+              if (val) window.location.href = `/consultation?q=${encodeURIComponent(val)}`;
+            }}
+            style={{ marginTop: "1.25rem" }}
+          >
+            <textarea
+              name="feeling"
+              placeholder="Want to share more? (optional) — e.g. I'm feeling a bit lonely today..."
+              rows={3}
+              style={{
+                width: "100%",
+                padding: "1rem",
+                borderRadius: "1rem",
+                border: "2px solid #C2C8C2",
+                fontSize: "1.0625rem",
+                fontFamily: "inherit",
+                resize: "none",
+                marginBottom: "1rem",
+                boxSizing: "border-box",
+              }}
+            />
+            <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+              {["I just want to talk", "Find people near me", "Suggest an activity", "I feel overwhelmed"].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => { window.location.href = `/consultation?q=${encodeURIComponent(preset)}`; }}
+                  style={{
+                    backgroundColor: "#FEF9ED", border: "1px solid #C2C8C2",
+                    borderRadius: "2rem", padding: "0.5rem 1rem",
+                    fontSize: "0.95rem", color: "#173124", cursor: "pointer",
+                  }}
+                >
+                  {preset}
+                </button>
+              ))}
+            </div>
+            <button
+              type="submit"
+              style={{
+                width: "100%", backgroundColor: "#173124", color: "#FFFFFF",
+                fontWeight: 600, fontSize: "1.125rem", padding: "1rem",
+                borderRadius: "3rem", border: "none", cursor: "pointer",
+              }}
+            >
+              Let's Chat with Jo →
+            </button>
+          </form>
+        </div>
+
         <div
           style={{
             backgroundColor: "#FFFBEA",
@@ -216,10 +276,10 @@ export default function DashboardPage() {
                 {card.emoji}
               </div>
               <div>
-                <p style={{ fontWeight: 700, fontSize: "1rem", marginBottom: "0.25rem" }}>
+                <p style={{ fontWeight: 700, fontSize: "1.125rem", marginBottom: "0.25rem" }}>
                   {card.title}
                 </p>
-                <p style={{ fontSize: "0.875rem", color: "#727973", lineHeight: 1.4 }}>
+                <p style={{ fontSize: "1rem", color: "#727973", lineHeight: 1.4 }}>
                   {card.desc}
                 </p>
               </div>
@@ -227,92 +287,7 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Mood check-in */}
-        <div style={{ marginBottom: "2rem" }}>
-          <MoodWidget />
-        </div>
 
-        {/* Simple AI input */}
-        <div
-          style={{
-            backgroundColor: "#FFFFFF",
-            border: "2px solid #E7E2D7",
-            borderRadius: "1.5rem",
-            padding: "2rem",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
-            marginBottom: "2.5rem",
-          }}
-        >
-          <h2 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1rem" }}>
-            How are you feeling today?
-          </h2>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const val = (e.currentTarget.elements.namedItem("feeling") as HTMLInputElement).value;
-              if (val) window.location.href = `/consultation?q=${encodeURIComponent(val)}`;
-            }}
-          >
-            <textarea
-              name="feeling"
-              placeholder="E.g., I'm feeling a bit lonely today and would love to just talk to someone, or maybe find an activity nearby..."
-              rows={4}
-              style={{
-                width: "100%",
-                padding: "1rem",
-                borderRadius: "1rem",
-                border: "2px solid #C2C8C2",
-                fontSize: "1.0625rem",
-                fontFamily: "inherit",
-                resize: "none",
-                marginBottom: "1rem",
-              }}
-            />
-            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
-              {[
-                "I just want to talk",
-                "Find people near me",
-                "Suggest an activity",
-                "I feel overwhelmed",
-              ].map((preset) => (
-                <button
-                  key={preset}
-                  type="button"
-                  onClick={() => {
-                    window.location.href = `/consultation?q=${encodeURIComponent(preset)}`;
-                  }}
-                  style={{
-                    backgroundColor: "#FEF9ED",
-                    border: "1px solid #C2C8C2",
-                    borderRadius: "2rem",
-                    padding: "0.5rem 1rem",
-                    fontSize: "0.95rem",
-                    color: "#173124",
-                    cursor: "pointer",
-                  }}
-                >
-                  {preset}
-                </button>
-              ))}
-            </div>
-            <button
-              type="submit"
-              style={{
-                width: "100%",
-                backgroundColor: "#173124",
-                color: "#FFFFFF",
-                fontWeight: 600,
-                fontSize: "1.125rem",
-                padding: "1rem",
-                borderRadius: "3rem",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Continue to Consultation
-            </button>
-          </form>
-        </div>
       </div>
     </div>
   );

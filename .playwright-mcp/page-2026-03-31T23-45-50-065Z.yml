@@ -1,0 +1,68 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "JOYN" [ref=e5] [cursor=pointer]:
+          - /url: /dashboard
+          - paragraph [ref=e6]: JOYN
+        - paragraph [ref=e7]: Connect. Belong. Age with Joy.
+      - navigation [ref=e8]:
+        - paragraph [ref=e9]: Navigation
+        - link "🏠 Dashboard" [ref=e10] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e11]: 🏠
+          - text: Dashboard
+        - link "👥 My Matches" [ref=e12] [cursor=pointer]:
+          - /url: /match
+          - generic [ref=e13]: 👥
+          - text: My Matches
+        - link "💬 Messages" [ref=e14] [cursor=pointer]:
+          - /url: /messages
+          - generic [ref=e16]: 💬
+          - text: Messages
+        - link "📅 Catch-Ups" [ref=e17] [cursor=pointer]:
+          - /url: /sessions
+          - generic [ref=e18]: 📅
+          - text: Catch-Ups
+        - link "📍 Events" [ref=e19] [cursor=pointer]:
+          - /url: /events
+          - generic [ref=e20]: 📍
+          - text: Events
+        - link "👤 Profile" [ref=e21] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=e22]: 👤
+          - text: Profile
+      - button "🚪 Sign Out" [ref=e24] [cursor=pointer]:
+        - generic [ref=e25]: 🚪
+        - text: Sign Out
+    - main [ref=e26]:
+      - generic [ref=e27]:
+        - heading "Messages" [level=1] [ref=e28]
+        - paragraph [ref=e29]: Your conversations with companions
+        - generic [ref=e30]:
+          - link "MW Margaret That sounds wonderful! I'd love to sit and have a proper chat. 2 min ago" [ref=e31] [cursor=pointer]:
+            - /url: /messages/1
+            - generic [ref=e32]: MW
+            - generic [ref=e33]:
+              - paragraph [ref=e34]: Margaret
+              - paragraph [ref=e35]: That sounds wonderful! I'd love to sit and have a proper chat.
+            - paragraph [ref=e37]: 2 min ago
+          - link "RJ Robert Likewise! Always happy to meet someone new. Do you enjoy music? Yesterday" [ref=e39] [cursor=pointer]:
+            - /url: /messages/2
+            - generic [ref=e40]: RJ
+            - generic [ref=e41]:
+              - paragraph [ref=e42]: Robert
+              - paragraph [ref=e43]: Likewise! Always happy to meet someone new. Do you enjoy music?
+            - paragraph [ref=e45]: Yesterday
+          - link "DL Dorothy I'd love to show you my watercolors on a video call sometime! 2 days ago" [ref=e46] [cursor=pointer]:
+            - /url: /messages/3
+            - generic [ref=e47]: DL
+            - generic [ref=e48]:
+              - paragraph [ref=e49]: Dorothy
+              - paragraph [ref=e50]: I'd love to show you my watercolors on a video call sometime!
+            - paragraph [ref=e52]: 2 days ago
+    - button "Open Jo companion chat" [ref=e53] [cursor=pointer]:
+      - generic [ref=e54]: Jo
+  - button "Open Next.js Dev Tools" [ref=e61] [cursor=pointer]:
+    - img [ref=e62]
+  - alert [ref=e65]

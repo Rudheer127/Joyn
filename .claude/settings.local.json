@@ -13,7 +13,30 @@
       "Bash(curl -s \"https://wbxrsdjetrmykllymwoh.supabase.co/rest/v1/profiles?select=id,full_name,embedding,embedding_updated_at&limit=1\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndieHJzZGpldHJteWtsbHltd29oIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDY2Njg4MiwiZXhwIjoyMDkwMjQyODgyfQ.nkTWQjcbqvGB95J9Jr5dBhGh0lKFujh3qGidMMl9cMU\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndieHJzZGpldHJteWtsbHltd29oIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDY2Njg4MiwiZXhwIjoyMDkwMjQyODgyfQ.nkTWQjcbqvGB95J9Jr5dBhGh0lKFujh3qGidMMl9cMU\" -w \"\\\\nHTTP %{http_code}\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
       "Bash(gh auth:*)",
-      "Bash(gh repo:*)"
+      "Bash(gh repo:*)",
+      "Bash(ls -la '/c/Users/rudhe/Downloads/Joyn/app/\\(app\\)/consultation/')",
+      "Bash(find /c/Users/rudhe/Downloads/Joyn -name middleware.* -o -name *auth*)",
+      "Bash(find /c/Users/rudhe/Downloads/Joyn -not -path */node_modules/* -not -path */.next/* -not -path */.git/* -type d)",
+      "Bash(npx next:*)",
+      "Bash(npm run:*)",
+      "Bash(node -e \"require\\(''typescript''\\).version && console.log\\(require\\(''typescript''\\).version\\)\")",
+      "Bash(node -e \"const ts = require\\(''''typescript''''\\); const host = ts.createCompilerHost\\({}\\); const f = ts.createProgram\\([''''lib.dom.d.ts''''], {lib: [''''dom'''']}, host\\); console.log\\(''''ok''''\\)\")",
+      "Bash(node -e \"const {execSync} = require\\(''''child_process''''\\); console.log\\(execSync\\(''''npx tsc --listFiles 2>&1 | grep SpeechRecognition'''', {cwd: process.cwd\\(\\)}\\).toString\\(\\)\\)\")",
+      "Bash(node -e \"const fs = require\\(''fs''\\); const content = fs.readFileSync\\(''node_modules/typescript/lib/lib.dom.d.ts'', ''utf8''\\); const idx = content.indexOf\\(''interface SpeechRecognition''\\); console.log\\(idx > -1 ? ''found at '' + idx : ''NOT FOUND''\\)\")",
+      "Bash(node -e \"const {execSync} = require\\(''''child_process''''\\); try { console.log\\(execSync\\(''''npx tsc --noEmit --listFiles 2>&1 | grep -i speech'''', {encoding: ''''utf8''''}\\)\\) } catch\\(e\\) { console.log\\(e.stdout || e.message\\) }\")",
+      "Bash(dir \"C:\\\\Users\\\\rudhe\\\\Downloads\\\\Joyn\\\\node_modules\\\\typescript\\\\lib\")",
+      "Bash(findstr /i speech)",
+      "Bash(node -e \"const fs = require\\(''fs''\\); const content = fs.readFileSync\\(''node_modules/typescript/lib/lib.dom.d.ts'', ''utf8''\\); const matches = [...content.matchAll\\(/interface SpeechRecognition\\\\w*/g\\)]; matches.slice\\(0,10\\).forEach\\(m => console.log\\(m[0]\\)\\)\")",
+      "Bash(node -e \"const {execSync} = require\\(''''child_process''''\\); try { const out = execSync\\(''''npx tsc --noEmit 2>&1'''', {encoding:''''utf8''''}\\); console.log\\(out || ''''PASS''''\\) } catch\\(e\\) { console.log\\(e.stdout || e.message\\) }\")",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_evaluate",
+      "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__list_teams",
+      "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__list_projects",
+      "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__list_deployments",
+      "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__get_deployment",
+      "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__get_project"
     ]
   }
 }

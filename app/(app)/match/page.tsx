@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MOCK_MATCHES, type MatchCandidate, connectionLabel } from "@/lib/ai/matching";
 import { Avatar } from "@/components/shared/Avatar";
+import { Loader2 } from "lucide-react";
 
 export default function MatchesPage() {
   const [matches, setMatches] = useState<MatchCandidate[]>(MOCK_MATCHES);
@@ -50,14 +51,17 @@ export default function MatchesPage() {
 
         {/* Loading skeleton */}
         {loading && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", maxWidth: "800px" }}>
-            {[1, 2, 3].map((i) => (
-              <div key={i} style={{
-                backgroundColor: "#E7E2D7", border: "2px solid #C2C8C2",
-                borderRadius: "2rem", padding: "1.75rem", height: "220px",
-                animation: "match-shimmer 1.6s ease-in-out infinite",
-              }} />
-            ))}
+          <div style={{
+            display: "flex", flexDirection: "column", alignItems: "center",
+            justifyContent: "center", gap: "1.5rem", padding: "4rem 0",
+            backgroundColor: "#FFFFFF", borderRadius: "2rem", border: "2px solid #E7E2D7",
+            maxWidth: "800px"
+          }}>
+            <Loader2 size={48} color="#173124" style={{ animation: "spin 2s linear infinite" }} />
+            <h2 style={{ fontFamily: "var(--font-epilogue), serif", fontSize: "1.5rem", color: "#173124", textAlign: "center", maxWidth: "400px" }}>
+              Jo is finding your best companions...
+            </h2>
+            <p style={{ color: "#727973", textAlign: "center" }}>This usually takes just a moment.</p>
           </div>
         )}
 

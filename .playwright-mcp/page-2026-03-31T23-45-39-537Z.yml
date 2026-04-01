@@ -1,0 +1,64 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "JOYN" [ref=e5] [cursor=pointer]:
+          - /url: /dashboard
+          - paragraph [ref=e6]: JOYN
+        - paragraph [ref=e7]: Connect. Belong. Age with Joy.
+      - navigation [ref=e8]:
+        - paragraph [ref=e9]: Navigation
+        - link "🏠 Dashboard" [ref=e10] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e11]: 🏠
+          - text: Dashboard
+        - link "👥 My Matches" [ref=e12] [cursor=pointer]:
+          - /url: /match
+          - generic [ref=e13]: 👥
+          - text: My Matches
+        - link "💬 Messages" [ref=e14] [cursor=pointer]:
+          - /url: /messages
+          - generic [ref=e15]: 💬
+          - text: Messages
+        - link "📅 Catch-Ups" [ref=e16] [cursor=pointer]:
+          - /url: /sessions
+          - generic [ref=e17]: 📅
+          - text: Catch-Ups
+        - link "📍 Events" [ref=e18] [cursor=pointer]:
+          - /url: /events
+          - generic [ref=e19]: 📍
+          - text: Events
+        - link "👤 Profile" [ref=e20] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=e21]: 👤
+          - text: Profile
+      - button "🚪 Sign Out" [ref=e23] [cursor=pointer]:
+        - generic [ref=e24]: 🚪
+        - text: Sign Out
+    - main [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]:
+          - generic [ref=e28]: JOYN Consultation
+          - button "Skip to Dashboard" [ref=e29] [cursor=pointer]
+        - generic [ref=e30]:
+          - strong [ref=e31]: "Note:"
+          - text: You are chatting with Jo, an AI companion designed to help you get started safely. This is an AI response.
+        - generic [ref=e33]:
+          - generic [ref=e34]: 🌻
+          - heading "Hi Friend, I'm Jo." [level=2] [ref=e35]
+          - paragraph [ref=e36]: What brings you to Joyn today? You can choose an option below, type your answer, or use the microphone to talk to me.
+          - generic [ref=e37]:
+            - button "I recently moved to a new place" [ref=e38] [cursor=pointer]
+            - button "I lost my partner" [ref=e39] [cursor=pointer]
+            - button "I&apos;m just looking for a walking buddy" [ref=e40] [cursor=pointer]
+            - button "I want someone to check in on me" [ref=e41] [cursor=pointer]
+        - generic [ref=e43]:
+          - button [ref=e44] [cursor=pointer]:
+            - img [ref=e45]
+          - textbox "Type your message here..." [ref=e48]
+          - button [disabled] [ref=e49]:
+            - img [ref=e50]
+    - button "Open Jo companion chat" [ref=e53] [cursor=pointer]:
+      - generic [ref=e54]: Jo
+  - button "Open Next.js Dev Tools" [ref=e61] [cursor=pointer]:
+    - img [ref=e62]

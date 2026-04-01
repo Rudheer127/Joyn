@@ -45,17 +45,9 @@ export default function HomePage() {
       }}>
         <Link
           href="/"
-          style={{
-            fontFamily: "var(--font-epilogue), serif",
-            fontWeight: 900,
-            fontSize: "1.75rem",
-            color: "#173124",
-            letterSpacing: "-0.04em",
-            textDecoration: "none",
-            cursor: "pointer",
-          }}
+          style={{ textDecoration: "none", display: "inline-block" }}
         >
-          JOYN
+          <img src="/joyn-logo.svg" alt="JOYN" style={{ height: "44px" }} />
         </Link>
         <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
           <Link href="/sign-in" style={{ color: "#173124", fontWeight: 500, fontSize: "1rem", textDecoration: "none" }}>
@@ -463,7 +455,7 @@ export default function HomePage() {
             letterSpacing: "-0.03em",
             lineHeight: 1.05,
           }}>
-            Ready to stop<br />feeling alone?
+            Ready to find<br />your person?
           </h2>
           <p style={{ fontSize: "1.25rem", color: "#4A5C50", marginBottom: "2.5rem" }}>
             Free. Simple. Takes less than 5 minutes.
@@ -491,15 +483,7 @@ export default function HomePage() {
             borderBottom: "1px solid rgba(255,255,255,0.15)",
           }}>
             <div>
-              <p style={{
-                fontFamily: "var(--font-epilogue), serif",
-                fontWeight: 900,
-                fontSize: "1.5rem",
-                color: "#FFFFFF",
-                letterSpacing: "-0.04em",
-              }}>
-                JOYN
-              </p>
+              <img src="/joyn-logo.svg" alt="JOYN" style={{ height: "36px", filter: "brightness(0) invert(1)" }} />
               <p style={{ fontSize: "0.9rem", color: "rgba(255,255,255,0.6)", marginTop: "0.25rem" }}>
                 Find Your Person. Age with Joy.
               </p>
@@ -516,7 +500,7 @@ export default function HomePage() {
                 <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                   <Link href="/sign-up" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "0.95rem" }}>Join Free</Link>
                   <Link href="/sign-in" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "0.95rem" }}>Sign In</Link>
-                  <Link href="/onboard" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "0.95rem" }}>How It Works</Link>
+                  <Link href="/#how-it-works" style={{ color: "rgba(255,255,255,0.8)", textDecoration: "none", fontSize: "0.95rem" }}>How It Works</Link>
                 </div>
               </div>
               <div>

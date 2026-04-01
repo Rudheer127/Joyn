@@ -85,20 +85,10 @@ export default function SignUpPage() {
       >
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <Link href="/">
-            <span
-              style={{
-                fontFamily: "'Epilogue', serif",
-                fontWeight: 800,
-                fontSize: "2rem",
-                color: "#173124",
-                letterSpacing: "-0.02em",
-              }}
-            >
-              JOYN
-            </span>
+          <Link href="/" style={{ display: "inline-block" }}>
+            <img src="/joyn-logo.svg" alt="JOYN" style={{ height: "48px" }} />
           </Link>
-          <p style={{ fontSize: "0.875rem", color: "#727973", marginTop: "0.25rem" }}>
+          <p style={{ fontSize: "0.875rem", color: "#727973", marginTop: "0.5rem" }}>
             Find Your Person. Age with Joy.
           </p>
         </div>

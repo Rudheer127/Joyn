@@ -2,21 +2,20 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Mic, Square, Send } from "lucide-react";
 
-export default function ConsultationPage() {
+function ConsultationInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isClient] = useState(true);
   const [userName, setUserName] = useState("Friend");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const hasSentInitial = useRef(false);
 
-  // Own input state (v6 no longer manages this internally)
   const [inputValue, setInputValue] = useState("");
-
-  // Voice state
   const [isListening, setIsListening] = useState(false);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
@@ -36,16 +35,9 @@ export default function ConsultationPage() {
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) {
-        router.push("/sign-in");
-        return;
-      }
+      if (!user) { router.push("/sign-in"); return; }
       supabase.from("profiles").select("full_name").eq("id", user.id).single()
-        .then(({ data }) => {
-          if (data?.full_name) {
-            setUserName(data.full_name.split(" ")[0]);
-          }
-        });
+        .then(({ data }) => { if (data?.full_name) setUserName(data.full_name.split(" ")[0]); });
     });
 
     if (typeof window !== "undefined" && ("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
@@ -55,29 +47,27 @@ export default function ConsultationPage() {
         recognitionRef.current = new SR();
         recognitionRef.current.continuous = false;
         recognitionRef.current.interimResults = true;
-
         recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
           let finalTranscript = "";
           for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              finalTranscript += event.results[i][0].transcript;
-            }
+            if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
           }
-          if (finalTranscript) {
-            setInputValue((prev) => prev ? prev + " " + finalTranscript : finalTranscript);
-          }
+          if (finalTranscript) setInputValue((prev) => prev ? prev + " " + finalTranscript : finalTranscript);
         };
-
-        recognitionRef.current.onerror = () => {
-          setIsListening(false);
-        };
-
-        recognitionRef.current.onend = () => {
-          setIsListening(false);
-        };
+        recognitionRef.current.onerror = () => setIsListening(false);
+        recognitionRef.current.onend = () => setIsListening(false);
       }
     }
   }, [router]);
+
+  // Pre-fill the input automatically if ?q= is provided from dashboard
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q && !hasSentInitial.current) {
+      hasSentInitial.current = true;
+      setInputValue(q);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -94,23 +84,14 @@ export default function ConsultationPage() {
   }
 
   function toggleListening() {
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-    } else {
+    if (isListening) { recognitionRef.current?.stop(); setIsListening(false); }
+    else {
       window.speechSynthesis.cancel();
-      try {
-        recognitionRef.current?.start();
-        setIsListening(true);
-      } catch (e) {
-        console.error(e);
-      }
+      try { recognitionRef.current?.start(); setIsListening(true); } catch (e) { console.error(e); }
     }
   }
 
-  function handlePreset(text: string) {
-    sendMessage({ text });
-  }
+  function handlePreset(text: string) { sendMessage({ text }); }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -130,9 +111,12 @@ export default function ConsultationPage() {
     }}>
       {/* Top Banner */}
       <div style={{ backgroundColor: "#173124", padding: "1rem 2rem", color: "#FFFFFF", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontFamily: "var(--font-epilogue), serif", fontWeight: 700, fontSize: "1.25rem" }}>
-          JOYN Consultation
-        </span>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <img src="/joyn-logo.svg" alt="JOYN" style={{ height: "32px", filter: "brightness(0) invert(1)" }} />
+          <span style={{ fontFamily: "var(--font-epilogue), serif", fontWeight: 700, fontSize: "1.125rem", color: "rgba(255,255,255,0.85)" }}>
+            Chat with Jo
+          </span>
+        </div>
         <button
           onClick={() => router.push("/dashboard")}
           style={{
@@ -147,7 +131,7 @@ export default function ConsultationPage() {
 
       {/* Consent Notice */}
       <div style={{ backgroundColor: "#FEF9ED", padding: "0.75rem", textAlign: "center", fontSize: "0.85rem", color: "#735C00", borderBottom: "1px solid #E7E2D7" }}>
-        <strong>Note:</strong> You are chatting with Jo, an AI companion designed to help you get started safely. This is an AI response.
+        <strong>Note:</strong> You are chatting with Jo, an AI companion. This is not a medical service.
       </div>
 
       {/* Chat Area */}
@@ -164,11 +148,16 @@ export default function ConsultationPage() {
               Hi {userName}, I&apos;m Jo.
             </h2>
             <p style={{ color: "#727973", fontSize: "1.1rem", maxWidth: "400px", margin: "0 auto" }}>
-              What brings you to Joyn today? You can choose an option below, type your answer, or use the microphone to talk to me.
+              What brings you here today? Choose an option below, type your answer, or use the microphone to talk to me.
             </p>
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center", marginTop: "2rem", maxWidth: "500px", margin: "2rem auto 0 auto" }}>
-              {["I recently moved to a new place", "I lost my partner", "I&apos;m just looking for a walking buddy", "I want someone to check in on me"].map(preset => (
+              {[
+                "I recently moved to a new place",
+                "I've been going through a difficult time",
+                "I'm looking for a walking buddy",
+                "I'd love a friend to stay in touch with",
+              ].map(preset => (
                 <button
                   key={preset}
                   onClick={() => handlePreset(preset)}
@@ -189,7 +178,6 @@ export default function ConsultationPage() {
         )}
 
         {messages.map((m) => {
-          // Extract text and tool parts from parts
           const textParts = m.parts.filter((p): p is { type: "text"; text: string } => p.type === "text");
           const toolParts = m.parts.filter((p) => (p.type as string).startsWith("tool-"));
           const displayText = textParts.map((p) => p.text).join("");
@@ -225,10 +213,8 @@ export default function ConsultationPage() {
 
         {isLoading && (
           <div style={{
-            alignSelf: "flex-start",
-            backgroundColor: "#FFFFFF",
-            padding: "1rem 1.25rem",
-            borderRadius: "1.5rem", borderBottomLeftRadius: "0.25rem",
+            alignSelf: "flex-start", backgroundColor: "#FFFFFF",
+            padding: "1rem 1.25rem", borderRadius: "1.5rem", borderBottomLeftRadius: "0.25rem",
             border: "1px solid #E7E2D7", color: "#727973"
           }}>
             Jo is thinking...
@@ -282,3 +268,13 @@ export default function ConsultationPage() {
     </div>
   );
 }
+
+export default function ConsultationPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: "100vh", backgroundColor: "#F8F3E8", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-lexend), sans-serif", color: "#173124" }}>Loading...</div>}>
+      <ConsultationInner />
+    </Suspense>
+  );
+}
+
+
