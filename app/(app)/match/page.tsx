@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MOCK_MATCHES, type MatchCandidate, connectionLabel } from "@/lib/ai/matching";
+import { DEMO_MATCHES, isDemoMode } from "@/lib/demo/demoData";
 import { Avatar } from "@/components/shared/Avatar";
 import { Loader2 } from "lucide-react";
 
@@ -11,6 +12,12 @@ export default function MatchesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Demo mode: use rich demo matches instantly, no spinner
+    if (isDemoMode()) {
+      setMatches(DEMO_MATCHES as unknown as MatchCandidate[]);
+      setLoading(false);
+      return;
+    }
     fetch("/api/ai/match/candidates")
       .then((r) => r.json())
       .then((data) => {

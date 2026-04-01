@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Avatar } from "@/components/shared/Avatar";
+import { isDemoMode, DEMO_USER } from "@/lib/demo/demoData";
 
 const arizonaCities = [
   "Phoenix", "Scottsdale", "Mesa", "Tempe", "Chandler", "Gilbert",
@@ -84,6 +85,21 @@ export default function ProfilePage() {
 
   useEffect(() => {
     async function loadProfile() {
+      // Demo mode: pre-fill with demo user data
+      if (isDemoMode()) {
+        setName(DEMO_USER.full_name);
+        setAge(DEMO_USER.age.toString());
+        setCity(DEMO_USER.city);
+        setBio(DEMO_USER.bio);
+        setGender(DEMO_USER.gender);
+        setFitnessLevel("Moderate");
+        setConnectionPref(DEMO_USER.connection_preference);
+        setHealthGoals(DEMO_USER.health_goals.join("\n"));
+        setSelectedInterests(DEMO_USER.interests);
+        setLoading(false);
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         setLoading(false);

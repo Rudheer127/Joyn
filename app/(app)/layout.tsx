@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { CompanionWidget } from "@/components/companion/CompanionWidget";
+import { DemoBanner } from "@/components/shared/DemoBanner";
+import { isDemoMode, exitDemo } from "@/lib/demo/demoData";
 
 const navItems = [
   { href: "/dashboard",    label: "Dashboard",        icon: "🏠" },
@@ -19,8 +22,18 @@ const navItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [demoMode, setDemoMode] = useState(false);
+
+  useEffect(() => {
+    setDemoMode(isDemoMode());
+  }, []);
 
   async function handleSignOut() {
+    if (demoMode) {
+      exitDemo();
+      router.push("/");
+      return;
+    }
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/");
@@ -124,8 +137,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               padding: "0.875rem 1rem",
               borderRadius: "0.875rem",
               border: "1px solid rgba(255,255,255,0.15)",
-              backgroundColor: "transparent",
-              color: "rgba(255,255,255,0.6)",
+              backgroundColor: demoMode ? "rgba(232,200,74,0.15)" : "transparent",
+              color: demoMode ? "#E8C84A" : "rgba(255,255,255,0.6)",
               fontSize: "1rem",
               fontWeight: 500,
               cursor: "pointer",
@@ -141,18 +154,23 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             }}
             onMouseLeave={(e) => {
               const el = e.currentTarget as HTMLButtonElement;
-              el.style.backgroundColor = "transparent";
-              el.style.color = "rgba(255,255,255,0.6)";
+              el.style.backgroundColor = demoMode ? "rgba(232,200,74,0.15)" : "transparent";
+              el.style.color = demoMode ? "#E8C84A" : "rgba(255,255,255,0.6)";
             }}
           >
-            <span style={{ fontSize: "1.125rem" }}>🚪</span>
-            Sign Out
+            <span style={{ fontSize: "1.125rem" }}>{demoMode ? "🎬" : "🚪"}</span>
+            {demoMode ? "Exit Demo" : "Sign Out"}
           </button>
         </div>
       </aside>
 
       {/* ── Main content ── */}
-      <main style={{ marginLeft: "272px", flex: 1, backgroundColor: "#FEF9ED", minHeight: "100vh" }}>
+      <main style={{
+        marginLeft: "272px", flex: 1,
+        backgroundColor: "#FEF9ED", minHeight: "100vh",
+        paddingTop: demoMode ? "40px" : "0",  // space for demo banner
+      }}>
+        <DemoBanner />
         {children}
       </main>
 

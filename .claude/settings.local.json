@@ -36,7 +36,19 @@
       "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__list_projects",
       "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__list_deployments",
       "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__get_deployment",
-      "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__get_project"
+      "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__get_project",
+      "WebFetch(domain:www.hhs.gov)",
+      "WebFetch(domain:www.ncoa.org)",
+      "WebFetch(domain:www.aarp.org)",
+      "WebFetch(domain:www.cdc.gov)",
+      "WebFetch(domain:www.who.int)",
+      "WebFetch(domain:www.nia.nih.gov)",
+      "WebFetch(domain:health.gov)",
+      "WebFetch(domain:www.pewresearch.org)",
+      "WebFetch(domain:jamanetwork.com)",
+      "WebFetch(domain:www.aging.com)",
+      "WebFetch(domain:www.apa.org)",
+      "WebFetch(domain:www.census.gov)"
     ]
   }
 }

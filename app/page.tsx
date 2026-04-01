@@ -90,13 +90,40 @@ export default function HomePage() {
             }}>
               Find a real companion. Someone to talk to, laugh with, and look forward to — right here in Arizona.
             </p>
-            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
               <Link href="/sign-up" className="btn-primary animate-fade-up delay-200">
                 Join Free — It&apos;s Simple
               </Link>
               <a href="#how-it-works" className="btn-secondary animate-fade-up delay-300" style={{ border: "2px solid #173124" }}>
                 See How It Works
               </a>
+            </div>
+            {/* Try Demo CTA */}
+            <div style={{ marginTop: "1.25rem" }}>
+              <Link
+                href="/demo"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  backgroundColor: "#FFFFFF",
+                  border: "2px solid #C2C8C2",
+                  borderRadius: "3rem",
+                  padding: "0.75rem 1.75rem",
+                  fontSize: "1rem",
+                  fontWeight: 700,
+                  color: "#173124",
+                  textDecoration: "none",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+                  transition: "all 0.15s",
+                }}
+              >
+                <span>🎬</span>
+                Try Demo — No Sign Up Needed
+              </Link>
+              <p style={{ fontSize: "0.8rem", color: "#727973", marginTop: "0.5rem", marginLeft: "0.25rem" }}>
+                Explore the full experience as a first-time user
+              </p>
             </div>
           </div>
 

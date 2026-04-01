@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { MoodWidget } from "@/components/dashboard/MoodWidget";
+import { isDemoMode, DEMO_USER } from "@/lib/demo/demoData";
 
 const ACTION_CARDS = [
   {
@@ -59,6 +60,7 @@ const ACTION_CARDS = [
 export default function DashboardPage() {
   const [firstName, setFirstName] = useState("");
   const [feelingText, setFeelingText] = useState("");
+  const [demoMode, setDemoMode] = useState(false);
   const [greeting] = useState(() => {
     if (typeof window === "undefined") return "Good day";
     const hour = new Date().getHours();
@@ -68,6 +70,11 @@ export default function DashboardPage() {
   });
 
   useEffect(() => {
+    if (isDemoMode()) {
+      setDemoMode(true);
+      setFirstName(DEMO_USER.full_name);
+      return;
+    }
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) return;
@@ -268,27 +275,54 @@ export default function DashboardPage() {
           </form>
         </div>
 
-        <div
-          style={{
-            backgroundColor: "#FFFBEA",
-            border: "2px solid #E8C84A",
-            borderRadius: "1rem",
-            padding: "0.875rem 1.25rem",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.75rem",
-            marginBottom: "2rem",
-            fontSize: "0.95rem",
-            color: "#735C00",
-            fontWeight: 500,
-          }}
-        >
-          <span style={{ fontSize: "1.125rem" }}>💡</span>
-          <span>
-            <strong>Tip:</strong> A simple &ldquo;hello&rdquo; message is all it takes to start a
-            great friendship. Your matches are waiting!
-          </span>
-        </div>
+        {demoMode ? (
+          <div
+            style={{
+              backgroundColor: "#E8F4EC",
+              border: "2px solid #A8D5B5",
+              borderRadius: "1rem",
+              padding: "0.875rem 1.25rem",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "0.75rem",
+              marginBottom: "2rem",
+              fontSize: "0.95rem",
+              color: "#173124",
+              fontWeight: 500,
+            }}
+          >
+            <span style={{ fontSize: "1.25rem", flexShrink: 0 }}>🎬</span>
+            <span>
+              <strong>You&apos;re in Demo Mode</strong> — explore freely as Margaret.
+              Try <Link href="/find" style={{ color: "#173124", fontWeight: 700 }}>Find Companions</Link>,
+              check your <Link href="/match" style={{ color: "#173124", fontWeight: 700 }}>Matches</Link>,
+              or chat with <Link href="/consultation" style={{ color: "#173124", fontWeight: 700 }}>Jo</Link>.
+              Everything is ready for you.
+            </span>
+          </div>
+        ) : (
+          <div
+            style={{
+              backgroundColor: "#FFFBEA",
+              border: "2px solid #E8C84A",
+              borderRadius: "1rem",
+              padding: "0.875rem 1.25rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+              marginBottom: "2rem",
+              fontSize: "0.95rem",
+              color: "#735C00",
+              fontWeight: 500,
+            }}
+          >
+            <span style={{ fontSize: "1.125rem" }}>💡</span>
+            <span>
+              <strong>Tip:</strong> A simple &ldquo;hello&rdquo; message is all it takes to start a
+              great friendship. Your matches are waiting!
+            </span>
+          </div>
+        )}
 
       </div>
     </div>
