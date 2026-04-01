@@ -100,13 +100,14 @@ export default function ProfilePage() {
         if (profile.full_name) setName(profile.full_name);
         if (profile.age) setAge(profile.age.toString());
         if (profile.city) setCity(profile.city);
+        if (profile.bio) setBio(profile.bio);
         if (profile.fitness_level) {
           const fl = profile.fitness_level;
           setFitnessLevel(fl.charAt(0).toUpperCase() + fl.slice(1));
         }
         if (profile.connection_preference) setConnectionPref(profile.connection_preference);
         if (profile.health_goals && profile.health_goals.length > 0) {
-          setHealthGoals(profile.health_goals.join("\\n"));
+          setHealthGoals(profile.health_goals.join("\n"));
         }
         // New avatar fields
         if (profile.avatar_url) setAvatarUrl(profile.avatar_url);
@@ -161,6 +162,7 @@ export default function ProfilePage() {
         full_name: name || null,
         age: age ? parseInt(age) : null,
         city: city || null,
+        bio: bio || null,
         fitness_level: fitnessLevel.toLowerCase(),
         health_goals: healthGoals ? [healthGoals] : [],
         connection_preference: connectionPref,

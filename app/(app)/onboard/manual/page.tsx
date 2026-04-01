@@ -51,6 +51,7 @@ export default function OnboardPage() {
   const [name, setName] = useState("");
   const [age, setAge] = useState<number | "">("");
   const [gender, setGender] = useState("");
+  const [bio, setBio] = useState("");
 
   function toggleItem(id: string, list: string[], setList: (v: string[]) => void) {
     setList(list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
@@ -69,6 +70,7 @@ export default function OnboardPage() {
         city: city || null,
         age: age || null,
         gender: gender || null,
+        bio: bio || null,
         connection_preference: selectedConnections.join(",") || "any",
         health_goals: selectedReasons,
         onboarding_completed: true,
@@ -108,7 +110,7 @@ export default function OnboardPage() {
   const stepSubs: Record<Step, string> = {
     1: "Select all that apply",
     2: "Choose everything that feels comfortable",
-    3: "This helps us find the right companions",
+    3: "Add your details and a short introduction (optional)",
     4: "Please read carefully",
   };
 
@@ -382,6 +384,30 @@ export default function OnboardPage() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* About Me / Bio */}
+            <div>
+              <label style={{ display: "block", fontWeight: 600, fontSize: "0.95rem", marginBottom: "0.25rem", color: "#173124" }}>
+                About me (optional)
+              </label>
+              <p style={{ fontSize: "0.85rem", color: "#727973", marginBottom: "0.5rem" }}>
+                This is what companions will see on your profile. Share a little about yourself!
+              </p>
+              <textarea
+                value={bio}
+                onChange={(e) => setBio(e.target.value)}
+                placeholder="e.g. Retired teacher who loves gardening and long conversations over tea. I recently moved to Phoenix and I'm looking forward to making new friends..."
+                rows={4}
+                style={{
+                  width: "100%", border: "2px solid #D4C9A8", borderRadius: "0.75rem",
+                  padding: "0.875rem 1rem", fontSize: "1rem", color: "#173124",
+                  backgroundColor: "#FFFFFF", fontFamily: "var(--font-lexend), sans-serif",
+                  outline: "none", boxSizing: "border-box", resize: "vertical", lineHeight: 1.6,
+                }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = "#173124"; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = "#D4C9A8"; }}
+              />
             </div>
 
             {/* Interests */}
