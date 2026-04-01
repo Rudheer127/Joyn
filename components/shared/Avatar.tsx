@@ -40,11 +40,11 @@ function GenericSilhouette({ size }: { size: number }) {
   );
 }
 
-// Background colours by gender
+// Background colours by gender — all green-toned to match Joyn brand
 function getBgColor(gender?: string | null) {
-  if (gender === "female") return "linear-gradient(135deg, #8B5CF6 0%, #C084FC 100%)";
-  if (gender === "male") return "linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%)";
-  return "linear-gradient(135deg, #173124 0%, #2D5240 100%)";
+  if (gender === "female") return "linear-gradient(135deg, #2D7A5F 0%, #4CAF85 100%)";
+  if (gender === "male")   return "linear-gradient(135deg, #173124 0%, #2D5240 100%)";
+  return "linear-gradient(135deg, #3B6E55 0%, #5A9E7A 100%)";
 }
 
 export function Avatar({ avatarUrl, photoPublic = true, gender, name, size = 72, style }: AvatarProps) {
