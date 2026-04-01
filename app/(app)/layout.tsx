@@ -6,13 +6,14 @@ import { createClient } from "@/lib/supabase/client";
 import { CompanionWidget } from "@/components/companion/CompanionWidget";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard",  icon: "🏠" },
-  { href: "/match",     label: "My Matches", icon: "👥" },
-  { href: "/messages",  label: "Messages",   icon: "💬" },
-  { href: "/sessions",  label: "Catch-Ups",  icon: "📅" },
-  { href: "/events",    label: "Events",     icon: "📍" },
-  { href: "/consultation", label: "Chat with Jo", icon: "🌻" },
-  { href: "/profile",   label: "Profile",    icon: "👤" },
+  { href: "/dashboard",    label: "Dashboard",        icon: "🏠" },
+  { href: "/find",         label: "Find Companions",   icon: "🔍" },
+  { href: "/match",        label: "My Matches",        icon: "👥" },
+  { href: "/messages",     label: "Messages",          icon: "💬" },
+  { href: "/sessions",     label: "Catch-Ups",         icon: "📅" },
+  { href: "/events",       label: "Events",            icon: "📍" },
+  { href: "/consultation", label: "Chat with Jo",      icon: "🌻" },
+  { href: "/profile",      label: "Profile",           icon: "👤" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {

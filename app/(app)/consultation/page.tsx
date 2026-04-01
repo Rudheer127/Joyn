@@ -199,12 +199,20 @@ function ConsultationInner() {
         {messages.map((m) => {
           const textParts = m.parts.filter((p): p is { type: "text"; text: string } => p.type === "text");
           const toolParts = m.parts.filter((p) => (p.type as string).startsWith("tool-"));
-          const displayText = textParts.map((p) => p.text).join("");
+          const rawText = textParts.map((p) => p.text).join("");
+
+          // Break long assistant messages into readable paragraphs
+          const paragraphs = m.role === "assistant"
+            ? rawText
+                .split(/\n{2,}|(?<=[\.\!\?])\s{2,}/)  // split on blank lines or double-space after sentence
+                .map(s => s.trim())
+                .filter(Boolean)
+            : [rawText];
 
           return (
             <div key={m.id} style={{
               alignSelf: m.role === "user" ? "flex-end" : "flex-start",
-              maxWidth: "75%",
+              maxWidth: "78%",
               backgroundColor: m.role === "user" ? "#173124" : "#FFFFFF",
               color: m.role === "user" ? "#FFFFFF" : "#173124",
               padding: "1rem 1.25rem",
@@ -212,11 +220,16 @@ function ConsultationInner() {
               borderBottomRightRadius: m.role === "user" ? "0.25rem" : "1.5rem",
               borderBottomLeftRadius: m.role === "assistant" ? "0.25rem" : "1.5rem",
               boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-              fontSize: "1.1rem",
-              lineHeight: 1.4,
+              fontSize: "1.05rem",
+              lineHeight: 1.6,
               border: m.role === "assistant" ? "1px solid #E7E2D7" : "none"
             }}>
-              {displayText || (!toolParts.length && <span style={{ fontStyle: "italic", color: "#727973" }}>Processing...</span>)}
+              {paragraphs.length > 1
+                ? paragraphs.map((para, i) => (
+                    <p key={i} style={{ margin: i === 0 ? 0 : "0.75rem 0 0 0" }}>{para}</p>
+                  ))
+                : (rawText || (!toolParts.length && <span style={{ fontStyle:"italic", color:"#727973" }}>Processing...</span>))
+              }
               {toolParts.map((part, i) => {
                 const toolName = (part.type as string).slice("tool-".length);
                 return (
