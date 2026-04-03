@@ -32,7 +32,7 @@ const PRESET_OPTIONS = [
   "Help me find a friend",
   "I'm new, how does this work?",
   "Check my messages",
-  "I just want to talk",
+  "Explore the website",
 ];
 
 /**
@@ -449,7 +449,12 @@ export function UnifiedChatUI({
 
       {/* Messages */}
       <div style={messagesStyle}>
+        {/* Spacer to push messages to the bottom left so it doesn't look weirdly floating at the top */}
+        <div style={{ flexGrow: 1, minHeight: mode === "full" ? "10vh" : 0 }} />
         {messages.map((msg, idx) => {
+          // Hide redundant welcome bubble if we're showing the big welcome UI
+          if (messages.length <= 1 && mode === "full" && idx === 0) return null;
+
           const isUser = msg.role === "user";
           const rawText = msg.parts
             ?.filter((p: any) => p.type === "text")
@@ -581,45 +586,63 @@ export function UnifiedChatUI({
       </div>
 
       {/* Suggested Options */}
-      {suggestedOptions.length > 0 && !isStreaming && (
-        <div
-          style={{
-            padding: mode === "full" ? "1rem 2rem" : "12px 20px",
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "8px",
-            borderTop: "1px solid #E7E2D7",
-            backgroundColor: mode === "full" ? "#F8F3E8" : "#FFFFFF",
-          }}
-        >
-          {suggestedOptions.map((option) => (
-            <button
-              key={option.text}
-              onClick={() => handleSend(option.text)}
-              style={{
-                backgroundColor: "#FFFFFF",
-                color: "#173124",
-                border: "2px solid #E7E2D7",
-                padding: mode === "full" ? "0.75rem 1.25rem" : "6px 12px",
-                borderRadius: "2rem",
-                fontSize: mode === "full" ? "0.95rem" : "0.85rem",
-                cursor: "pointer",
-                transition: "all 0.2s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#173124";
-                e.currentTarget.style.backgroundColor = "#F8F3E8";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "#E7E2D7";
-                e.currentTarget.style.backgroundColor = "#FFFFFF";
-              }}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
-      )}
+      {(() => {
+        // Intercept suggestedOptions if the user specifically asked to explore the website
+        const lastUserMessage = [...messages].reverse().find(m => m.role === "user");
+        const lastUserText = lastUserMessage?.parts?.filter((p:any) => p.type==="text").map((p:any)=>p.text).join(" ") || "";
+        const isExploringWebsite = lastUserText === "Explore the website";
+        const activeSuggestedOptions = isExploringWebsite 
+          ? [
+              { label: "Find Companions", text: "What is the Find Companions section?" },
+              { label: "My Matches", text: "What is the My Matches section?" },
+              { label: "Messages", text: "What is the Messages section?" },
+              { label: "Events", text: "What is the Events section?" },
+              { label: "My Profile", text: "What is the My Profile section?" }
+            ]
+          : suggestedOptions;
+
+        if (activeSuggestedOptions.length === 0 || isStreaming) return null;
+
+        return (
+          <div
+            style={{
+              padding: mode === "full" ? "1rem 2rem" : "12px 20px",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px",
+              borderTop: "1px solid #E7E2D7",
+              backgroundColor: mode === "full" ? "#F8F3E8" : "#FFFFFF",
+            }}
+          >
+            {activeSuggestedOptions.map((option) => (
+              <button
+                key={option.text}
+                onClick={() => handleSend(option.text)}
+                style={{
+                  backgroundColor: "#FFFFFF",
+                  color: "#173124",
+                  border: "2px solid #E7E2D7",
+                  padding: mode === "full" ? "0.75rem 1.25rem" : "6px 12px",
+                  borderRadius: "2rem",
+                  fontSize: mode === "full" ? "0.95rem" : "0.85rem",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = "#173124";
+                  e.currentTarget.style.backgroundColor = "#F8F3E8";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = "#E7E2D7";
+                  e.currentTarget.style.backgroundColor = "#FFFFFF";
+                }}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        );
+      })()}
 
       {/* Input Area */}
       <div style={inputAreaStyle}>
