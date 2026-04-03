@@ -24,9 +24,9 @@ export async function GET(req: NextRequest) {
     if (error) throw error;
 
     // Filter options by context match
-    const filteredOptions = (options || []).filter(opt => {
+    const filteredOptions = (options || []).filter((opt: any) => {
       const contextMatch = opt.context_match || [];
-      return contextMatch.length === 0 || contextMatch.some(tag => contextTags.includes(tag));
+      return contextMatch.length === 0 || contextMatch.some((tag: string) => contextTags.includes(tag));
     });
 
     return NextResponse.json({

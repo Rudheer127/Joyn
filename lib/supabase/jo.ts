@@ -1,9 +1,39 @@
 import { createClient } from "@/lib/supabase/server";
-import { Database } from "@/types/database";
 
-type JoConversation = Database["public"]["Tables"]["jo_conversations"]["Row"];
-type JoMessage = Database["public"]["Tables"]["jo_messages"]["Row"];
-type JoConversationState = Database["public"]["Tables"]["jo_conversation_state"]["Row"];
+// Type definitions for Jo tables
+type JoConversation = {
+  id: string;
+  user_id: string;
+  status: string;
+  current_page?: string;
+  started_at?: string;
+  updated_at?: string;
+  last_message_at?: string;
+  workflow_step?: string;
+  workflow_context?: any;
+  created_at?: string;
+};
+
+type JoMessage = {
+  id: string;
+  conversation_id: string;
+  sender: string;
+  message_text: string;
+  message_type?: string;
+  metadata?: any;
+  created_at?: string;
+};
+
+type JoConversationState = {
+  conversation_id: string;
+  state_phase?: string;
+  last_intent?: string | null;
+  last_topic?: string | null;
+  workflow_step?: string;
+  suggested_options?: any[];
+  context?: any;
+  updated_at?: string;
+};
 
 /**
  * Get or create the active conversation for a user
@@ -208,9 +238,9 @@ export async function getContextualOptions(
 
   // Filter by context match
   if (contextTags.length > 0) {
-    return (data || []).filter((option) => {
+    return (data || []).filter((option: any) => {
       const matches = option.context_match || [];
-      return matches.some((tag) => contextTags.includes(tag));
+      return matches.some((tag: string) => contextTags.includes(tag));
     });
   }
 

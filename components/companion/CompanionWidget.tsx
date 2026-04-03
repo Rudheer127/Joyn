@@ -161,7 +161,7 @@ export function CompanionWidget() {
             body: JSON.stringify({
               conversationId,
               sender: msg.role === "user" ? "user" : "assistant",
-              messageText: msg.parts?.[0]?.text || (msg.parts as any)?.[0] || "",
+              messageText: ((msg.parts?.[0] as any)?.text || (msg.parts as any)?.[0]?.toString?.() || "").toString(),
               metadata: { parts: msg.parts },
             }),
           });
