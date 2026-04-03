@@ -78,7 +78,13 @@
       "Bash(git checkout:*)",
       "Bash(git commit:*)",
       "Bash(ls -la .env*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "mcp__7eec3f06-f474-43a6-9271-96b1b6c44eb6__apply_migration",
+      "Bash(npm test:*)",
+      "Bash(node -e \":*)",
+      "Read(//mnt/c/Users/rudhe/Downloads/**)",
+      "Bash(git -C 'C:\\\\Users\\\\rudhe\\\\Downloads\\\\Joyn' add -A)",
+      "Bash(git -C 'C:\\\\Users\\\\rudhe\\\\Downloads\\\\Joyn' commit -m \"fix: database migrations applied, intent classifier patterns corrected, tests passing\")"
     ]
   }
 }

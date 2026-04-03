@@ -50,16 +50,18 @@ const INTENT_PATTERNS: Record<IntentClass, {
   'provide_info': {
     keywords: [/\b(my|i|i'm|i am|i'm|we|our|mine|me|myself)\b.*\b(interest|hobby|goal|age|name|live|from|do|work)\b/i],
     phrases: [
-      /\b(my name is|i'm|i am|i live in|i'm from|i'm interested in|my interests are|my goal is|i enjoy)\b/i,
+      /\b(my name is|i live in|i'm from|i'm interested in|my interests are|my goal is|i enjoy|my goals are)\b/i,
       /\b(i like|i love|i prefer|i want|i need|i have|i'm looking for)\b/i,
     ],
     priority: 4
   },
   'emotional_support': {
-    keywords: [/\b(lonely|sad|depressed|anxious|worried|stressed|unhappy|down|struggling|hard|difficult|pain|hurt)\b/i],
+    keywords: [/\b(lonely|sad|depressed|anxious|worried|stressed|unhappy|down|struggling|hard|difficult|pain|hurt|feel|down|blue)\b/i],
     phrases: [
-      /\b(i feel|i'm feeling|i've been|feeling)\b.*(lonely|sad|depressed|anxious|worried|stressed|unhappy|down)/i,
-      /\b(it's hard|difficult|struggling|not doing well|having trouble|can't|couldn't)\b/i,
+      /\b(i feel|i'm feeling|i've been|feeling)\b.*(lonely|sad|depressed|anxious|worried|stressed|unhappy|down|blue|upset|bad)/i,
+      /\b(i'm|i am)\b.*(hard time|difficult|struggling|not doing well|having trouble|sad|lonely|down|upset|blue|bad)/i,
+      /\b(it's hard|life's hard|having a hard time|difficult|struggling|not doing well|having trouble|can't cope|couldn't cope)\b/i,
+      /^(i feel|i'm feeling|i've been|feeling).*(lonely|sad|bad|down|blue|upset|depressed|anxious|worried|stressed)/i,
     ],
     priority: 5
   },
@@ -164,16 +166,16 @@ export function classifyIntent(messageText: string): IntentClassification {
  */
 export function extractNavigationIntent(messageText: string): string | null {
   const navigationPatterns: Record<string, RegExp> = {
-    '/match': /\b(match|companion|companion page|find companion)\b/i,
-    '/messages': /\b(message|inbox|conversation|chat)\b/i,
-    '/events': /\b(event|activity|meetup|gathering)\b/i,
+    '/match': /\b(match|companion|companions|companion page|find companion)\b/i,
+    '/messages': /\bmessages?\b|\binbox\b|\bconversation\b|\bchat\b/i,
+    '/events': /\b(events?|activity|activities|meetup|gathering)\b/i,
     '/profile': /\b(profile|account|my profile)\b/i,
-    '/sessions': /\b(catch.?up|session|schedule|meeting)\b/i,
+    '/sessions': /\b(catch.?up|sessions?|schedule|meeting)\b/i,
     '/dashboard': /\b(dashboard|home|home page)\b/i,
   };
 
   // Check if this looks like a navigation request at all
-  const navIntent = /\b(go|take|open|show|find|navigate|view|visit)\b/i;
+  const navIntent = /\b(go|take|open|show|find|navigate|view|visit|bring|load)\b/i;
   if (!navIntent.test(messageText)) {
     return null;
   }
@@ -193,10 +195,10 @@ export function extractNavigationIntent(messageText: string): string | null {
  */
 export function extractTopic(messageText: string): string | null {
   const topics: Record<string, RegExp> = {
-    'matches': /\b(match|companion|profile|person|people)\b/i,
-    'events': /\b(event|activity|meetup|gathering|thing to do)\b/i,
-    'messages': /\b(message|conversation|chat|inbox|contact|reach out)\b/i,
-    'profile': /\b(profile|account|info|information|about|me)\b/i,
+    'match': /\b(matches?|companions?)\b/i,
+    'event': /\b(events?|activities?|meetup|gathering|thing to do)\b/i,
+    'message': /\bmessages?\b|\binbox\b|\bconversation\b|\bchat\b|\bcontact\b|\breach out\b/i,
+    'profile': /\b(profile|account|interests?|goals?|information|about|me)\b/i,
     'emotional': /\b(lonely|sad|depressed|anxious|worried|stressed|help|support|feeling)\b/i,
   };
 

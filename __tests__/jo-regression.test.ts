@@ -345,7 +345,7 @@ describe("Jo Regression Tests", () => {
       const messageTopics = [
         ["show me matches", "matches"],
         ["what events?", "events"],
-        ["my interests", "profile"],
+        ["send me a message", "messages"],
       ];
 
       messageTopics.forEach(([msg, expectedTopic]) => {
