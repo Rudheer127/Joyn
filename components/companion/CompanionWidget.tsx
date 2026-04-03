@@ -318,7 +318,7 @@ export function CompanionWidget() {
 
   const panelStyle: React.CSSProperties = isMobile
     ? { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, width: "100vw", height: "100vh", borderRadius: 0, zIndex: 200 }
-    : { position: "fixed", bottom: "24px", right: "24px", width: "min(400px, calc(100vw - 48px))", height: "min(580px, calc(100vh - 48px))", borderRadius: "2rem", zIndex: 200 };
+    : { position: "fixed", bottom: "24px", right: "24px", width: "480px", height: "680px", borderRadius: "2rem", zIndex: 200, boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)" };
 
   return (
     <>
@@ -391,21 +391,51 @@ export function CompanionWidget() {
                 </p>
               </div>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              aria-label="Close Jo companion chat"
-              style={{
-                width: "44px", height: "44px", borderRadius: "50%",
-                backgroundColor: "rgba(255,255,255,0.1)", border: "none",
-                color: "#FFFFFF", cursor: "pointer", display: "flex",
-                alignItems: "center", justifyContent: "center", fontSize: "1.375rem",
-                transition: "background-color 0.15s",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.2)"; }}
-              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"; }}
-            >
-              ×
-            </button>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <button
+                onClick={async () => {
+                  if (conversationId && !demoMode) {
+                    try {
+                      await fetch("/api/ai/jo/clear-conversation", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ conversationId }),
+                      });
+                    } catch (error) {
+                      console.error("Error clearing conversation:", error);
+                    }
+                  }
+                }}
+                aria-label="Clear conversation history"
+                title="Clear all messages"
+                style={{
+                  width: "44px", height: "44px", borderRadius: "50%",
+                  backgroundColor: "rgba(255,255,255,0.1)", border: "none",
+                  color: "#FFFFFF", cursor: "pointer", display: "flex",
+                  alignItems: "center", justifyContent: "center", fontSize: "1.125rem",
+                  transition: "background-color 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.2)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"; }}
+              >
+                🗑️
+              </button>
+              <button
+                onClick={() => setIsOpen(false)}
+                aria-label="Close Jo companion chat"
+                style={{
+                  width: "44px", height: "44px", borderRadius: "50%",
+                  backgroundColor: "rgba(255,255,255,0.1)", border: "none",
+                  color: "#FFFFFF", cursor: "pointer", display: "flex",
+                  alignItems: "center", justifyContent: "center", fontSize: "1.375rem",
+                  transition: "background-color 0.15s",
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.2)"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"; }}
+              >
+                ×
+              </button>
+            </div>
           </div>
 
           {/* Message list */}
