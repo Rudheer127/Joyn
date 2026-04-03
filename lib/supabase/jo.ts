@@ -27,8 +27,13 @@ type JoMessage = {
 type JoConversationState = {
   conversation_id: string;
   state_phase?: string;
+  intent_class?: string | null;
+  intent_confidence?: number;
   last_intent?: string | null;
   last_topic?: string | null;
+  last_action_hidden?: boolean;
+  state_transition_valid?: boolean;
+  action_gated_count?: number;
   workflow_step?: string;
   suggested_options?: any[];
   context?: any;
