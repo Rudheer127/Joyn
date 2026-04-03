@@ -61,21 +61,31 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const isDemoMode = req.cookies.get("joyn_demo_mode")?.value === "true";
 
-    if (!user) {
-      return new Response("Unauthorized", { status: 401 });
+    let userName = "Friend";
+    let userCity = "Phoenix";
+
+    if (isDemoMode) {
+      userName = "Margaret";
+      userCity = "Scottsdale";
+    } else {
+      const supabase = await createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        return new Response("Unauthorized", { status: 401 });
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("full_name, city")
+        .eq("id", user.id)
+        .single();
+
+      userName = profile?.full_name?.split(" ")[0] || "Friend";
+      userCity = profile?.city || "Phoenix";
     }
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("full_name, city")
-      .eq("id", user.id)
-      .single();
-
-    const userName = profile?.full_name?.split(" ")[0] || "Friend";
-    const userCity = profile?.city || "Phoenix";
 
     const body = await req.json();
     const { messages }: { messages: UIMessage[] } = body;
@@ -92,16 +102,16 @@ export async function POST(req: NextRequest) {
             preferredConnection: z.string().describe("What the user wants: e.g. 'phone calls', 'coffee meetups', 'walking buddy'.")
           }),
           execute: async ({ lonelinessReason, preferredConnection }) => {
+            if (isDemoMode) return "Profile saved (demo).";
+            const supabase = await createClient();
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return "Could not save — no session.";
             const { error } = await supabase.from("profiles").update({
               health_goals: [lonelinessReason],
               connection_preference: preferredConnection,
               onboarding_completed: true,
             }).eq("id", user.id);
-
-            if (error) {
-              console.error("Failed to update profile", error);
-            }
-
+            if (error) console.error("Failed to update profile", error);
             return "Profile saved successfully.";
           }
         }),

@@ -55,24 +55,18 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const isDemoMode = req.cookies.get("joyn_demo_mode")?.value === "true";
 
-    if (!user) {
-      return new Response("Unauthorized", { status: 401 });
-    }
-
-    const body = await req.json();
-    const { messages, pageContext, isDemo }: { messages: UIMessage[]; pageContext?: string; isDemo?: boolean } = body;
-
-    // Skip auth for demo mode
-    if (!isDemo) {
+    if (!isDemoMode) {
       const supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         return new Response("Unauthorized", { status: 401 });
       }
     }
+
+    const body = await req.json();
+    const { messages, pageContext }: { messages: UIMessage[]; pageContext?: string } = body;
 
     const result = streamText({
       model: COMPANION_MODEL,
