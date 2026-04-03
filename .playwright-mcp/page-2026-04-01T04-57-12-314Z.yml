@@ -1,0 +1,101 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "JOYN" [ref=e5] [cursor=pointer]:
+          - /url: /dashboard
+          - img "JOYN" [ref=e6]
+        - paragraph [ref=e7]: Connect. Belong. Age with Joy.
+      - navigation [ref=e8]:
+        - paragraph [ref=e9]: Navigation
+        - link "🏠 Dashboard" [ref=e10] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e11]: 🏠
+          - text: Dashboard
+        - link "🔍 Find Companions" [ref=e12] [cursor=pointer]:
+          - /url: /find
+          - generic [ref=e13]: 🔍
+          - text: Find Companions
+        - link "👥 My Matches" [ref=e14] [cursor=pointer]:
+          - /url: /match
+          - generic [ref=e15]: 👥
+          - text: My Matches
+        - link "💬 Messages" [ref=e16] [cursor=pointer]:
+          - /url: /messages
+          - generic [ref=e17]: 💬
+          - text: Messages
+        - link "📅 Catch-Ups" [ref=e18] [cursor=pointer]:
+          - /url: /sessions
+          - generic [ref=e20]: 📅
+          - text: Catch-Ups
+        - link "📍 Events" [ref=e21] [cursor=pointer]:
+          - /url: /events
+          - generic [ref=e22]: 📍
+          - text: Events
+        - link "🌻 Chat with Jo" [ref=e23] [cursor=pointer]:
+          - /url: /consultation
+          - generic [ref=e24]: 🌻
+          - text: Chat with Jo
+        - link "👤 Profile" [ref=e25] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=e26]: 👤
+          - text: Profile
+      - button "🚪 Sign Out" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]: 🚪
+        - text: Sign Out
+    - main [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - heading "Your Catch-Ups" [level=1] [ref=e33]
+          - button "+ Schedule a Catch-Up" [ref=e34] [cursor=pointer]
+        - generic [ref=e35]:
+          - paragraph [ref=e36]: Upcoming Catch-Ups
+          - generic [ref=e37]:
+            - generic [ref=e38]:
+              - generic [ref=e39]:
+                - paragraph [ref=e40]: Morning Coffee Chat with Margaret
+                - paragraph [ref=e41]: Tomorrow at 10:00 AM
+              - generic [ref=e42]:
+                - button "Join Catch-Up" [ref=e43] [cursor=pointer]
+                - button "Cancel" [ref=e44] [cursor=pointer]
+            - generic [ref=e45]:
+              - generic [ref=e46]:
+                - paragraph [ref=e47]: Watching Jeopardy Together with Robert
+                - paragraph [ref=e48]: Thursday, April 3 at 8:30 AM
+              - generic [ref=e49]:
+                - button "Join Catch-Up" [ref=e50] [cursor=pointer]
+                - button "Cancel" [ref=e51] [cursor=pointer]
+            - generic [ref=e52]:
+              - generic [ref=e53]:
+                - paragraph [ref=e54]: Book Club Call with Dorothy
+                - paragraph [ref=e55]: Saturday, April 5 at 9:00 AM
+              - generic [ref=e56]:
+                - button "Join Catch-Up" [ref=e57] [cursor=pointer]
+                - button "Cancel" [ref=e58] [cursor=pointer]
+        - generic [ref=e59]:
+          - paragraph [ref=e60]: Past Meetups
+          - generic [ref=e61]:
+            - generic [ref=e62]: 🌻
+            - generic [ref=e63]:
+              - paragraph [ref=e64]: 3 Weeks of Connection!
+              - paragraph [ref=e65]: You've stayed in touch every week for 3 weeks. Keep it up!
+          - generic [ref=e66]:
+            - generic [ref=e67]:
+              - generic [ref=e68]:
+                - paragraph [ref=e69]: Phone Call Check-in with Margaret
+                - paragraph [ref=e70]: March 26 at 10:00 AM
+              - generic [ref=e71]: ✓ Completed
+            - generic [ref=e72]:
+              - generic [ref=e73]:
+                - paragraph [ref=e74]: Card Game Night with Robert
+                - paragraph [ref=e75]: March 24 at 8:30 AM
+              - generic [ref=e76]: ✓ Completed
+            - generic [ref=e77]:
+              - generic [ref=e78]:
+                - paragraph [ref=e79]: Morning Coffee Chat with Dorothy
+                - paragraph [ref=e80]: March 22 at 9:00 AM
+              - generic [ref=e81]: ✓ Completed
+    - button "Open Jo companion chat" [ref=e82] [cursor=pointer]:
+      - generic [ref=e83]: Jo
+  - button "Open Next.js Dev Tools" [ref=e90] [cursor=pointer]:
+    - img [ref=e91]

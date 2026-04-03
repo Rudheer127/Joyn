@@ -1,0 +1,204 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "JOYN" [ref=e5] [cursor=pointer]:
+          - /url: /dashboard
+          - img "JOYN" [ref=e6]
+        - paragraph [ref=e7]: Connect. Belong. Age with Joy.
+      - navigation [ref=e8]:
+        - paragraph [ref=e9]: Navigation
+        - link "🏠 Dashboard" [ref=e10] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e11]: 🏠
+          - text: Dashboard
+        - link "🔍 Find Companions" [ref=e12] [cursor=pointer]:
+          - /url: /find
+          - generic [ref=e13]: 🔍
+          - text: Find Companions
+        - link "👥 My Matches" [ref=e14] [cursor=pointer]:
+          - /url: /match
+          - generic [ref=e15]: 👥
+          - text: My Matches
+        - link "💬 Messages" [ref=e16] [cursor=pointer]:
+          - /url: /messages
+          - generic [ref=e17]: 💬
+          - text: Messages
+        - link "📅 Catch-Ups" [ref=e18] [cursor=pointer]:
+          - /url: /sessions
+          - generic [ref=e19]: 📅
+          - text: Catch-Ups
+        - link "📍 Events" [ref=e20] [cursor=pointer]:
+          - /url: /events
+          - generic [ref=e21]: 📍
+          - text: Events
+        - link "🌻 Chat with Jo" [ref=e22] [cursor=pointer]:
+          - /url: /consultation
+          - generic [ref=e23]: 🌻
+          - text: Chat with Jo
+        - link "👤 Profile" [ref=e24] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=e26]: 👤
+          - text: Profile
+      - button "🎬 Exit Demo" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]: 🎬
+        - text: Exit Demo
+    - main [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]: 🎬
+          - paragraph [ref=e34]:
+            - text: Demo Mode — You're exploring as
+            - strong [ref=e35]: Margaret, 68, Scottsdale
+            - text: (first-time user)
+        - button "Exit Demo" [ref=e36] [cursor=pointer]
+      - generic [ref=e37]:
+        - heading "Your Profile" [level=1] [ref=e38]
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - generic "Margaret's profile silhouette" [ref=e41]:
+              - img [ref=e42]
+            - generic [ref=e45]:
+              - paragraph [ref=e46]: Profile Photo
+              - generic [ref=e47] [cursor=pointer]: 📷 Upload Photo
+              - button "🔓 Photo visible to matches" [ref=e49] [cursor=pointer]:
+                - generic [ref=e50]: 🔓
+                - generic [ref=e51]: Photo visible to matches
+              - paragraph [ref=e52]: Matches can see your photo. This builds trust.
+          - generic [ref=e53]:
+            - paragraph [ref=e54]: Basic Information
+            - generic [ref=e55]:
+              - generic [ref=e56]:
+                - generic [ref=e57]: Full Name
+                - textbox "Your full name" [ref=e58]: Margaret
+              - generic [ref=e59]:
+                - generic [ref=e60]: I identify as
+                - combobox [ref=e61] [cursor=pointer]:
+                  - option "Prefer not to say"
+                  - option "Female" [selected]
+                  - option "Male"
+                  - option "Non-binary"
+              - generic [ref=e62]:
+                - generic [ref=e63]: Age
+                - spinbutton [ref=e64]: "68"
+            - generic [ref=e65]:
+              - generic [ref=e66]: City (Arizona)
+              - combobox [ref=e67] [cursor=pointer]:
+                - option "Phoenix"
+                - option "Scottsdale" [selected]
+                - option "Mesa"
+                - option "Tempe"
+                - option "Chandler"
+                - option "Gilbert"
+                - option "Peoria"
+                - option "Glendale"
+                - option "Sun City"
+                - option "Sun City West"
+                - option "Surprise"
+                - option "Ahwatukee"
+                - option "Fountain Hills"
+                - option "Cave Creek"
+                - option "Carefree"
+                - option "Sedona"
+                - option "Flagstaff"
+                - option "Tucson"
+                - option "Green Valley"
+                - option "Sierra Vista"
+          - generic [ref=e68]:
+            - paragraph [ref=e69]: About Me
+            - paragraph [ref=e70]: This is what companions see on your profile — share your story, what you enjoy, and what you're looking for.
+            - textbox "e.g. Retired nurse from Scottsdale who loves gardening, long walks and a good cup of tea. I recently moved closer to my grandchildren and I'm looking forward to making new friends in the area..." [ref=e71]: Retired school teacher who loves gardening, morning walks, and a good cup of tea. I moved here two years ago to be closer to my grandchildren and I'm looking forward to meeting new people and building new friendships.
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - paragraph [ref=e74]: Interests
+              - paragraph [ref=e75]: Tap to select the activities you enjoy
+              - generic [ref=e76]:
+                - button "Chair Yoga" [ref=e77] [cursor=pointer]
+                - button "Walking" [ref=e78] [cursor=pointer]
+                - button "Stretching" [ref=e79] [cursor=pointer]
+                - button "Light Resistance" [ref=e80] [cursor=pointer]
+                - button "Dancing" [ref=e81] [cursor=pointer]
+                - button "Swimming" [ref=e82] [cursor=pointer]
+                - button "Cycling" [ref=e83] [cursor=pointer]
+                - button "Gardening" [ref=e84] [cursor=pointer]
+                - button "Cooking" [ref=e85] [cursor=pointer]
+                - button "Painting" [ref=e86] [cursor=pointer]
+                - button "Photography" [ref=e87] [cursor=pointer]
+                - button "Music" [ref=e88] [cursor=pointer]
+                - button "Card Games" [ref=e89] [cursor=pointer]
+                - button "Board Games" [ref=e90] [cursor=pointer]
+                - button "Chess" [ref=e91] [cursor=pointer]
+                - button "Reading" [ref=e92] [cursor=pointer]
+                - button "History" [ref=e93] [cursor=pointer]
+                - button "Movies" [ref=e94] [cursor=pointer]
+                - button "Birdwatching" [ref=e95] [cursor=pointer]
+                - button "Volunteering" [ref=e96] [cursor=pointer]
+                - button "Travel" [ref=e97] [cursor=pointer]
+                - button "Grandchildren" [ref=e98] [cursor=pointer]
+                - button "Pets" [ref=e99] [cursor=pointer]
+            - generic [ref=e100]:
+              - paragraph [ref=e101]: Life Stage
+              - paragraph [ref=e102]: Which best describes where you are in life right now?
+              - generic [ref=e103]:
+                - button "Recently retired" [ref=e104] [cursor=pointer]
+                - button "Widowed" [ref=e105] [cursor=pointer]
+                - button "Recently relocated" [ref=e106] [cursor=pointer]
+                - button "Empty nester" [ref=e107] [cursor=pointer]
+                - button "Long-time resident" [ref=e108] [cursor=pointer]
+                - button "Other" [ref=e109] [cursor=pointer]
+            - generic [ref=e110]:
+              - paragraph [ref=e111]: Social Comfort Level
+              - paragraph [ref=e112]: What kind of social setting feels most comfortable to you?
+              - generic [ref=e113]:
+                - button "I prefer 1-on-1 time" [ref=e114] [cursor=pointer]
+                - button "I enjoy small groups (2–4)" [ref=e115] [cursor=pointer]
+                - button "I'm comfortable in larger groups" [ref=e116] [cursor=pointer]
+            - generic [ref=e117]:
+              - paragraph [ref=e118]: What I'm Looking For
+              - paragraph [ref=e119]: Select all that apply
+              - generic [ref=e120]:
+                - button "An activity buddy" [ref=e121] [cursor=pointer]
+                - button "Someone to talk to" [ref=e122] [cursor=pointer]
+                - button "Group events and outings" [ref=e123] [cursor=pointer]
+                - button "Volunteer opportunities" [ref=e124] [cursor=pointer]
+            - generic [ref=e125]:
+              - paragraph [ref=e126]: Availability
+              - paragraph [ref=e127]: When are you generally free to connect?
+              - generic [ref=e128]:
+                - button "Mornings" [ref=e129] [cursor=pointer]
+                - button "Afternoons" [ref=e130] [cursor=pointer]
+                - button "Evenings" [ref=e131] [cursor=pointer]
+                - button "Weekends" [ref=e132] [cursor=pointer]
+            - generic [ref=e133]:
+              - paragraph [ref=e134]: I want to connect with
+              - paragraph [ref=e135]: Choose who you'd like to be matched with
+              - generic [ref=e136]:
+                - button "Same Age" [ref=e137] [cursor=pointer]
+                - button "Younger People" [ref=e138] [cursor=pointer]
+                - button "Both" [ref=e139] [cursor=pointer]
+            - generic [ref=e140]:
+              - paragraph [ref=e141]: How Active Are You?
+              - paragraph [ref=e142]: How would you describe your current activity level? (This is optional.)
+              - generic [ref=e143]:
+                - button "Beginner" [ref=e144] [cursor=pointer]
+                - button "Moderate" [ref=e145] [cursor=pointer]
+                - button "Active" [ref=e146] [cursor=pointer]
+            - generic [ref=e147]:
+              - paragraph [ref=e148]: What Are You Hoping to Find?
+              - textbox "What matters most to you right now? e.g., someone to have coffee with, a person to call on hard days, a friend who gets what this stage of life is like." [ref=e149]: Reduce loneliness Stay active Make new friends
+            - generic [ref=e150]:
+              - paragraph [ref=e151]: Emergency Contact
+              - paragraph [ref=e152]: Optional but recommended for your safety
+              - generic [ref=e153]:
+                - generic [ref=e154]:
+                  - generic [ref=e155]: Contact Name
+                  - textbox "Full name" [ref=e156]
+                - generic [ref=e157]:
+                  - generic [ref=e158]: Phone Number
+                  - textbox "(602) 555-0100" [ref=e159]
+          - button "Save Profile" [ref=e160] [cursor=pointer]
+    - button "Open Jo companion chat" [ref=e161] [cursor=pointer]:
+      - generic [ref=e162]: Jo
+  - button "Open Next.js Dev Tools" [ref=e169] [cursor=pointer]:
+    - img [ref=e170]
+  - alert [ref=e173]

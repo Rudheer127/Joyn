@@ -1,0 +1,209 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "JOYN" [ref=e5] [cursor=pointer]:
+          - /url: /dashboard
+          - img "JOYN" [ref=e6]
+        - paragraph [ref=e7]: Connect. Belong. Age with Joy.
+      - navigation [ref=e8]:
+        - paragraph [ref=e9]: Navigation
+        - link "🏠 Dashboard" [ref=e10] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e11]: 🏠
+          - text: Dashboard
+        - link "🔍 Find Companions" [ref=e12] [cursor=pointer]:
+          - /url: /find
+          - generic [ref=e13]: 🔍
+          - text: Find Companions
+        - link "👥 My Matches" [ref=e14] [cursor=pointer]:
+          - /url: /match
+          - generic [ref=e16]: 👥
+          - text: My Matches
+        - link "💬 Messages" [ref=e17] [cursor=pointer]:
+          - /url: /messages
+          - generic [ref=e18]: 💬
+          - text: Messages
+        - link "📅 Catch-Ups" [ref=e19] [cursor=pointer]:
+          - /url: /sessions
+          - generic [ref=e20]: 📅
+          - text: Catch-Ups
+        - link "📍 Events" [ref=e21] [cursor=pointer]:
+          - /url: /events
+          - generic [ref=e22]: 📍
+          - text: Events
+        - link "🌻 Chat with Jo" [ref=e23] [cursor=pointer]:
+          - /url: /consultation
+          - generic [ref=e24]: 🌻
+          - text: Chat with Jo
+        - link "👤 Profile" [ref=e25] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=e26]: 👤
+          - text: Profile
+      - button "🎬 Exit Demo" [ref=e28] [cursor=pointer]:
+        - generic [ref=e29]: 🎬
+        - text: Exit Demo
+    - main [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]: 🎬
+          - paragraph [ref=e34]:
+            - text: Demo Mode — You're exploring as
+            - strong [ref=e35]: Margaret, 68, Scottsdale
+            - text: (first-time user)
+        - button "Exit Demo" [ref=e36] [cursor=pointer]
+      - generic [ref=e37]:
+        - generic [ref=e38]:
+          - paragraph [ref=e39]: Matched for you
+          - heading "My Matches" [level=1] [ref=e40]
+          - paragraph [ref=e41]: 6 people who could be a wonderful companion
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - generic [ref=e45]:
+              - generic "Dorothy's profile silhouette" [ref=e46]:
+                - img [ref=e47]
+              - generic [ref=e50]:
+                - paragraph [ref=e51]: Dorothy, 71
+                - paragraph [ref=e52]: 📍 8 min away
+              - generic [ref=e53]:
+                - paragraph [ref=e54]: 94%
+                - paragraph [ref=e55]: compatibility
+            - generic [ref=e56]:
+              - generic [ref=e57]: Walking
+              - generic [ref=e58]: Gardening
+              - generic [ref=e59]: Reading
+              - generic [ref=e60]: Cooking
+            - generic [ref=e61]: ☕ Best for coffee catch-ups
+            - generic [ref=e62]:
+              - paragraph [ref=e63]: 🌻 Why you'd be great together
+              - paragraph [ref=e64]: You both love morning walks and quiet one-on-one conversations. Dorothy is also a passionate gardener — you two will have a lot to talk about over tea.
+            - generic [ref=e65]:
+              - link "Say Hello to Dorothy →" [ref=e66] [cursor=pointer]:
+                - /url: /messages/dm-001
+              - link "View Full Profile" [ref=e67] [cursor=pointer]:
+                - /url: /match/dm-001
+          - generic [ref=e68]:
+            - generic [ref=e69]:
+              - generic "Robert's profile silhouette" [ref=e70]:
+                - img [ref=e71]
+              - generic [ref=e74]:
+                - paragraph [ref=e75]: Robert, 72
+                - paragraph [ref=e76]: 📍 22 min away
+              - generic [ref=e77]:
+                - paragraph [ref=e78]: 88%
+                - paragraph [ref=e79]: compatibility
+            - generic [ref=e80]:
+              - generic [ref=e81]: Birdwatching
+              - generic [ref=e82]: Walking
+              - generic [ref=e83]: History
+              - generic [ref=e84]: Chess
+            - generic [ref=e85]: 💬 Start with a message
+            - generic [ref=e86]:
+              - paragraph [ref=e87]: 🌻 Why you'd be great together
+              - paragraph [ref=e88]: Robert shares your love of birdwatching and long walks. He's thoughtful, easy to talk to, and values honest conversation — just like you.
+            - generic [ref=e89]:
+              - link "Say Hello to Robert →" [ref=e90] [cursor=pointer]:
+                - /url: /messages/dm-002
+              - link "View Full Profile" [ref=e91] [cursor=pointer]:
+                - /url: /match/dm-002
+          - generic [ref=e92]:
+            - generic [ref=e93]:
+              - generic "Carol's profile silhouette" [ref=e94]:
+                - img [ref=e95]
+              - generic [ref=e98]:
+                - paragraph [ref=e99]: Carol, 66
+                - paragraph [ref=e100]: 📍 18 min away
+              - generic [ref=e101]:
+                - paragraph [ref=e102]: 85%
+                - paragraph [ref=e103]: compatibility
+            - generic [ref=e104]:
+              - generic [ref=e105]: Reading
+              - generic [ref=e106]: Music
+              - generic [ref=e107]: Cooking
+              - generic [ref=e108]: Movies
+            - generic [ref=e109]: ☕ Best for coffee catch-ups
+            - generic [ref=e110]:
+              - paragraph [ref=e111]: 🌻 Why you'd be great together
+              - paragraph [ref=e112]: You and Carol are both building social lives in a new chapter — she's warm, patient, and loves the same quiet activities you enjoy.
+            - generic [ref=e113]:
+              - link "Say Hello to Carol →" [ref=e114] [cursor=pointer]:
+                - /url: /messages/dm-003
+              - link "View Full Profile" [ref=e115] [cursor=pointer]:
+                - /url: /match/dm-003
+          - generic [ref=e116]:
+            - generic [ref=e117]:
+              - generic "Harold's profile silhouette" [ref=e118]:
+                - img [ref=e119]
+              - generic [ref=e122]:
+                - paragraph [ref=e123]: Harold, 74
+                - paragraph [ref=e124]: 📍 30 min away
+              - generic [ref=e125]:
+                - paragraph [ref=e126]: 81%
+                - paragraph [ref=e127]: compatibility
+            - generic [ref=e128]:
+              - generic [ref=e129]: Card Games
+              - generic [ref=e130]: Reading
+              - generic [ref=e131]: History
+              - generic [ref=e132]: Grandchildren
+            - generic [ref=e133]: 💬 Start with a message
+            - generic [ref=e134]:
+              - paragraph [ref=e135]: 🌻 Why you'd be great together
+              - paragraph [ref=e136]: Harold's warmth and love of connection mirrors yours. You'll both appreciate someone who values real conversation over surface-level small talk.
+            - generic [ref=e137]:
+              - link "Say Hello to Harold →" [ref=e138] [cursor=pointer]:
+                - /url: /messages/dm-004
+              - link "View Full Profile" [ref=e139] [cursor=pointer]:
+                - /url: /match/dm-004
+          - generic [ref=e140]:
+            - generic [ref=e141]:
+              - generic "Patricia's profile silhouette" [ref=e142]:
+                - img [ref=e143]
+              - generic [ref=e146]:
+                - paragraph [ref=e147]: Patricia, 63
+                - paragraph [ref=e148]: 📍 12 min away
+              - generic [ref=e149]:
+                - paragraph [ref=e150]: 79%
+                - paragraph [ref=e151]: compatibility
+            - generic [ref=e152]:
+              - generic [ref=e153]: Cooking
+              - generic [ref=e154]: Gardening
+              - generic [ref=e155]: Volunteering
+              - generic [ref=e156]: Dancing
+            - generic [ref=e157]: 💬 Start with a message
+            - generic [ref=e158]:
+              - paragraph [ref=e159]: 🌻 Why you'd be great together
+              - paragraph [ref=e160]: Patricia lives nearby and shares your passion for gardening. She's active in the community and would love a companion for weekend meetups.
+            - generic [ref=e161]:
+              - link "Say Hello to Patricia →" [ref=e162] [cursor=pointer]:
+                - /url: /messages/dm-005
+              - link "View Full Profile" [ref=e163] [cursor=pointer]:
+                - /url: /match/dm-005
+          - generic [ref=e164]:
+            - generic [ref=e165]:
+              - generic "George's profile silhouette" [ref=e166]:
+                - img [ref=e167]
+              - generic [ref=e170]:
+                - paragraph [ref=e171]: George, 69
+                - paragraph [ref=e172]: 📍 35 min away
+              - generic [ref=e173]:
+                - paragraph [ref=e174]: 76%
+                - paragraph [ref=e175]: compatibility
+            - generic [ref=e176]:
+              - generic [ref=e177]: Walking
+              - generic [ref=e178]: Swimming
+              - generic [ref=e179]: Music
+              - generic [ref=e180]: Movies
+            - generic [ref=e181]: 📞 Great for regular phone calls
+            - generic [ref=e182]:
+              - paragraph [ref=e183]: 🌻 Why you'd be great together
+              - paragraph [ref=e184]: George is gentle, creative, and emotionally open — the kind of person who makes every conversation feel easy and unhurried.
+            - generic [ref=e185]:
+              - link "Say Hello to George →" [ref=e186] [cursor=pointer]:
+                - /url: /messages/dm-006
+              - link "View Full Profile" [ref=e187] [cursor=pointer]:
+                - /url: /match/dm-006
+    - button "Open Jo companion chat" [ref=e188] [cursor=pointer]:
+      - generic [ref=e189]: Jo
+  - button "Open Next.js Dev Tools" [ref=e196] [cursor=pointer]:
+    - img [ref=e197]
+  - alert [ref=e200]

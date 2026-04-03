@@ -1,0 +1,184 @@
+- generic [ref=e1]:
+  - generic [ref=e6] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e7]:
+      - img [ref=e8]
+    - generic [ref=e116]:
+      - button "Open issues overlay" [ref=e117]:
+        - generic [ref=e118]:
+          - generic [ref=e119]: "0"
+          - generic [ref=e120]: "1"
+        - generic [ref=e121]: Issue
+      - button "Collapse issues badge" [ref=e122]:
+        - img [ref=e123]
+  - generic [ref=e11]:
+    - complementary [ref=e12]:
+      - generic [ref=e13]:
+        - link "JOYN" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img "JOYN" [ref=e15]
+        - paragraph [ref=e16]: Connect. Belong. Age with Joy.
+      - navigation [ref=e17]:
+        - paragraph [ref=e18]: Navigation
+        - link "🏠 Dashboard" [ref=e19] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e21]: 🏠
+          - text: Dashboard
+        - link "🔍 Find Companions" [ref=e22] [cursor=pointer]:
+          - /url: /find
+          - generic [ref=e23]: 🔍
+          - text: Find Companions
+        - link "👥 My Matches" [ref=e24] [cursor=pointer]:
+          - /url: /match
+          - generic [ref=e25]: 👥
+          - text: My Matches
+        - link "💬 Messages" [ref=e26] [cursor=pointer]:
+          - /url: /messages
+          - generic [ref=e27]: 💬
+          - text: Messages
+        - link "📅 Catch-Ups" [ref=e28] [cursor=pointer]:
+          - /url: /sessions
+          - generic [ref=e29]: 📅
+          - text: Catch-Ups
+        - link "📍 Events" [ref=e30] [cursor=pointer]:
+          - /url: /events
+          - generic [ref=e31]: 📍
+          - text: Events
+        - link "🌻 Chat with Jo" [ref=e32] [cursor=pointer]:
+          - /url: /consultation
+          - generic [ref=e33]: 🌻
+          - text: Chat with Jo
+        - link "👤 Profile" [ref=e34] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=e35]: 👤
+          - text: Profile
+      - button "🎬 Exit Demo" [ref=e125] [cursor=pointer]:
+        - generic [ref=e38]: 🎬
+        - text: Exit Demo
+    - main [ref=e39]:
+      - generic [ref=e126]:
+        - generic [ref=e127]:
+          - generic [ref=e128]: 🎬
+          - paragraph [ref=e129]:
+            - text: Demo Mode — You're exploring as
+            - strong [ref=e130]: Margaret, 68, Scottsdale
+            - text: (first-time user)
+        - button "Exit Demo" [ref=e131] [cursor=pointer]
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - img "JOYN" [ref=e42]
+          - link "Update my profile →" [ref=e43] [cursor=pointer]:
+            - /url: /profile
+        - generic [ref=e44]:
+          - generic [ref=e45]:
+            - heading "Good evening, Margaret 👋" [level=1] [ref=e132]
+            - paragraph [ref=e47]: How would you like to connect today?
+          - generic [ref=e48]:
+            - link "🤝 Find Companions Meet someone who truly understands you." [ref=e49] [cursor=pointer]:
+              - /url: /find
+              - generic [ref=e50]: 🤝
+              - generic [ref=e51]:
+                - paragraph [ref=e52]: Find Companions
+                - paragraph [ref=e53]: Meet someone who truly understands you.
+            - link "💬 My Messages Continue a conversation with a companion." [ref=e54] [cursor=pointer]:
+              - /url: /messages
+              - generic [ref=e55]: 💬
+              - generic [ref=e56]:
+                - paragraph [ref=e57]: My Messages
+                - paragraph [ref=e58]: Continue a conversation with a companion.
+            - link "📅 Schedule a Catch-Up Plan your next phone call or coffee chat." [ref=e59] [cursor=pointer]:
+              - /url: /sessions
+              - generic [ref=e60]: 📅
+              - generic [ref=e61]:
+                - paragraph [ref=e62]: Schedule a Catch-Up
+                - paragraph [ref=e63]: Plan your next phone call or coffee chat.
+            - link "📍 Events Near Me Find activities happening in Arizona." [ref=e64] [cursor=pointer]:
+              - /url: /events
+              - generic [ref=e65]: 📍
+              - generic [ref=e66]:
+                - paragraph [ref=e67]: Events Near Me
+                - paragraph [ref=e68]: Find activities happening in Arizona.
+            - link "👥 My Matches View your curated companion list." [ref=e69] [cursor=pointer]:
+              - /url: /match
+              - generic [ref=e70]: 👥
+              - generic [ref=e71]:
+                - paragraph [ref=e72]: My Matches
+                - paragraph [ref=e73]: View your curated companion list.
+            - link "👤 My Profile Update your story and preferences." [ref=e74] [cursor=pointer]:
+              - /url: /profile
+              - generic [ref=e75]: 👤
+              - generic [ref=e76]:
+                - paragraph [ref=e77]: My Profile
+                - paragraph [ref=e78]: Update your story and preferences.
+          - generic [ref=e79]:
+            - heading "How are you feeling today?" [level=2] [ref=e80]
+            - paragraph [ref=e81]: Pick an emoji, then share more if you'd like — Jo will respond.
+            - generic [ref=e82]:
+              - paragraph [ref=e83]: Daily Check-In
+              - paragraph [ref=e84]: How are you feeling today?
+              - generic [ref=e85]:
+                - button "Not great" [ref=e86] [cursor=pointer]:
+                  - generic [ref=e87]: 😔
+                  - generic [ref=e88]: Not great
+                - button "Okay" [ref=e89] [cursor=pointer]:
+                  - generic [ref=e90]: 😐
+                  - generic [ref=e91]: Okay
+                - button "Pretty good" [ref=e92] [cursor=pointer]:
+                  - generic [ref=e93]: 🙂
+                  - generic [ref=e94]: Pretty good
+                - button "Good" [ref=e95] [cursor=pointer]:
+                  - generic [ref=e96]: 😊
+                  - generic [ref=e97]: Good
+                - button "Great" [ref=e98] [cursor=pointer]:
+                  - generic [ref=e99]: 🌟
+                  - generic [ref=e100]: Great
+            - generic [ref=e101]:
+              - textbox "Want to share more? (optional) — e.g. I'm feeling a bit lonely today..." [ref=e102]
+              - generic [ref=e103]:
+                - button "I just want to talk" [ref=e104] [cursor=pointer]
+                - button "Find people near me" [ref=e105] [cursor=pointer]
+                - button "Suggest an activity" [ref=e106] [cursor=pointer]
+                - button "I feel overwhelmed" [ref=e107] [cursor=pointer]
+              - button "Let's Chat with Jo →" [ref=e108] [cursor=pointer]
+          - generic [ref=e109]:
+            - generic [ref=e110]: 🎬
+            - generic [ref=e111]:
+              - strong [ref=e112]: You're in Demo Mode
+              - text: — explore freely as Margaret. Try
+              - link "Find Companions" [ref=e133] [cursor=pointer]:
+                - /url: /find
+              - text: ", check your"
+              - link "Matches" [ref=e134] [cursor=pointer]:
+                - /url: /match
+              - text: ", or chat with"
+              - link "Jo" [ref=e135] [cursor=pointer]:
+                - /url: /consultation
+              - text: . Everything is ready for you.
+    - dialog "Jo companion chat" [ref=e137]:
+      - generic [ref=e138]:
+        - generic [ref=e139]:
+          - generic [ref=e140]: Jo
+          - generic [ref=e142]:
+            - paragraph [ref=e143]: Jo
+            - paragraph [ref=e144]: Here on Dashboard · Always ready to help
+        - button "Close Jo companion chat" [ref=e145] [cursor=pointer]: ×
+      - generic "Conversation with Jo" [ref=e146]:
+        - generic [ref=e147]:
+          - generic [ref=e148]:
+            - generic [ref=e149]: Jo
+            - generic [ref=e150]: Hi there! 😊 I'm Jo, your Joyn guide. I can see you're on the Dashboard page — how can I help you today? Use the quick buttons below, or just type anything.
+          - generic [ref=e151]:
+            - paragraph [ref=e152]: Quick questions
+            - generic [ref=e153]:
+              - button "I feel lonely" [ref=e154] [cursor=pointer]
+              - button "I feel weak" [ref=e155] [cursor=pointer]
+              - button "Show my matches" [ref=e156] [cursor=pointer]
+              - button "Go to messages" [ref=e157] [cursor=pointer]
+              - button "Find events" [ref=e158] [cursor=pointer]
+              - button "Update my profile" [ref=e159] [cursor=pointer]
+              - button "I need help" [ref=e160] [cursor=pointer]
+      - generic [ref=e161]:
+        - button "Speak to Jo" [ref=e162] [cursor=pointer]: 🎤
+        - textbox "Message Jo" [active] [ref=e163]:
+          - /placeholder: Type or use mic…
+        - button "Send message" [disabled] [ref=e164]: ↑
+  - alert [ref=e136]

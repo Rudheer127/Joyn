@@ -1,0 +1,29 @@
+- generic [active] [ref=e1]:
+  - button "Open Next.js Dev Tools" [ref=e164] [cursor=pointer]:
+    - img [ref=e165]
+  - alert [ref=e168]
+  - generic [ref=e170]:
+    - generic [ref=e171]:
+      - link "JOYN" [ref=e172] [cursor=pointer]:
+        - /url: /
+        - img "JOYN" [ref=e173]
+      - paragraph [ref=e174]: Find Your Person. Age with Joy.
+    - heading "Welcome back" [level=1] [ref=e175]
+    - paragraph [ref=e176]: Sign in to reconnect with your companions
+    - paragraph [ref=e177]: For Visitors / Demo
+    - button "🌻 Try the Demo Account" [ref=e178] [cursor=pointer]
+    - generic [ref=e181]: Or sign in to your account
+    - generic [ref=e183]:
+      - button "📱 Phone Number" [ref=e184] [cursor=pointer]
+      - button "✉️ Email" [ref=e185] [cursor=pointer]
+    - generic [ref=e186]:
+      - generic [ref=e187]:
+        - generic [ref=e188]: Your Phone Number
+        - textbox "Your Phone Number" [ref=e189]:
+          - /placeholder: (602) 555-1234
+        - paragraph [ref=e190]: We'll send a 6-digit code. No password needed!
+      - button "Send Me a Code →" [disabled] [ref=e191] [cursor=pointer]
+    - paragraph [ref=e192]:
+      - text: Don't have an account?
+      - link "Join Free" [ref=e193] [cursor=pointer]:
+        - /url: /sign-up

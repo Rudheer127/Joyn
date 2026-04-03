@@ -1,0 +1,196 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e6] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e7]:
+      - img [ref=e8]
+    - generic [ref=e116]:
+      - button "Open issues overlay" [ref=e117]:
+        - generic [ref=e118]:
+          - generic [ref=e119]: "0"
+          - generic [ref=e120]: "1"
+        - generic [ref=e121]: Issue
+      - button "Collapse issues badge" [ref=e122]:
+        - img [ref=e123]
+  - generic [ref=e11]:
+    - complementary [ref=e12]:
+      - generic [ref=e13]:
+        - link "JOYN" [ref=e14] [cursor=pointer]:
+          - /url: /dashboard
+          - img "JOYN" [ref=e15]
+        - paragraph [ref=e16]: Connect. Belong. Age with Joy.
+      - navigation [ref=e17]:
+        - paragraph [ref=e18]: Navigation
+        - link "🏠 Dashboard" [ref=e19] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=e21]: 🏠
+          - text: Dashboard
+        - link "🔍 Find Companions" [ref=e22] [cursor=pointer]:
+          - /url: /find
+          - generic [ref=e23]: 🔍
+          - text: Find Companions
+        - link "👥 My Matches" [ref=e24] [cursor=pointer]:
+          - /url: /match
+          - generic [ref=e25]: 👥
+          - text: My Matches
+        - link "💬 Messages" [ref=e26] [cursor=pointer]:
+          - /url: /messages
+          - generic [ref=e27]: 💬
+          - text: Messages
+        - link "📅 Catch-Ups" [ref=e28] [cursor=pointer]:
+          - /url: /sessions
+          - generic [ref=e29]: 📅
+          - text: Catch-Ups
+        - link "📍 Events" [ref=e30] [cursor=pointer]:
+          - /url: /events
+          - generic [ref=e31]: 📍
+          - text: Events
+        - link "🌻 Chat with Jo" [ref=e32] [cursor=pointer]:
+          - /url: /consultation
+          - generic [ref=e33]: 🌻
+          - text: Chat with Jo
+        - link "👤 Profile" [ref=e34] [cursor=pointer]:
+          - /url: /profile
+          - generic [ref=e35]: 👤
+          - text: Profile
+      - button "🎬 Exit Demo" [ref=e125] [cursor=pointer]:
+        - generic [ref=e38]: 🎬
+        - text: Exit Demo
+    - main [ref=e39]:
+      - generic [ref=e126]:
+        - generic [ref=e127]:
+          - generic [ref=e128]: 🎬
+          - paragraph [ref=e129]:
+            - text: Demo Mode — You're exploring as
+            - strong [ref=e130]: Margaret, 68, Scottsdale
+            - text: (first-time user)
+        - button "Exit Demo" [ref=e131] [cursor=pointer]
+      - generic [ref=e166]:
+        - heading "Events Near You in Arizona" [level=1] [ref=e167]
+        - paragraph [ref=e168]: Community activities, fitness classes, and social gatherings across the Valley.
+        - generic [ref=e169]:
+          - paragraph [ref=e170]: 📍 Near you · Phoenix
+          - generic [ref=e171]:
+            - button "Desert Botanical Garden Morning Walk · Monday, April 7" [ref=e172] [cursor=pointer]
+            - 'button "Volunteer: Read to Kids at Library · Saturday, April 26" [ref=e173] [cursor=pointer]'
+        - generic [ref=e174]:
+          - combobox [ref=e175] [cursor=pointer]:
+            - option "All cities" [selected]
+            - option "Chandler"
+            - option "Phoenix"
+            - option "Sun City"
+            - option "Scottsdale"
+            - option "Tempe"
+            - option "Mesa"
+            - option "Peoria"
+            - option "Gilbert"
+            - option "Glendale"
+          - generic [ref=e176]:
+            - button "All" [ref=e177] [cursor=pointer]
+            - button "Fitness" [ref=e178] [cursor=pointer]
+            - button "Social" [ref=e179] [cursor=pointer]
+            - button "Educational" [ref=e180] [cursor=pointer]
+            - button "Support" [ref=e181] [cursor=pointer]
+            - button "Hobby" [ref=e182] [cursor=pointer]
+            - button "Volunteer" [ref=e183] [cursor=pointer]
+            - button "Intergenerational" [ref=e184] [cursor=pointer]
+        - generic [ref=e185]:
+          - generic [ref=e186]:
+            - generic [ref=e187]: Fitness
+            - heading "Chandler Senior Center Yoga" [level=3] [ref=e188]
+            - paragraph [ref=e189]: 📅 Thursday, April 3 at 9:00 AM
+            - paragraph [ref=e190]: 📍 Chandler Community Center, Chandler, AZ
+            - paragraph [ref=e191]: Gentle yoga class designed for seniors, focusing on balance, flexibility, and relaxation. All levels welcome.
+            - button "Learn More" [ref=e192] [cursor=pointer]
+          - generic [ref=e193]:
+            - generic [ref=e194]: Fitness
+            - heading "Desert Botanical Garden Morning Walk" [level=3] [ref=e195]
+            - paragraph [ref=e196]: 📅 Monday, April 7 at 7:30 AM
+            - paragraph [ref=e197]: 📍 Desert Botanical Garden, Phoenix, AZ
+            - paragraph [ref=e198]: Guided nature walk through the stunning desert landscape. Easy pace, 1.5 miles total. Admission required.
+            - button "Learn More" [ref=e199] [cursor=pointer]
+          - generic [ref=e200]:
+            - generic [ref=e201]: Social
+            - heading "Sun City Card & Board Games" [level=3] [ref=e202]
+            - paragraph [ref=e203]: 📅 Wednesday, April 9 at 1:00 PM
+            - paragraph [ref=e204]: 📍 Sun City Recreation Center, Sun City, AZ
+            - paragraph [ref=e205]: Weekly afternoon of cards, board games, and great conversation. Newcomers always welcome!
+            - button "Learn More" [ref=e206] [cursor=pointer]
+          - generic [ref=e207]:
+            - generic [ref=e208]: Educational
+            - heading "Scottsdale Senior Art Class" [level=3] [ref=e209]
+            - paragraph [ref=e210]: 📅 Friday, April 11 at 10:00 AM
+            - paragraph [ref=e211]: 📍 Scottsdale Arts Center, Scottsdale, AZ
+            - paragraph [ref=e212]: Watercolor painting for beginners and experienced artists alike. Supplies provided. Limited seats.
+            - button "Learn More" [ref=e213] [cursor=pointer]
+          - generic [ref=e214]:
+            - generic [ref=e215]: Social
+            - heading "Tempe Town Lake Walk & Coffee" [level=3] [ref=e216]
+            - paragraph [ref=e217]: 📅 Saturday, April 12 at 8:00 AM
+            - paragraph [ref=e218]: 📍 Tempe Town Lake, Tempe, AZ
+            - paragraph [ref=e219]: Casual lakeside walk followed by coffee at a nearby café. A wonderful way to meet neighbors and stay active.
+            - button "Learn More" [ref=e220] [cursor=pointer]
+          - generic [ref=e221]:
+            - generic [ref=e222]: Educational
+            - heading "Mesa Senior Nutrition & Health Talk" [level=3] [ref=e223]
+            - paragraph [ref=e224]: 📅 Tuesday, April 15 at 11:00 AM
+            - paragraph [ref=e225]: 📍 Mesa Senior Center, Mesa, AZ
+            - paragraph [ref=e226]: Free presentation by a registered dietitian on healthy eating for seniors. Q&A session included.
+            - button "Learn More" [ref=e227] [cursor=pointer]
+          - generic [ref=e228]:
+            - generic [ref=e229]: Fitness
+            - heading "Peoria Chair Exercise Class" [level=3] [ref=e230]
+            - paragraph [ref=e231]: 📅 Thursday, April 17 at 9:30 AM
+            - paragraph [ref=e232]: 📍 Peoria Community Center, Peoria, AZ
+            - paragraph [ref=e233]: Low-impact seated exercise class great for improving strength and coordination without stress on joints.
+            - button "Learn More" [ref=e234] [cursor=pointer]
+          - generic [ref=e235]:
+            - generic [ref=e236]: Social
+            - heading "Gilbert Community Potluck Dinner" [level=3] [ref=e237]
+            - paragraph [ref=e238]: 📅 Saturday, April 19 at 5:30 PM
+            - paragraph [ref=e239]: 📍 Gilbert Heritage District, Gilbert, AZ
+            - paragraph [ref=e240]: Bring a dish to share and meet your neighbors! Live music and community raffle. Free admission.
+            - button "Learn More" [ref=e241] [cursor=pointer]
+          - generic [ref=e242]:
+            - generic [ref=e243]: Support
+            - heading "Widows & Widowers Support Circle" [level=3] [ref=e244]
+            - paragraph [ref=e245]: 📅 Monday, April 21 at 2:00 PM
+            - paragraph [ref=e246]: 📍 Mesa Senior Center, Mesa, AZ
+            - paragraph [ref=e247]: A warm, welcoming space to share, listen, and connect with others who understand. Facilitated by a licensed counselor. All are welcome.
+            - button "Learn More" [ref=e248] [cursor=pointer]
+          - generic [ref=e249]:
+            - generic [ref=e250]: Social
+            - heading "Morning Coffee & Conversation" [level=3] [ref=e251]
+            - paragraph [ref=e252]: 📅 Wednesday, April 23 at 9:00 AM
+            - paragraph [ref=e253]: 📍 Old Town Coffee House, Scottsdale, AZ
+            - paragraph [ref=e254]: Drop in for a cup of coffee and easy conversation with friendly neighbors. No agenda, just good company.
+            - button "Learn More" [ref=e255] [cursor=pointer]
+          - generic [ref=e256]:
+            - generic [ref=e257]: Hobby
+            - heading "Chess Club for Seniors" [level=3] [ref=e258]
+            - paragraph [ref=e259]: 📅 Friday, April 25 at 1:00 PM
+            - paragraph [ref=e260]: 📍 Chandler Public Library, Chandler, AZ
+            - paragraph [ref=e261]: Weekly chess club open to all skill levels. Beginners welcome — boards and pieces provided. Great for the mind!
+            - button "Learn More" [ref=e262] [cursor=pointer]
+          - generic [ref=e263]:
+            - generic [ref=e264]: Volunteer
+            - 'heading "Volunteer: Read to Kids at Library" [level=3] [ref=e265]'
+            - paragraph [ref=e266]: 📅 Saturday, April 26 at 10:00 AM
+            - paragraph [ref=e267]: 📍 Phoenix Public Library, Phoenix, AZ
+            - paragraph [ref=e268]: Share the joy of reading with children ages 4–8. No experience needed — just a love of stories and a warm smile.
+            - button "Learn More" [ref=e269] [cursor=pointer]
+          - generic [ref=e270]:
+            - generic [ref=e271]: Intergenerational
+            - heading "Intergenerational Cooking Class" [level=3] [ref=e272]
+            - paragraph [ref=e273]: 📅 Tuesday, April 29 at 5:30 PM
+            - paragraph [ref=e274]: 📍 Tempe Community Center, Tempe, AZ
+            - paragraph [ref=e275]: Cook alongside ASU students and share family recipes. A fun evening of food, laughter, and cross-generational connection.
+            - button "Learn More" [ref=e276] [cursor=pointer]
+          - generic [ref=e277]:
+            - generic [ref=e278]: Hobby
+            - 'heading "Book Club: Arizona Authors" [level=3] [ref=e279]'
+            - paragraph [ref=e280]: 📅 Thursday, May 1 at 3:00 PM
+            - paragraph [ref=e281]: 📍 Glendale Public Library, Glendale, AZ
+            - paragraph [ref=e282]: "Monthly book club celebrating Arizona writers. This month: a local mystery set in the Sonoran Desert. New members always welcome."
+            - button "Learn More" [ref=e283] [cursor=pointer]
+    - button "Open Jo companion chat" [ref=e284] [cursor=pointer]:
+      - generic [ref=e285]: Jo
+  - alert [ref=e136]

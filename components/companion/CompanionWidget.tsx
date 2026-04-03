@@ -27,28 +27,61 @@ function getPageContext(pathname: string) {
   return { label: "Joyn", hint: "Help the user navigate or find a companion." };
 }
 
-// ─── Quick action chips ────────────────────────────────────────────────────
-const QUICK_ACTIONS = [
-  { label: "I feel lonely",        text: "I feel lonely today",               nav: null },
-  { label: "I feel weak",          text: "I've been feeling weak lately",      nav: null },
-  { label: "Show my matches",      text: "Show me my matches",                  nav: "/match" },
-  { label: "Go to messages",       text: "Take me to my messages",              nav: "/messages" },
-  { label: "Find events",          text: "Find events near me",                 nav: "/events" },
-  { label: "Update my profile",    text: "I want to update my profile",         nav: "/profile" },
-  { label: "I need help",          text: "I need help with something",          nav: null },
-];
+/**
+ * Generate dynamic suggestions based on conversation state
+ * (NOT hardcoded presets)
+ */
+function generateSuggestedOptions(
+  statePhase: string,
+  lastTopic: string | null,
+  lastIntent: string | null
+): Array<{ label: string; text: string; nav?: string | null }> {
+  // Generate suggestions based on state and context
+  const suggestions: Array<{ label: string; text: string; nav?: string | null }> = [];
 
-// ─── Client-side user intent → navigation ───────────────────────────────────
-// Two-part match: msg needs a NAV verb AND a page keyword (anywhere in sentence)
-const NAV_INTENT = /\b(go|open|take|show|find|navigate|view|see|bring|load|visit|check)\b/i;
-const USER_NAV_PATTERNS: { keyword: RegExp; route: string }[] = [
-  { keyword: /\bevents?\b/i,                                        route: "/events"   },
-  { keyword: /\bmatches\b|\bcompanions?\b|\bcompanion\s+page\b/i,   route: "/match"    },
-  { keyword: /\bmessages?\b|\binbox\b|\bconversations?\b/i,         route: "/messages" },
-  { keyword: /\bprofile\b/i,                                        route: "/profile"  },
-  { keyword: /\bdashboard\b|\bhome\s+page\b/i,                      route: "/dashboard"},
-  { keyword: /\bcatch.?ups?\b|\bsessions?\b|\bschedule\b/i,         route: "/sessions" },
-];
+  if (statePhase === "greeting") {
+    suggestions.push(
+      { label: "Show my matches", text: "Can you show me some matches?" },
+      { label: "What are events?", text: "What events are happening near me?" },
+      { label: "Help me get started", text: "Help me get started with Joyn" }
+    );
+  } else if (statePhase === "awaiting_choice") {
+    if (lastTopic === "matches") {
+      suggestions.push(
+        { label: "More matches", text: "Show me more matches" },
+        { label: "Message one", text: "I'd like to message someone" }
+      );
+    } else if (lastTopic === "events") {
+      suggestions.push(
+        { label: "More events", text: "Show me more events" },
+        { label: "Tell me more", text: "Tell me about one of these events" }
+      );
+    } else {
+      suggestions.push(
+        { label: "Browse matches", text: "Show me some matches" },
+        { label: "Find events", text: "What events are near me?" }
+      );
+    }
+  } else if (statePhase === "answering_question") {
+    suggestions.push(
+      { label: "Next steps", text: "What should I do next?" },
+      { label: "Go back", text: "Take me back to the beginning" }
+    );
+  } else if (statePhase === "clarifying") {
+    suggestions.push(
+      { label: "Let me clarify", text: "Let me explain that better" },
+      { label: "Try again", text: "Can you ask that differently?" }
+    );
+  } else {
+    // Default fallback for other states
+    suggestions.push(
+      { label: "Show my matches", text: "Show me my matches" },
+      { label: "Find events", text: "Find events near me" }
+    );
+  }
+
+  return suggestions.slice(0, 4); // Limit to 4 suggestions
+}
 
 export function CompanionWidget() {
   const pathname = usePathname();
@@ -62,7 +95,7 @@ export function CompanionWidget() {
   const [demoMode] = useState(() => isDemoMode());
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [isLoadingConversation, setIsLoadingConversation] = useState(true);
-  const [suggestedOptions, setSuggestedOptions] = useState(QUICK_ACTIONS);
+  const [suggestedOptions, setSuggestedOptions] = useState<Array<{ label: string; text: string; nav?: string | null }>>([]);
   const [conversationState, setConversationState] = useState<any>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -75,7 +108,7 @@ export function CompanionWidget() {
     role: "assistant",
     parts: [{
       type: "text",
-      text: `Hi there! 😊 I'm Jo, your Joyn guide. I can see you're on the ${pageLabel} page — how can I help you today? Use the quick buttons below, or just type anything.`,
+      text: `Hi there! 😊 I'm Jo, your Joyn guide. I can see you're on the ${pageLabel} page — how can I help you today?`,
     }],
   };
 
@@ -84,8 +117,8 @@ export function CompanionWidget() {
     async function initializeConversation() {
       try {
         if (demoMode) {
-          // Demo mode: use a demo conversation ID
           setConversationId("demo-" + pathname.replace(/\//g, "-"));
+          setSuggestedOptions(generateSuggestedOptions("greeting", null, null));
           setIsLoadingConversation(false);
           return;
         }
@@ -102,7 +135,6 @@ export function CompanionWidget() {
           return;
         }
 
-        // Start conversation via API
         const response = await fetch("/api/ai/jo/start-conversation", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -117,6 +149,7 @@ export function CompanionWidget() {
 
         const data = await response.json();
         setConversationId(data.conversation_id);
+        setSuggestedOptions(generateSuggestedOptions("greeting", null, null));
       } catch (error) {
         console.error("Error initializing conversation:", error);
       } finally {
@@ -151,7 +184,6 @@ export function CompanionWidget() {
 
     async function syncMessages() {
       for (const msg of messages) {
-        // Skip welcome message and already-synced messages
         if (msg.id === "companion-welcome" || msg.id?.startsWith("__")) continue;
 
         try {
@@ -174,12 +206,10 @@ export function CompanionWidget() {
     syncMessages();
   }, [messages, conversationId, isLoadingConversation, demoMode]);
 
-  // Fetch conversation state and suggested options
+  // Fetch conversation state and generate suggestions
   useEffect(() => {
     async function fetchConversationState() {
       if (!conversationId || demoMode) {
-        // Use default quick actions for demo mode
-        setSuggestedOptions(QUICK_ACTIONS);
         return;
       }
 
@@ -190,24 +220,15 @@ export function CompanionWidget() {
         const data = await response.json();
         setConversationState(data.state);
 
-        // Generate context tags for suggested options
-        const contextTags = [data.state?.state_phase || "greeting"];
-        if (data.state?.last_topic) contextTags.push(data.state.last_topic);
+        // Generate suggestions based on unified state
+        const statePhase = data.state?.state_phase || "greeting";
+        const lastTopic = data.state?.last_topic || null;
+        const lastIntent = data.state?.last_intent || null;
 
-        // Fetch suggested options from database
-        const optionsResponse = await fetch(`/api/ai/jo/get-options?context=${contextTags.join(",")}`);
-        if (optionsResponse.ok) {
-          const optionsData = await optionsResponse.json();
-          const mappedOptions = optionsData.options.map((opt: any) => ({
-            label: opt.label,
-            text: opt.action_payload?.question || opt.label,
-            nav: null,
-          }));
-          setSuggestedOptions(mappedOptions.slice(0, 5)); // Limit to 5 options
-        }
+        const generatedOptions = generateSuggestedOptions(statePhase, lastTopic, lastIntent);
+        setSuggestedOptions(generatedOptions);
       } catch (error) {
         console.error("Error fetching conversation state:", error);
-        setSuggestedOptions(QUICK_ACTIONS);
       }
     }
 
@@ -243,23 +264,13 @@ export function CompanionWidget() {
 
   const lastNavRef = useRef<string | null>(null);
 
-  // ── Text-based navigation keywords (fallback if tool call doesn't fire) ──
-  const NAV_KEYWORDS: { patterns: RegExp[]; route: string }[] = [
-    { patterns: [/\bmatches\b/i, /\bcompanions?\b/i, /\/match\b/i],  route: "/match" },
-    { patterns: [/\bmessages\b/i, /\/messages\b/i],                   route: "/messages" },
-    { patterns: [/\bevents\b/i, /\/events\b/i],                       route: "/events" },
-    { patterns: [/\bprofile\b/i, /\/profile\b/i],                     route: "/profile" },
-    { patterns: [/\bcatch.?ups?\b/i, /\bsessions\b/i],                route: "/sessions" },
-    // NOTE: dashboard intentionally last and no broad /home/ to avoid false positives
-    { patterns: [/\bdashboard\b/i, /\/dashboard\b/i],                 route: "/dashboard" },
-  ];
-
+  // Navigation detection
   useEffect(() => {
     const lastMessage = messages[messages.length - 1] as any;
     if (!lastMessage || lastMessage.role !== "assistant") return;
     if (lastMessage.id === lastNavRef.current) return;
 
-    // ── Primary: tool invocation detection (v6 pattern: tool-<toolName>) ──
+    // Tool invocation detection (v6 pattern: tool-<toolName>)
     const toolParts = lastMessage.parts?.filter((p: any) => p.type?.startsWith("tool-")) || [];
     if (toolParts.length > 0) {
       const navPart = toolParts.find((p: any) => p.type === "tool-navigateTo");
@@ -273,17 +284,25 @@ export function CompanionWidget() {
       }
     }
 
-    // ── Fallback: keyword scan in message text ──
+    // Fallback: keyword scan in message text
     const text = (lastMessage.parts ?? [])
       .filter((p: any) => p.type === "text")
       .map((p: any) => p.text ?? "")
       .join(" ");
 
-    // Only act on navigation-intent phrases (avoid false positives)
     const isNavIntent = /taking you|heading (there|over)|opening|navigating|going to|let.?s go/i.test(text);
     if (isNavIntent) {
-      for (const { patterns, route } of NAV_KEYWORDS) {
-        if (patterns.some((rx) => rx.test(text)) && pathname !== route) {
+      const navPatterns: Record<string, RegExp> = {
+        '/match': /\b(match|companion)\b/i,
+        '/messages': /\b(message|inbox)\b/i,
+        '/events': /\b(event|activity)\b/i,
+        '/profile': /\b(profile|account)\b/i,
+        '/sessions': /\b(catch.?up|session)\b/i,
+        '/dashboard': /\b(dashboard|home)\b/i,
+      };
+
+      for (const [route, pattern] of Object.entries(navPatterns)) {
+        if (pattern.test(text) && pathname !== route) {
           lastNavRef.current = lastMessage.id;
           setTimeout(() => { router.push(route); setIsOpen(false); }, 1200);
           return;
@@ -296,32 +315,13 @@ export function CompanionWidget() {
     const msg = (text ?? inputValue).trim();
     if (!msg || isStreaming) return;
 
-    // ── Client-side navigation intercept ──
-    // Jo sends the message to AI AND navigates immediately if intent is clear
-    if (NAV_INTENT.test(msg)) {
-      for (const { keyword, route } of USER_NAV_PATTERNS) {
-        if (keyword.test(msg) && pathname !== route) {
-          sendMessage({ text: msg });
-          setInputValue("");
-          setTimeout(() => { router.push(route); setIsOpen(false); }, 700);
-          return;
-        }
-      }
-    }
-
     sendMessage({ text: msg });
     setInputValue("");
     inputRef.current?.focus();
   }
 
-  function handleQuickAction(action: typeof QUICK_ACTIONS[0]) {
+  function handleQuickAction(action: typeof suggestedOptions[0]) {
     handleSend(action.text);
-    if (action.nav) {
-      setTimeout(() => {
-        router.push(action.nav!);
-        setIsOpen(false);
-      }, 1200);
-    }
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -397,272 +397,127 @@ export function CompanionWidget() {
         <div
           ref={panelRef}
           role="dialog"
-          aria-label="Jo companion chat"
-          aria-modal="true"
+          aria-labelledby="jo-title"
           style={{
             ...panelStyle,
-            backgroundColor: "#FEF9ED",
-            border: isMobile ? "none" : "2px solid #C2C8C2",
-            display: "flex", flexDirection: "column",
-            boxShadow: isMobile ? "none" : "0 8px 40px rgba(23,49,36,0.2)",
-            overflow: "hidden", fontFamily: "var(--font-lexend), sans-serif",
+            display: "flex", flexDirection: "column", backgroundColor: "#FFFFFF", color: "#1a1a1a",
+            fontFamily: "var(--font-epilogue), sans-serif",
           }}
         >
-          {/* Header */}
+          {/* ── Header ── */}
           <div style={{
-            backgroundColor: "#173124", padding: "1rem 1.25rem",
-            display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0,
+            padding: "16px 20px", borderBottom: "1px solid #e0e0e0",
+            display: "flex", alignItems: "center", justifyContent: "space-between",
           }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <div style={{
-                width: "44px", height: "44px", borderRadius: "50%",
-                backgroundColor: "rgba(255,255,255,0.15)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontFamily: "var(--font-epilogue), serif", fontWeight: 700, fontSize: "1rem",
-                color: "#FFFFFF", flexShrink: 0, position: "relative",
-              }}>
-                Jo
-                <span style={{
-                  position: "absolute", bottom: "2px", right: "2px",
-                  width: "10px", height: "10px", borderRadius: "50%",
-                  backgroundColor: "#4CAF50", border: "2px solid #173124",
-                }} />
-              </div>
-              <div>
-                <p style={{ color: "#FFFFFF", fontWeight: 600, fontSize: "1.125rem", lineHeight: 1.2, margin: 0 }}>Jo</p>
-                <p style={{ color: "rgba(255,255,255,0.65)", fontSize: "0.8rem", margin: 0 }}>
-                  Here on {pageLabel} · Always ready to help
-                </p>
-              </div>
-            </div>
-            <div style={{ display: "flex", gap: "0.5rem" }}>
-              <button
-                onClick={async () => {
-                  if (conversationId && !demoMode) {
-                    try {
-                      await fetch("/api/ai/jo/clear-conversation", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ conversationId }),
-                      });
-                    } catch (error) {
-                      console.error("Error clearing conversation:", error);
-                    }
-                  }
-                }}
-                aria-label="Clear conversation history"
-                title="Clear all messages"
-                style={{
-                  width: "44px", height: "44px", borderRadius: "50%",
-                  backgroundColor: "rgba(255,255,255,0.1)", border: "none",
-                  color: "#FFFFFF", cursor: "pointer", display: "flex",
-                  alignItems: "center", justifyContent: "center", fontSize: "1.125rem",
-                  transition: "background-color 0.15s",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.2)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"; }}
-              >
-                🗑️
-              </button>
+            <h2 id="jo-title" style={{ margin: 0, fontSize: "1.25rem", fontWeight: 700, color: "#173124" }}>
+              Jo
+            </h2>
+            <div style={{ display: "flex", gap: "8px" }}>
               <button
                 onClick={() => setIsOpen(false)}
-                aria-label="Close Jo companion chat"
+                aria-label="Close"
                 style={{
-                  width: "44px", height: "44px", borderRadius: "50%",
-                  backgroundColor: "rgba(255,255,255,0.1)", border: "none",
-                  color: "#FFFFFF", cursor: "pointer", display: "flex",
-                  alignItems: "center", justifyContent: "center", fontSize: "1.375rem",
-                  transition: "background-color 0.15s",
+                  background: "none", border: "none", cursor: "pointer", padding: "4px",
+                  fontSize: "1.5rem", color: "#666",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.2)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "rgba(255,255,255,0.1)"; }}
               >
-                ×
+                ✕
               </button>
             </div>
           </div>
 
-          {/* Message list */}
-          <div
-            aria-live="polite"
-            aria-label="Conversation with Jo"
-            style={{
-              flex: 1, overflowY: "auto", padding: "1.25rem",
-              display: "flex", flexDirection: "column", gap: "1rem",
-            }}
-          >
-            {messages.map((message, index) => {
-              const isBot = message.role === "assistant";
-              const text = message.parts
-                .filter((p): p is { type: "text"; text: string } => p.type === "text")
-                .map((p) => p.text)
-                .join("");
-
+          {/* ── Messages ── */}
+          <div style={{
+            flex: 1, overflowY: "auto", padding: "16px 20px", display: "flex",
+            flexDirection: "column", gap: "12px",
+          }}>
+            {messages.map((msg, idx) => {
+              const isUser = msg.role === "user";
               return (
-                <div key={message.id} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  <div
-                    style={{
-                    display: "flex",
-                    flexDirection: isBot ? "row" : "row-reverse",
-                    alignItems: "flex-end", gap: "0.5rem",
-                  }}
-                >
-                  {isBot && (
-                    <div style={{
-                      width: "34px", height: "34px", borderRadius: "50%",
-                      backgroundColor: "#173124", color: "#FFFFFF",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontFamily: "var(--font-epilogue), serif", fontWeight: 700,
-                      fontSize: "0.75rem", flexShrink: 0,
-                    }}>
-                      Jo
-                    </div>
-                  )}
+                <div key={msg.id || idx} style={{ display: "flex", justifyContent: isUser ? "flex-end" : "flex-start" }}>
                   <div style={{
-                    maxWidth: "80%",
-                    backgroundColor: isBot ? "#E7E2D7" : "#173124",
-                    color: isBot ? "#173124" : "#FFFFFF",
-                    border: isBot ? "2px solid #C2C8C2" : "none",
-                    borderRadius: isBot ? "0.375rem 1.5rem 1.5rem 1.5rem" : "1.5rem 0.375rem 1.5rem 1.5rem",
-                    padding: "0.875rem 1.125rem",
-                    fontSize: "1rem",
-                    lineHeight: 1.65,
-                    // hide the bubble entirely if it has no content yet (streaming dots cover it)
-                    display: (!text && isBot && index === messages.length - 1 && isStreaming) ? "none" : undefined,
+                    maxWidth: "85%", padding: "10px 14px", borderRadius: "12px",
+                    backgroundColor: isUser ? "#173124" : "#f0f0f0",
+                    color: isUser ? "#FFFFFF" : "#1a1a1a",
+                    wordWrap: "break-word",
                   }}>
-                    {text || (
-                      (message as any).parts?.some((p: any) => p.type?.startsWith("tool-"))
-                        ? "🌻 Taking you there now…"
-                        : isBot ? "🌻 One moment…" : ""
+                    {msg.parts && Array.isArray(msg.parts) ? (
+                      msg.parts.map((p: any, i: number) => {
+                        if (p.type === "text") return <span key={i}>{p.text}</span>;
+                        if (p.type?.startsWith("tool-")) return null; // Hide tool calls
+                        return null;
+                      })
+                    ) : (
+                      <span>{msg.content}</span>
                     )}
                   </div>
                 </div>
-
-                {/* Inline Quick Questions after the very first welcome message */}
-                {index === 0 && messages.length < 3 && (
-                  <div style={{ paddingLeft: "42px", marginTop: "0.5rem" }}>
-                    <p style={{
-                      fontSize: "0.7rem", fontWeight: 700, color: "#727973",
-                      textTransform: "uppercase", letterSpacing: "0.06em",
-                      margin: "0 0 0.5rem 0"
-                    }}>Quick questions</p>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem" }}>
-                      {QUICK_ACTIONS.map((action) => (
-                        <button
-                          key={action.label}
-                          onClick={() => handleQuickAction(action)}
-                          style={{
-                            backgroundColor: "#FFFFFF",
-                            border: "1.5px solid #C2C8C2",
-                            borderRadius: "2rem",
-                            padding: "0.35rem 0.85rem",
-                            fontSize: "0.85rem",
-                            color: "#173124",
-                            cursor: "pointer",
-                            fontFamily: "var(--font-lexend), sans-serif",
-                            fontWeight: 500,
-                            whiteSpace: "nowrap",
-                            transition: "background-color 0.15s, border-color 0.15s",
-                          }}
-                          onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = "#F8F3E8"; e.currentTarget.style.borderColor = "#173124"; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = "#FFFFFF"; e.currentTarget.style.borderColor = "#C2C8C2"; }}
-                        >
-                          {action.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
               );
             })}
-
-            {/* Typing indicator */}
-            {isStreaming && (
-              <div style={{ display: "flex", alignItems: "flex-end", gap: "0.5rem" }}>
-                <div style={{
-                  width: "34px", height: "34px", borderRadius: "50%",
-                  backgroundColor: "#173124", color: "#FFFFFF",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontFamily: "var(--font-epilogue), serif", fontWeight: 700, fontSize: "0.75rem", flexShrink: 0,
-                }}>Jo</div>
-                <div style={{
-                  backgroundColor: "#E7E2D7", border: "2px solid #C2C8C2",
-                  borderRadius: "0.375rem 1.5rem 1.5rem 1.5rem",
-                  padding: "0.875rem 1.125rem", display: "flex", gap: "0.35rem", alignItems: "center",
-                }}>
-                  {[0, 1, 2].map((i) => (
-                    <div key={i} style={{
-                      width: "7px", height: "7px", borderRadius: "50%",
-                      backgroundColor: "#727973",
-                      animation: `jo-dot 1.2s ease ${i * 0.2}s infinite alternate`,
-                    }} />
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div ref={bottomRef} />
           </div>
 
-          {/* Input area */}
-          <div style={{
-            padding: "0.75rem 1rem",
-            borderTop: "2px solid #C2C8C2",
-            backgroundColor: "#F8F3E8",
-            display: "flex", gap: "0.5rem", alignItems: "flex-end", flexShrink: 0,
-          }}>
-            {/* Mic button */}
-            <button
-              onClick={toggleMic}
-              aria-label={isListening ? "Stop voice input" : "Speak to Jo"}
-              title={isListening ? "Listening… tap to stop" : "Tap to speak"}
-              style={{
-                width: "48px", height: "48px", borderRadius: "50%", flexShrink: 0,
-                backgroundColor: isListening ? "#E53E3E" : "#E7E2D7",
-                border: `2px solid ${isListening ? "#E53E3E" : "#C2C8C2"}`,
-                cursor: "pointer", display: "flex", alignItems: "center",
-                justifyContent: "center", fontSize: "1.125rem",
-                animation: isListening ? "mic-pulse 1s ease-in-out infinite" : "none",
-              }}
-            >
-              🎤
-            </button>
+          {/* ── Quick actions ── */}
+          {suggestedOptions.length > 0 && !isStreaming && (
+            <div style={{
+              padding: "0 20px 12px", display: "flex", flexDirection: "column", gap: "8px",
+            }}>
+              {suggestedOptions.map((action, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleQuickAction(action)}
+                  disabled={isStreaming}
+                  style={{
+                    padding: "10px 14px", backgroundColor: "#f0f0f0", border: "1px solid #ddd",
+                    borderRadius: "8px", cursor: isStreaming ? "not-allowed" : "pointer",
+                    fontSize: "0.875rem", textAlign: "left", opacity: isStreaming ? 0.6 : 1,
+                    transition: "background-color 0.2s",
+                  }}
+                  onMouseEnter={(e) => !isStreaming && (e.currentTarget.style.backgroundColor = "#e0e0e0")}
+                  onMouseLeave={(e) => !isStreaming && (e.currentTarget.style.backgroundColor = "#f0f0f0")}
+                >
+                  {action.label}
+                </button>
+              ))}
+            </div>
+          )}
 
+          {/* ── Input ── */}
+          <div style={{
+            padding: "12px 20px 20px", borderTop: "1px solid #e0e0e0",
+            display: "flex", gap: "8px",
+          }}>
             <textarea
               ref={inputRef}
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={isStreaming ? "Jo is thinking…" : "Type or use mic…"}
-              disabled={isStreaming}
-              rows={1}
-              aria-label="Message Jo"
+              placeholder="Type something..."
               style={{
-                flex: 1, resize: "none", border: "2px solid #C2C8C2",
-                borderRadius: "1rem", padding: "0.75rem 1rem",
-                fontFamily: "var(--font-lexend), sans-serif", fontSize: "1rem",
-                color: "#173124", backgroundColor: "#FFFFFF",
-                minHeight: "48px", maxHeight: "120px", lineHeight: 1.5, outline: "none",
-                transition: "border-color 0.15s",
+                flex: 1, padding: "10px 12px", border: "1px solid #ddd",
+                borderRadius: "8px", fontFamily: "inherit", fontSize: "0.875rem",
+                resize: "none", minHeight: "40px", maxHeight: "100px",
               }}
-              onFocus={(e) => { e.currentTarget.style.borderColor = "#173124"; }}
-              onBlur={(e) => { e.currentTarget.style.borderColor = "#C2C8C2"; }}
             />
             <button
               onClick={() => handleSend()}
               disabled={sendDisabled}
-              aria-label="Send message"
               style={{
-                width: "48px", height: "48px", borderRadius: "50%",
-                backgroundColor: sendDisabled ? "#C2C8C2" : "#173124",
-                color: "#FFFFFF", border: "none",
-                cursor: sendDisabled ? "not-allowed" : "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "1.25rem", flexShrink: 0, transition: "background-color 0.15s",
+                padding: "10px 16px", backgroundColor: sendDisabled ? "#ccc" : "#173124",
+                color: "#FFFFFF", border: "none", borderRadius: "8px",
+                cursor: sendDisabled ? "not-allowed" : "pointer", fontSize: "1rem",
               }}
             >
-              ↑
+              Send
+            </button>
+            <button
+              onClick={toggleMic}
+              style={{
+                padding: "10px 12px", backgroundColor: isListening ? "#f08080" : "#e0e0e0",
+                border: "none", borderRadius: "8px", cursor: "pointer", fontSize: "1rem",
+              }}
+            >
+              🎤
             </button>
           </div>
         </div>
@@ -670,16 +525,8 @@ export function CompanionWidget() {
 
       <style>{`
         @keyframes jo-pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(0.8); }
-        }
-        @keyframes jo-dot {
-          0% { opacity: 0.3; transform: translateY(0); }
-          100% { opacity: 1; transform: translateY(-4px); }
-        }
-        @keyframes mic-pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(229,62,62,0.4); }
-          50% { box-shadow: 0 0 0 8px rgba(229,62,62,0); }
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.5; }
         }
       `}</style>
     </>

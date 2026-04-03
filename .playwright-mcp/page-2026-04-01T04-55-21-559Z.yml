@@ -1,0 +1,182 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - link "JOYN" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img "JOYN" [ref=e5]
+      - generic [ref=e6]:
+        - link "Sign In" [ref=e7] [cursor=pointer]:
+          - /url: /sign-in
+        - link "Join Free" [ref=e8] [cursor=pointer]:
+          - /url: /sign-up
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - paragraph [ref=e12]: Arizona's Senior Companionship Platform
+        - heading "Find Your Person. Age with Joy." [level=1] [ref=e13]:
+          - text: Find Your
+          - text: Person.
+          - text: Age with
+          - text: Joy.
+        - paragraph [ref=e14]: Find a real companion. Someone to talk to, laugh with, and look forward to — right here in Arizona.
+        - generic [ref=e15]:
+          - link "Join Free — It's Simple" [ref=e16] [cursor=pointer]:
+            - /url: /sign-up
+          - link "See How It Works" [ref=e17] [cursor=pointer]:
+            - /url: "#how-it-works"
+        - generic [ref=e18]:
+          - link "🎬 Try Demo — No Sign Up Needed" [ref=e19] [cursor=pointer]:
+            - /url: /demo
+            - generic [ref=e20]: 🎬
+            - text: Try Demo — No Sign Up Needed
+          - paragraph [ref=e21]: Explore the full experience as a first-time user
+      - generic [ref=e23]:
+        - paragraph [ref=e25]: The Loneliness Reality
+        - paragraph [ref=e26]: 1 in 3
+        - paragraph [ref=e27]:
+          - text: seniors aged 60+ feel
+          - text: isolated from others
+        - paragraph [ref=e28]:
+          - text: University of Michigan National Poll
+          - text: on Healthy Aging, 2023
+        - paragraph [ref=e30]:
+          - text: Joyn is building the antidote — one
+          - strong [ref=e31]: genuine friendship
+          - text: at a time.
+    - generic [ref=e33]:
+      - generic [ref=e34]:
+        - paragraph [ref=e35]: 50%
+        - paragraph [ref=e36]: greater survival odds with strong social connections
+      - generic [ref=e37]:
+        - paragraph [ref=e38]: 1 in 3
+        - paragraph [ref=e39]: older adults aged 60+ experience chronic loneliness
+      - generic [ref=e40]:
+        - paragraph [ref=e41]: 3 min
+        - paragraph [ref=e42]: is all it takes to get matched with your companion on Joyn
+    - generic [ref=e44]:
+      - generic [ref=e45]:
+        - paragraph [ref=e47]: Platform Features
+        - heading "Everything you need to connect, belong, and thrive." [level=2] [ref=e48]
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - generic [ref=e51]:
+            - generic [ref=e52]: 🤝
+            - generic [ref=e53]: AI Matching
+          - heading "Smart Companion Matching" [level=3] [ref=e54]
+          - paragraph [ref=e55]: Matched by personality, shared interests, life stage, and when you're free to connect. Our AI finds someone truly compatible — not just nearby.
+        - generic [ref=e56]:
+          - generic [ref=e57]:
+            - generic [ref=e58]: 📹
+            - generic [ref=e59]: Virtual Connection
+          - heading "Connect Face to Face, From Home" [level=3] [ref=e60]
+          - paragraph [ref=e61]: Video calls, virtual coffee chats, watching a show together — real connection without needing to drive anywhere.
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - generic [ref=e64]: 📅
+            - generic [ref=e65]: Stay in Touch
+          - heading "Stay in Touch, Every Week" [level=3] [ref=e66]
+          - paragraph [ref=e67]: Gentle reminders to check in. Celebrate each other. Never let too much time pass between conversations.
+        - generic [ref=e68]:
+          - generic [ref=e69]:
+            - generic [ref=e70]: 📍
+            - generic [ref=e71]: Event Discovery
+          - heading "Arizona Events, Curated" [level=3] [ref=e72]
+          - paragraph [ref=e73]: Community gatherings, book clubs, and social outings — surfaced by AI and filtered to what you actually enjoy.
+    - generic [ref=e75]:
+      - generic [ref=e76]:
+        - paragraph [ref=e77]: Real Stories
+        - heading "They found their person. You can too." [level=2] [ref=e78]
+      - generic [ref=e79]:
+        - generic [ref=e80]:
+          - paragraph [ref=e81]: “I was lonely after my husband passed. Joyn matched me with Dorothy — we call each other every single morning now. I don't know what I'd do without her.”
+          - generic [ref=e82]:
+            - generic [ref=e83]: BM
+            - generic [ref=e84]:
+              - paragraph [ref=e85]: Barbara M., 71
+              - paragraph [ref=e86]: Scottsdale, AZ
+        - generic [ref=e87]:
+          - paragraph [ref=e88]: “My daughter signed me up because she was worried about me. Now I have Robert, and we watch Jeopardy together on video every Tuesday. I actually look forward to Tuesdays.”
+          - generic [ref=e89]:
+            - generic [ref=e90]: HT
+            - generic [ref=e91]:
+              - paragraph [ref=e92]: Harold T., 68
+              - paragraph [ref=e93]: Phoenix, AZ
+        - generic [ref=e94]:
+          - paragraph [ref=e95]: “I kept telling myself I wasn't lonely. But I hadn't had a real conversation in weeks. Joyn gave me Margaret, and she's become my dearest friend.”
+          - generic [ref=e96]:
+            - generic [ref=e97]: CW
+            - generic [ref=e98]:
+              - paragraph [ref=e99]: Carol W., 74
+              - paragraph [ref=e100]: Mesa, AZ
+    - generic [ref=e102]:
+      - generic [ref=e103]:
+        - paragraph [ref=e104]: Simple as 1-2-3
+        - heading "How It Works" [level=2] [ref=e105]
+      - generic [ref=e106]:
+        - generic [ref=e107]:
+          - generic [ref=e108]: "01"
+          - generic [ref=e109]:
+            - heading "Tell us about yourself" [level=3] [ref=e110]
+            - paragraph [ref=e111]: A warm 3-minute chat with Jo, our AI guide. Just answer a few simple questions — no forms, no typing required. Just conversation.
+        - generic [ref=e112]:
+          - generic [ref=e113]: "02"
+          - generic [ref=e114]:
+            - heading "Meet your companion" [level=3] [ref=e115]
+            - paragraph [ref=e116]: Our AI pairs you with a compatible companion — shared interests, life stage, and your preferred schedule.
+        - generic [ref=e117]:
+          - generic [ref=e118]: "03"
+          - generic [ref=e119]:
+            - heading "Start your friendship" [level=3] [ref=e120]
+            - paragraph [ref=e121]: Have your first conversation. Then another. Real friendship takes shape one chat at a time.
+    - generic [ref=e123]:
+      - generic [ref=e124]:
+        - paragraph [ref=e125]: For Family Members
+        - heading "Worried about a parent who seems isolated?" [level=2] [ref=e126]
+        - paragraph [ref=e127]: Share Joyn with them. It takes 3 minutes to get started, and it's completely free. You can help them set it up together.
+      - generic [ref=e128]:
+        - link "Share Joyn with a Loved One" [ref=e129] [cursor=pointer]:
+          - /url: /sign-up
+        - 'link "📞 Call Us: (602) 555-1234" [ref=e130] [cursor=pointer]':
+          - /url: tel:+16025551234
+    - generic [ref=e131]:
+      - generic: JOYN
+      - generic [ref=e132]:
+        - paragraph [ref=e133]: Join Today
+        - heading "Ready to find your person?" [level=2] [ref=e134]:
+          - text: Ready to find
+          - text: your person?
+        - paragraph [ref=e135]: Free. Simple. Takes less than 5 minutes.
+        - link "Find Your Companion Today" [ref=e136] [cursor=pointer]:
+          - /url: /sign-up
+    - contentinfo [ref=e137]:
+      - generic [ref=e138]:
+        - generic [ref=e139]:
+          - generic [ref=e140]:
+            - img "JOYN" [ref=e141]
+            - paragraph [ref=e142]: Find Your Person. Age with Joy.
+            - link "📞 (602) 555-1234" [ref=e143] [cursor=pointer]:
+              - /url: tel:+16025551234
+            - link "hello@joynapp.com" [ref=e144] [cursor=pointer]:
+              - /url: mailto:hello@joynapp.com
+          - generic [ref=e145]:
+            - generic [ref=e146]:
+              - paragraph [ref=e147]: Platform
+              - generic [ref=e148]:
+                - link "Join Free" [ref=e149] [cursor=pointer]:
+                  - /url: /sign-up
+                - link "Sign In" [ref=e150] [cursor=pointer]:
+                  - /url: /sign-in
+                - link "How It Works" [ref=e151] [cursor=pointer]:
+                  - /url: /#how-it-works
+            - generic [ref=e152]:
+              - paragraph [ref=e153]: Legal
+              - generic [ref=e154]:
+                - link "Privacy Policy" [ref=e155] [cursor=pointer]:
+                  - /url: /privacy
+                - link "Terms of Service" [ref=e156] [cursor=pointer]:
+                  - /url: /terms
+                - link "Contact Us" [ref=e157] [cursor=pointer]:
+                  - /url: mailto:hello@joynapp.com
+        - paragraph [ref=e158]: © 2026 Joyn. Arizona's Senior Companionship Platform. All rights reserved.
+  - button "Open Next.js Dev Tools" [ref=e164] [cursor=pointer]:
+    - img [ref=e165]
+  - alert [ref=e168]
