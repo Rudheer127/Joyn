@@ -118,13 +118,13 @@ function AgeRangeSlider({ min, max, onChange }: { min: number; max: number; onCh
       <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
         <div>
           <label style={{ fontSize: "0.85rem", color: "#727973", display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Minimum age</label>
-          <input type="range" className="joyn-slider" min={55} max={90} value={min}
+          <input type="range" className="joyn-slider" min={10} max={109} value={min}
             onChange={e => onChange(Math.min(Number(e.target.value), max - 1), max)}
           />
         </div>
         <div>
           <label style={{ fontSize: "0.85rem", color: "#727973", display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Maximum age</label>
-          <input type="range" className="joyn-slider" min={55} max={95} value={max}
+          <input type="range" className="joyn-slider" min={11} max={110} value={max}
             onChange={e => onChange(min, Math.max(Number(e.target.value), min + 1))}
           />
         </div>

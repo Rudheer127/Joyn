@@ -169,6 +169,11 @@ export default function ProfilePage() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    if (isDemoMode()) {
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+      return;
+    }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
@@ -406,7 +411,7 @@ export default function ProfilePage() {
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
                 placeholder="Your age"
-                min="50"
+                min="10"
                 max="110"
               />
             </div>
