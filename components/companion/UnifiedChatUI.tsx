@@ -211,7 +211,7 @@ export function UnifiedChatUI({
         const route = (navPart as any).result?.route || (navPart as any).args?.route;
         if (route) {
           lastNavRef.current = lastMessage.id;
-          setTimeout(() => router.push(route), 800);
+          setTimeout(() => router.push(route), 100);
           return;
         }
       }
@@ -229,7 +229,7 @@ export function UnifiedChatUI({
         const payload = JSON.parse(match[1]);
         if (payload.route) {
           lastNavRef.current = lastMessage.id;
-          setTimeout(() => router.push(payload.route), 800);
+          setTimeout(() => router.push(payload.route), 100);
           break;
         }
       } catch {
@@ -427,31 +427,42 @@ export function UnifiedChatUI({
 
       {/* Messages */}
       <div style={messagesStyle}>
-        {/* ─── Full mode: preset quick-reply buttons (only when chat is empty) ─── */}
-        {mode === "full" && messages.length <= 1 && !isStreaming && (
+        {/* ─── Preset quick-reply buttons (shown when chat is empty) ─── */}
+        {messages.length <= 1 && !isStreaming && (
           <div style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "0.75rem",
-            padding: "1rem 0 1.5rem",
+            gap: "0.5rem",
+            padding: mode === "full" ? "1rem 0 1.5rem" : "0.25rem 0 1rem",
           }}>
-            {/* Jo avatar */}
-            <div style={{
-              width: "72px", height: "72px", borderRadius: "50%",
-              backgroundColor: "#173124",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "2rem",
-              boxShadow: "0 4px 16px rgba(23,49,36,0.25)",
-              marginBottom: "0.25rem",
-            }}>🌻</div>
-            <h2 style={{
-              fontFamily: "var(--font-epilogue), serif",
-              fontWeight: 800, fontSize: "1.75rem",
-              color: "#173124", margin: 0, letterSpacing: "-0.02em",
-            }}>Hi {userName}, I&apos;m Jo.</h2>
-            <p style={{ fontSize: "1rem", color: "#727973", textAlign: "center", maxWidth: "360px", margin: 0, lineHeight: 1.6 }}>
-              What brings you here today? Choose an option below, type your answer, or use the microphone to talk to me.
+            {/* Jo avatar and heading (Full mode only) */}
+            {mode === "full" && (
+              <>
+                <div style={{
+                  width: "72px", height: "72px", borderRadius: "50%",
+                  backgroundColor: "#173124",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "2rem",
+                  boxShadow: "0 4px 16px rgba(23,49,36,0.25)",
+                  marginBottom: "0.25rem",
+                }}>🌻</div>
+                <h2 style={{
+                  fontFamily: "var(--font-epilogue), serif",
+                  fontWeight: 800, fontSize: "1.75rem",
+                  color: "#173124", margin: 0, letterSpacing: "-0.02em",
+                }}>Hi {firstName}, I&apos;m Jo.</h2>
+              </>
+            )}
+            
+            <p style={{ 
+              fontSize: mode === "full" ? "1rem" : "0.9rem", 
+              color: "#727973", textAlign: "center", maxWidth: "360px", 
+              margin: 0, lineHeight: 1.5, padding: "0 10px" 
+            }}>
+              {mode === "full"
+                ? "What brings you here today? Choose an option below, type your answer, or use the microphone to talk to me."
+                : "Choose an option below or type a question:"}
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem", width: "100%", alignItems: "center" }}>
               {PRESET_OPTIONS.map((option) => (
@@ -460,17 +471,17 @@ export function UnifiedChatUI({
                   onClick={() => handleSend(option)}
                   style={{
                     display: "inline-block",
-                    padding: "12px 28px",
+                    padding: mode === "full" ? "12px 28px" : "10px 20px",
                     borderRadius: "9999px",
                     border: "1.5px solid #D1CCC4",
                     backgroundColor: "#FFFFFF",
                     color: "#2C2C2C",
-                    fontSize: "1rem",
+                    fontSize: mode === "full" ? "1rem" : "0.9rem",
                     cursor: "pointer",
                     transition: "all 180ms ease",
                     textAlign: "center",
                     width: "auto",
-                    maxWidth: "380px",
+                    maxWidth: "90%",
                     fontFamily: "var(--font-lexend), sans-serif",
                     fontWeight: 500,
                   }}
