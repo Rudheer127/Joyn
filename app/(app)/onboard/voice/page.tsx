@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { isDemoMode } from "@/lib/demo/demoData";
 import { Mic, Square, Check, ArrowRight } from "lucide-react";
 
 type SetupStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
@@ -80,6 +81,7 @@ export default function VoiceOnboardingPage() {
   }
 
   async function saveProfile() {
+    if (isDemoMode()) { router.push("/find"); return; }
     try {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();

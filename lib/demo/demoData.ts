@@ -35,6 +35,7 @@ export const DEMO_MATCHES = [
     bio: "Retired librarian who loves early morning walks and cooking for friends. I lost my husband three years ago and found that staying connected keeps me going.",
     whyFit: "You both love morning walks and quiet one-on-one conversations. Dorothy is also a passionate gardener — you two will have a lot to talk about over tea.",
     connectionSuggestion: "coffee",
+    avatarUrl: "/avatars/demo-1-dorothy.jpg", photoPublic: true,
   },
   {
     id: "dm-002",
@@ -49,6 +50,7 @@ export const DEMO_MATCHES = [
     bio: "Retired engineer and avid birdwatcher. I moved to Arizona for the weather and the wildlife. Looking for someone to share morning walks and good conversation.",
     whyFit: "Robert shares your love of birdwatching and long walks. He's thoughtful, easy to talk to, and values honest conversation — just like you.",
     connectionSuggestion: "walking",
+    avatarUrl: "/avatars/demo-2-robert.jpg", photoPublic: true,
   },
   {
     id: "dm-003",
@@ -63,6 +65,7 @@ export const DEMO_MATCHES = [
     bio: "Former nurse who loves mystery novels and home cooking. I retired two years ago and I'm slowly building a new social life after relocating from Chicago.",
     whyFit: "You and Carol are both building social lives in a new chapter — she's warm, patient, and loves the same quiet activities you enjoy.",
     connectionSuggestion: "coffee",
+    avatarUrl: "/avatars/demo-3-carol.jpg", photoPublic: true,
   },
   {
     id: "dm-004",
@@ -77,6 +80,7 @@ export const DEMO_MATCHES = [
     bio: "Retired high school principal. I run a weekly card game group and love talking about history. My grandkids are the light of my life.",
     whyFit: "Harold's warmth and love of connection mirrors yours. You'll both appreciate someone who values real conversation over surface-level small talk.",
     connectionSuggestion: "talk",
+    avatarUrl: "/avatars/demo-4-harold.jpg", photoPublic: true,
   },
   {
     id: "dm-005",
@@ -91,6 +95,7 @@ export const DEMO_MATCHES = [
     bio: "Recently retired florist who volunteers at the local senior centre twice a week. I love growing herbs and cooking with them.",
     whyFit: "Patricia lives nearby and shares your passion for gardening. She's active in the community and would love a companion for weekend meetups.",
     connectionSuggestion: "group",
+    avatarUrl: "/avatars/demo-5-patricia.jpg", photoPublic: true,
   },
   {
     id: "dm-006",
@@ -105,6 +110,7 @@ export const DEMO_MATCHES = [
     bio: "Widower and former jazz musician who stays active with daily walks and weekly swims. Looking for good conversation and maybe someone to catch a film with.",
     whyFit: "George is gentle, creative, and emotionally open — the kind of person who makes every conversation feel easy and unhurried.",
     connectionSuggestion: "phone",
+    avatarUrl: "/avatars/demo-6-george.jpg", photoPublic: true,
   },
 ];
 

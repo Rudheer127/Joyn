@@ -53,6 +53,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "MW", matchPct: 97, phone: "6025550101",
     whyFit: "You both enjoy quiet mornings, love reading, and are looking for someone who truly listens. Margaret is nearby — coffee catch-ups would be a natural first step.",
     connectionSuggestion: "coffee", distanceLabel: "15 min away · Phoenix",
+    avatarUrl: "/avatars/mock-1-margaret.jpg", photoPublic: true,
   },
   {
     id: "2", name: "Robert", age: 68, city: "Scottsdale", fitness: "Active", gender: "male",
@@ -61,6 +62,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "RJ", matchPct: 91, phone: "6025550202",
     whyFit: "Robert loves music and swapping stories — just like you. He's a great listener and prefers one-on-one connection. Nearby in Scottsdale, or happy to call first.",
     connectionSuggestion: "phone", distanceLabel: "25 min away · Scottsdale",
+    avatarUrl: "/avatars/mock-2-robert.jpg", photoPublic: true,
   },
   {
     id: "3", name: "Dorothy", age: 74, city: "Tucson", fitness: "Gentle", gender: "female",
@@ -69,6 +71,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "DL", matchPct: 88, phone: "6025550303",
     whyFit: "Dorothy shares a love of quiet creative hobbies. She's in Tucson — ideal for weekly video calls and heartfelt correspondence.",
     connectionSuggestion: "video", distanceLabel: "~2 hours · Tucson",
+    avatarUrl: "/avatars/mock-3-dorothy.jpg", photoPublic: true,
   },
   {
     id: "4", name: "Frank", age: 76, city: "Mesa", fitness: "Moderate", gender: "male",
@@ -77,6 +80,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "FK", matchPct: 85, phone: "6025550404",
     whyFit: "Frank is thoughtful, patient, and loves deep conversation — you'd have plenty to talk about. He's in Mesa, close enough for regular meet-ups.",
     connectionSuggestion: "coffee", distanceLabel: "20 min away · Mesa",
+    avatarUrl: "/avatars/mock-4-frank.jpg", photoPublic: true,
   },
   {
     id: "5", name: "Evelyn", age: 65, city: "Chandler", fitness: "Active", gender: "female",
@@ -85,6 +89,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "EH", matchPct: 92, phone: "6025550505",
     whyFit: "Evelyn is warm, energetic, and passionate about community — a perfect activity buddy for walks, yoga, or local events in Chandler.",
     connectionSuggestion: "events", distanceLabel: "18 min away · Chandler",
+    avatarUrl: "/avatars/mock-5-evelyn.jpg", photoPublic: true,
   },
   {
     id: "6", name: "Harold", age: 79, city: "Sun City", fitness: "Gentle", gender: "male",
@@ -93,6 +98,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "HM", matchPct: 82, phone: "6025550606",
     whyFit: "Harold has decades of stories and a warm laugh. He's gentle, easygoing, and loves the kind of friendship built over shared quiet time.",
     connectionSuggestion: "phone", distanceLabel: "30 min away · Sun City",
+    avatarUrl: "/avatars/mock-6-harold.jpg", photoPublic: true,
   },
   {
     id: "7", name: "Patricia", age: 62, city: "Tempe", fitness: "Active", gender: "female",
@@ -101,6 +107,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "PW", matchPct: 89, phone: "6025550707",
     whyFit: "Patricia is fresh into retirement and brimming with energy. You'd both enjoy shared activities and she's wonderful company at community events.",
     connectionSuggestion: "events", distanceLabel: "22 min away · Tempe",
+    avatarUrl: "/avatars/mock-7-patricia.jpg", photoPublic: true,
   },
   {
     id: "8", name: "George", age: 82, city: "Peoria", fitness: "Gentle", gender: "male",
@@ -109,6 +116,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "GC", matchPct: 78, phone: "6025550808",
     whyFit: "George is gentle, curious, and would treasure a consistent friendship. Afternoon visits or a weekly phone call would mean the world to him.",
     connectionSuggestion: "phone", distanceLabel: "35 min away · Peoria",
+    avatarUrl: "/avatars/mock-8-george.jpg", photoPublic: true,
   },
   {
     id: "9", name: "Linda", age: 69, city: "Gilbert", fitness: "Moderate", gender: "female",
@@ -117,6 +125,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "LR", matchPct: 94, phone: "6025550909",
     whyFit: "Linda is warm, funny, and ready for genuine friendship. She loves coffee chats and shared creative time — you'd be wonderful together.",
     connectionSuggestion: "coffee", distanceLabel: "28 min away · Gilbert",
+    avatarUrl: "/avatars/mock-9-linda.jpg", photoPublic: true,
   },
   {
     id: "10", name: "James", age: 73, city: "Glendale", fitness: "Moderate", gender: "male",
@@ -125,6 +134,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "JT", matchPct: 86, phone: "6025551010",
     whyFit: "James is dependable, active, and great company. You'd enjoy weekend rides or just sitting on the porch sharing a good story.",
     connectionSuggestion: "events", distanceLabel: "32 min away · Glendale",
+    avatarUrl: "/avatars/mock-10-james.jpg", photoPublic: true,
   },
   {
     id: "11", name: "Betty", age: 77, city: "Fountain Hills", fitness: "Gentle", gender: "female",
@@ -133,6 +143,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "BN", matchPct: 83, phone: "6025551111",
     whyFit: "Betty is thoughtful, creative and deeply empathetic. Your conversations would be warm, meaningful, and something to look forward to each week.",
     connectionSuggestion: "phone", distanceLabel: "40 min away · Fountain Hills",
+    avatarUrl: "/avatars/mock-11-betty.jpg", photoPublic: true,
   },
   {
     id: "12", name: "Carlos", age: 66, city: "Scottsdale", fitness: "Active", gender: "male",
@@ -141,6 +152,7 @@ export const MOCK_MATCHES: MatchCandidate[] = [
     initials: "CM", matchPct: 87, phone: "6025551212",
     whyFit: "Carlos is warm, curious, and adventurous. He'd love a golf buddy or someone to swap recipes with — and he's a wonderful storyteller.",
     connectionSuggestion: "coffee", distanceLabel: "26 min away · Scottsdale",
+    avatarUrl: "/avatars/mock-12-carlos.jpg", photoPublic: true,
   },
 ];
 

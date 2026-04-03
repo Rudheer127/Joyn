@@ -5,6 +5,7 @@ import { DefaultChatTransport } from "ai";
 import { useState, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { isDemoMode, DEMO_USER } from "@/lib/demo/demoData";
 import { Mic, Square, Send } from "lucide-react";
 
 function ConsultationInner() {
@@ -35,6 +36,10 @@ function ConsultationInner() {
   const isLoading = status === "streaming" || status === "submitted";
 
   useEffect(() => {
+    if (isDemoMode()) {
+      setUserName(DEMO_USER.full_name.split(" ")[0]);
+      return;
+    }
     const supabase = createClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push("/sign-in"); return; }
@@ -107,7 +112,7 @@ function ConsultationInner() {
 
   return (
     <div style={{
-      minHeight: "100vh", backgroundColor: "#F8F3E8",
+      flex: 1, backgroundColor: "#F8F3E8",
       fontFamily: "var(--font-lexend), sans-serif", color: "#173124",
       display: "flex", flexDirection: "column"
     }}>

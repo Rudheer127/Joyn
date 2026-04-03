@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { exitDemo } from "@/lib/demo/demoData";
 
 type AuthMode = "phone" | "email";
 type PhoneStep = "input" | "verify";
@@ -85,6 +86,7 @@ export default function SignInPage() {
       if (verifyError) {
         setError(verifyError.message);
       } else if (data.session) {
+        exitDemo();
         const { data: profile } = await supabase
           .from("profiles")
           .select("onboarding_completed")
@@ -121,6 +123,7 @@ export default function SignInPage() {
       if (signInError) {
         setError(signInError.message);
       } else if (data.session) {
+        exitDemo();
         const { data: profile } = await supabase
           .from("profiles")
           .select("onboarding_completed")
@@ -141,6 +144,7 @@ export default function SignInPage() {
 
   async function handleGoogleSignIn() {
     setError("");
+    exitDemo(); // clear any stale demo session before OAuth redirect
     try {
       const supabase = createClient();
       // Use the configured site URL for production, or window.location.origin for localhost
