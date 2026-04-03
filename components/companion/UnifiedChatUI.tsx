@@ -28,12 +28,12 @@ interface UnifiedChatUIProps {
   initialMessages?: UIMessage[];
 }
 
-// Preset quick-reply options for the full Chat-with-Jo page
+// Preset quick-reply options for the welcome state
 const PRESET_OPTIONS = [
+  "Take me to my matches",
+  "Open my messages",
   "I recently moved to a new place",
-  "I've been going through a difficult time",
-  "I'm looking for a walking buddy",
-  "I'd love a friend to stay in touch with",
+  "I'm looking for a friend to stay in touch with",
 ];
 
 /**
@@ -276,6 +276,29 @@ export function UnifiedChatUI({
   function handleSend(text?: string) {
     const msg = (text ?? inputValue).trim();
     if (!msg || isStreaming) return;
+
+    const lowerMsg = msg.toLowerCase();
+    
+    // Fast-path client-side navigation detection to skip LLM latency
+    if (lowerMsg.includes("open my messages") || lowerMsg.includes("go to messages")) {
+      router.push("/messages");
+      setInputValue("");
+      if (onClose) onClose(); // Auto-close widget if navigating
+      return;
+    }
+    if (lowerMsg.includes("take me to my matches") || lowerMsg.includes("show my matches")) {
+      router.push("/match");
+      setInputValue("");
+      if (onClose) onClose();
+      return;
+    }
+    if (lowerMsg.includes("dashboard")) {
+      router.push("/dashboard");
+      setInputValue("");
+      if (onClose) onClose();
+      return;
+    }
+
     sendMessage({ text: msg });
     setInputValue("");
     inputRef.current?.focus();
@@ -427,14 +450,50 @@ export function UnifiedChatUI({
 
       {/* Messages */}
       <div style={messagesStyle}>
-        {/* ─── Preset quick-reply buttons (shown when chat is empty) ─── */}
+        {messages.map((msg, idx) => {
+          const isUser = msg.role === "user";
+          const rawText = msg.parts
+            ?.filter((p: any) => p.type === "text")
+            .map((p: any) => p.text)
+            .join(" ") || "";
+          // FIX: Strip raw command tags before displaying
+          const textContent = isUser ? rawText : parseAndStripCommands(rawText);
+
+          return (
+            <div
+              key={msg.id || idx}
+              style={{
+                display: "flex",
+                justifyContent: isUser ? "flex-end" : "flex-start",
+              }}
+            >
+              <div
+                style={{
+                  maxWidth: mode === "full" ? "78%" : "85%",
+                  padding: mode === "full" ? "1rem 1.25rem" : "10px 14px",
+                  borderRadius: mode === "full" ? "1.5rem" : "12px",
+                  backgroundColor: isUser ? "#173124" : (mode === "full" ? "#FFFFFF" : "#f0f0f0"),
+                  color: isUser ? "#FFFFFF" : "#173124",
+                  wordWrap: "break-word",
+                  border: !isUser && mode === "full" ? "1px solid #E7E2D7" : "none",
+                  fontSize: mode === "full" ? "1.05rem" : "0.95rem",
+                  lineHeight: 1.6,
+                }}
+              >
+                {textContent || (!isUser && <span style={{ fontStyle: "italic", color: "#999" }}>Processing...</span>)}
+              </div>
+            </div>
+          );
+        })}
+
+        {/* ─── Preset quick-reply buttons (Stacked AFTER the welcome message) ─── */}
         {messages.length <= 1 && !isStreaming && (
           <div style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             gap: "0.5rem",
-            padding: mode === "full" ? "1rem 0 1.5rem" : "0.25rem 0 1rem",
+            padding: mode === "full" ? "1rem 0 1.5rem" : "0.25rem 0 0.5rem",
           }}>
             {/* Jo avatar and heading (Full mode only) */}
             {mode === "full" && (
@@ -500,42 +559,6 @@ export function UnifiedChatUI({
             </div>
           </div>
         )}
-
-        {messages.map((msg, idx) => {
-          const isUser = msg.role === "user";
-          const rawText = msg.parts
-            ?.filter((p: any) => p.type === "text")
-            .map((p: any) => p.text)
-            .join(" ") || "";
-          // FIX: Strip raw command tags before displaying
-          const textContent = isUser ? rawText : parseAndStripCommands(rawText);
-
-          return (
-            <div
-              key={msg.id || idx}
-              style={{
-                display: "flex",
-                justifyContent: isUser ? "flex-end" : "flex-start",
-              }}
-            >
-              <div
-                style={{
-                  maxWidth: mode === "full" ? "78%" : "85%",
-                  padding: mode === "full" ? "1rem 1.25rem" : "10px 14px",
-                  borderRadius: mode === "full" ? "1.5rem" : "12px",
-                  backgroundColor: isUser ? "#173124" : (mode === "full" ? "#FFFFFF" : "#f0f0f0"),
-                  color: isUser ? "#FFFFFF" : "#173124",
-                  wordWrap: "break-word",
-                  border: !isUser && mode === "full" ? "1px solid #E7E2D7" : "none",
-                  fontSize: mode === "full" ? "1.05rem" : "0.95rem",
-                  lineHeight: 1.6,
-                }}
-              >
-                {textContent || (!isUser && <span style={{ fontStyle: "italic", color: "#999" }}>Processing...</span>)}
-              </div>
-            </div>
-          );
-        })}
         {isStreaming && (
           <div style={{ display: "flex" }}>
             <div
