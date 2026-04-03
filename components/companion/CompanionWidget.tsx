@@ -62,6 +62,8 @@ export function CompanionWidget() {
   const [demoMode] = useState(() => isDemoMode());
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [isLoadingConversation, setIsLoadingConversation] = useState(true);
+  const [suggestedOptions, setSuggestedOptions] = useState(QUICK_ACTIONS);
+  const [conversationState, setConversationState] = useState<any>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -171,6 +173,48 @@ export function CompanionWidget() {
 
     syncMessages();
   }, [messages, conversationId, isLoadingConversation, demoMode]);
+
+  // Fetch conversation state and suggested options
+  useEffect(() => {
+    async function fetchConversationState() {
+      if (!conversationId || demoMode) {
+        // Use default quick actions for demo mode
+        setSuggestedOptions(QUICK_ACTIONS);
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/ai/jo/get-conversation?conversationId=${conversationId}`);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        setConversationState(data.state);
+
+        // Generate context tags for suggested options
+        const contextTags = [data.state?.state_phase || "greeting"];
+        if (data.state?.last_topic) contextTags.push(data.state.last_topic);
+
+        // Fetch suggested options from database
+        const optionsResponse = await fetch(`/api/ai/jo/get-options?context=${contextTags.join(",")}`);
+        if (optionsResponse.ok) {
+          const optionsData = await optionsResponse.json();
+          const mappedOptions = optionsData.options.map((opt: any) => ({
+            label: opt.label,
+            text: opt.action_payload?.question || opt.label,
+            nav: null,
+          }));
+          setSuggestedOptions(mappedOptions.slice(0, 5)); // Limit to 5 options
+        }
+      } catch (error) {
+        console.error("Error fetching conversation state:", error);
+        setSuggestedOptions(QUICK_ACTIONS);
+      }
+    }
+
+    if (isOpen) {
+      fetchConversationState();
+    }
+  }, [conversationId, isOpen, demoMode]);
 
   useEffect(() => {
     if (isOpen) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
