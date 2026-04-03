@@ -4,7 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Mic, Square, Send, X, Expand2, Trash2 } from "lucide-react";
+import { Mic, Square, Send, Trash2 } from "lucide-react";
 
 interface UnifiedChatUIProps {
   mode: "mini" | "full";
@@ -312,7 +312,7 @@ export function UnifiedChatUI({
                 alignItems: "center",
               }}
             >
-              <Expand2 size={18} />
+              ⛶
             </button>
           )}
           <button
