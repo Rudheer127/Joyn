@@ -74,7 +74,7 @@ export default function MatchesPage() {
 
         {/* Real cards */}
         {!loading && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: "1.25rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))", gap: "1.25rem" }}>
             {matches.map((match) => (
               <div key={match.id} style={{
                 backgroundColor: "#E7E2D7",
@@ -99,6 +99,7 @@ export default function MatchesPage() {
                     <p style={{
                       fontFamily: "var(--font-epilogue), serif", fontWeight: 700,
                       fontSize: "1.2rem", color: "#173124", letterSpacing: "-0.02em", lineHeight: 1.1,
+                      whiteSpace: "nowrap",
                     }}>
                       {match.name}, {match.age}
                     </p>
