@@ -25,7 +25,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [demoMode, setDemoMode] = useState(false);
 
   useEffect(() => {
-    setDemoMode(isDemoMode());
+    if (!isDemoMode()) return;
+    // Demo localStorage is set — but verify there isn't a real session.
+    // If a real user is logged in (e.g. after Google OAuth), clear demo mode
+    // so they never see the demo account instead of their own.
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        exitDemo();
+        setDemoMode(false);
+      } else {
+        setDemoMode(true);
+      }
+    });
   }, []);
 
   async function handleSignOut() {
