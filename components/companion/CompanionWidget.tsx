@@ -447,9 +447,7 @@ export function CompanionWidget() {
                         if (p.type?.startsWith("tool-")) return null; // Hide tool calls
                         return null;
                       })
-                    ) : (
-                      <span>{msg.content}</span>
-                    )}
+                    ) : null}
                   </div>
                 </div>
               );
