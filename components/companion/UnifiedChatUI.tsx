@@ -22,9 +22,32 @@ interface UnifiedChatUIProps {
   isDemo?: boolean;
   onExpand?: () => void;
   onClear?: () => void;
+  onClose?: () => void;
   userName?: string;
   useVoiceOutput?: boolean;
   initialMessages?: UIMessage[];
+}
+
+// Preset quick-reply options for the full Chat-with-Jo page
+const PRESET_OPTIONS = [
+  "I recently moved to a new place",
+  "I've been going through a difficult time",
+  "I'm looking for a walking buddy",
+  "I'd love a friend to stay in touch with",
+];
+
+/**
+ * Strip <navigateTo> (and other XML-style command tags) from AI response text
+ * before rendering so raw command markup is never visible to the user.
+ */
+function parseAndStripCommands(text: string): string {
+  // Remove all XML-style command tags and their content
+  return text
+    .replace(/<navigateTo>[\s\S]*?<\/navigateTo>/g, "")
+    .replace(/<openModal>[\s\S]*?<\/openModal>/g, "")
+    .replace(/<showAlert>[\s\S]*?<\/showAlert>/g, "")
+    .replace(/<[a-zA-Z][a-zA-Z0-9]*>[\s\S]*?<\/[a-zA-Z][a-zA-Z0-9]*>/g, "")
+    .trim();
 }
 
 export function UnifiedChatUI({
@@ -34,6 +57,7 @@ export function UnifiedChatUI({
   isDemo = false,
   onExpand,
   onClear,
+  onClose,
   userName = "Friend",
   useVoiceOutput = false,
   initialMessages = [],
@@ -171,12 +195,13 @@ export function UnifiedChatUI({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Navigation detection
+  // Navigation detection — handles both tool-call parts AND text-embedded <navigateTo> tags
   useEffect(() => {
     const lastMessage = messages[messages.length - 1] as any;
     if (!lastMessage || lastMessage.role !== "assistant") return;
     if (lastMessage.id === lastNavRef.current) return;
 
+    // 1. Tool-call based navigation (preferred)
     const toolParts = lastMessage.parts?.filter((p: any) => p.type?.startsWith("tool-")) || [];
     if (toolParts.length > 0) {
       const navPart = toolParts.find((p: any) => p.type === "tool-navigateTo");
@@ -185,7 +210,28 @@ export function UnifiedChatUI({
         if (route) {
           lastNavRef.current = lastMessage.id;
           setTimeout(() => router.push(route), 800);
+          return;
         }
+      }
+    }
+
+    // 2. Text-embedded <navigateTo> tags (fallback for text responses)
+    const rawText = lastMessage.parts
+      ?.filter((p: any) => p.type === "text")
+      .map((p: any) => p.text)
+      .join(" ") || "";
+    const navRegex = /<navigateTo>([\s\S]*?)<\/navigateTo>/g;
+    let match;
+    while ((match = navRegex.exec(rawText)) !== null) {
+      try {
+        const payload = JSON.parse(match[1]);
+        if (payload.route) {
+          lastNavRef.current = lastMessage.id;
+          setTimeout(() => router.push(payload.route), 800);
+          break;
+        }
+      } catch {
+        // Ignore parse errors
       }
     }
   }, [messages, router]);
@@ -342,8 +388,8 @@ export function UnifiedChatUI({
           </button>
           {mode === "mini" && (
             <button
-              onClick={() => {}} // Will be handled by parent
-              aria-label="Close"
+              onClick={() => onClose?.()}
+              aria-label="Close Jo chat"
               style={{
                 background: "none",
                 border: "none",
@@ -351,6 +397,7 @@ export function UnifiedChatUI({
                 padding: "4px",
                 fontSize: "1.5rem",
                 color: "#666",
+                lineHeight: 1,
               }}
             >
               ✕
@@ -361,12 +408,77 @@ export function UnifiedChatUI({
 
       {/* Messages */}
       <div style={messagesStyle}>
+        {/* ─── Full mode: preset quick-reply buttons (only when chat is empty) ─── */}
+        {mode === "full" && messages.length <= 1 && !isStreaming && (
+          <div style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: "0.75rem",
+            padding: "1rem 0 1.5rem",
+          }}>
+            {/* Jo avatar */}
+            <div style={{
+              width: "72px", height: "72px", borderRadius: "50%",
+              backgroundColor: "#173124",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "2rem",
+              boxShadow: "0 4px 16px rgba(23,49,36,0.25)",
+              marginBottom: "0.25rem",
+            }}>🌻</div>
+            <h2 style={{
+              fontFamily: "var(--font-epilogue), serif",
+              fontWeight: 800, fontSize: "1.75rem",
+              color: "#173124", margin: 0, letterSpacing: "-0.02em",
+            }}>Hi {userName}, I&apos;m Jo.</h2>
+            <p style={{ fontSize: "1rem", color: "#727973", textAlign: "center", maxWidth: "360px", margin: 0, lineHeight: 1.6 }}>
+              What brings you here today? Choose an option below, type your answer, or use the microphone to talk to me.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", marginTop: "0.5rem", width: "100%", alignItems: "center" }}>
+              {PRESET_OPTIONS.map((option) => (
+                <button
+                  key={option}
+                  onClick={() => handleSend(option)}
+                  style={{
+                    display: "inline-block",
+                    padding: "12px 28px",
+                    borderRadius: "9999px",
+                    border: "1.5px solid #D1CCC4",
+                    backgroundColor: "#FFFFFF",
+                    color: "#2C2C2C",
+                    fontSize: "1rem",
+                    cursor: "pointer",
+                    transition: "all 180ms ease",
+                    textAlign: "center",
+                    width: "auto",
+                    maxWidth: "380px",
+                    fontFamily: "var(--font-lexend), sans-serif",
+                    fontWeight: 500,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = "#F0ECE5";
+                    e.currentTarget.style.borderColor = "#173124";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = "#FFFFFF";
+                    e.currentTarget.style.borderColor = "#D1CCC4";
+                  }}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {messages.map((msg, idx) => {
           const isUser = msg.role === "user";
-          const textContent = msg.parts
+          const rawText = msg.parts
             ?.filter((p: any) => p.type === "text")
             .map((p: any) => p.text)
             .join(" ") || "";
+          // FIX: Strip raw command tags before displaying
+          const textContent = isUser ? rawText : parseAndStripCommands(rawText);
 
           return (
             <div

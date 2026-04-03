@@ -36,6 +36,8 @@ export function CompanionWidget() {
   const [isMobile, setIsMobile] = useState(false);
   const [demoMode] = useState(() => isDemoMode());
   const [conversationId, setConversationId] = useState<string | null>(null);
+  // Separate key to force re-mount UnifiedChatUI after clearing
+  const [chatKey, setChatKey] = useState(0);
   const supabaseRef = useRef(demoMode ? null : createClient());
 
   // Initialize conversation and persist conversationId to localStorage
@@ -98,17 +100,28 @@ export function CompanionWidget() {
   }
 
   function handleClear() {
+    // FIX: Only clear messages — do NOT close the widget or set conversationId to null
     localStorage.removeItem("jo_conversation_id");
-    setConversationId(null);
+    // Generate a fresh conversation ID so the chat is truly reset
+    const freshId = demoMode
+      ? "demo-" + Date.now()
+      : "conv-" + Date.now();
+    setConversationId(freshId);
+    if (!demoMode) {
+      localStorage.setItem("jo_conversation_id", freshId);
+    }
+    // Increment key to remount the chat UI with fresh state
+    setChatKey(prev => prev + 1);
+    // Widget stays OPEN — do not call setIsOpen(false)
   }
 
-  if (!conversationId) {
-    return null; // Wait for conversationId to load
-  }
+  // FIX: Widget always renders (even without conversationId) so the FAB is always visible.
+  // Generate a temporary ID if none is available yet.
+  const effectiveConversationId = conversationId ?? (demoMode ? "demo-init" : "conv-init");
 
   return (
     <>
-      {/* ── Collapsed trigger ── */}
+      {/* ── Collapsed trigger — always visible ── */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
@@ -143,12 +156,14 @@ export function CompanionWidget() {
           }}
         >
           <UnifiedChatUI
+            key={chatKey}
             mode="mini"
-            conversationId={conversationId}
+            conversationId={effectiveConversationId}
             pageContext={pageHint}
             isDemo={demoMode}
             onExpand={handleExpand}
             onClear={handleClear}
+            onClose={() => setIsOpen(false)}
           />
         </div>
       )}
