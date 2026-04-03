@@ -44,11 +44,36 @@ export async function POST(req: NextRequest) {
 
     // Skip auth for demo mode
     let supabase: any = null;
+    let realUserProfile: UserProfile | undefined = undefined;
+
     if (!isDemo) {
       supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         return new Response("Unauthorized", { status: 401 });
+      }
+
+      // ── Fetch real user profile so Jo can greet them by name ──
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name, age, city, gender, interests, health_goals")
+          .eq("id", user.id)
+          .single();
+
+        if (profile) {
+          realUserProfile = {
+            full_name: profile.full_name || "Friend",
+            age: profile.age || 0,
+            city: profile.city || "",
+            gender: profile.gender || "",
+            interests: Array.isArray(profile.interests) ? profile.interests : [],
+            health_goals: Array.isArray(profile.health_goals) ? profile.health_goals : [],
+          };
+        }
+      } catch (err) {
+        console.error("[companion] Could not fetch user profile:", err);
+        // Non-fatal — Jo will still work, just without personalization
       }
     }
 
@@ -85,10 +110,15 @@ export async function POST(req: NextRequest) {
     const currentIntent = intentClassification.intent;
     const currentIntentConfidence = intentClassification.confidence;
 
-    // Build system prompt with new unified orchestration
+    // Resolve user profile: real profile for authenticated users, demo data for demo mode
+    const activeUserProfile: UserProfile | undefined = isDemo
+      ? (DEMO_USER as UserProfile)
+      : realUserProfile;
+
+    // Build system prompt with unified orchestration + real user profile
     const systemPromptContext = {
       pageContext,
-      userProfile: isDemo ? (DEMO_USER as UserProfile) : undefined,
+      userProfile: activeUserProfile,
       events: isDemo ? DEMO_EVENTS : undefined,
       statePhase,
       lastIntent,

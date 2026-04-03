@@ -110,14 +110,16 @@ export function UnifiedChatUI({
     return suggestions.slice(0, 4);
   }
 
+  const firstName = userName.split(" ")[0];
+
   const WELCOME_MESSAGE: UIMessage = {
     id: "unified-welcome",
     role: "assistant",
     parts: [{
       type: "text",
       text: mode === "full"
-        ? `Hi ${userName}, I'm Jo. What brings you here today?`
-        : `Hi there! 😊 I'm Jo, your Joyn guide. How can I help you today?`,
+        ? `Hi ${firstName}, I'm Jo. What brings you here today?`
+        : `Hi ${firstName}! 🌻 I'm Jo, your Joyn guide. How can I help you today?`,
     }],
   };
 
@@ -308,20 +310,23 @@ export function UnifiedChatUI({
   const containerStyle: React.CSSProperties = {
     display: "flex",
     flexDirection: "column",
-    backgroundColor: mode === "full" ? "#F8F3E8" : "#FFFFFF",
+    backgroundColor: mode === "full" ? "#F8F3E8" : "#FAF8F4",
     color: "#173124",
-    fontFamily: "var(--font-epilogue), sans-serif",
+    fontFamily: "var(--font-lexend), sans-serif",
     height: "100%",
+    overflow: "hidden",
   };
 
   const headerStyle: React.CSSProperties = {
-    padding: mode === "full" ? "1rem 2rem" : "16px 20px",
-    borderBottom: "1px solid #E7E2D7",
+    padding: mode === "full" ? "1rem 2rem" : "14px 18px",
+    borderBottom: mode === "full" ? "none" : "1px solid rgba(255,255,255,0.1)",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: mode === "full" ? "#173124" : "#FFFFFF",
-    color: mode === "full" ? "#FFFFFF" : "#173124",
+    // Both modes use the dark green brand header for consistency
+    backgroundColor: "#173124",
+    color: "#FFFFFF",
+    flexShrink: 0,
   };
 
   const messagesStyle: React.CSSProperties = {
@@ -343,13 +348,27 @@ export function UnifiedChatUI({
 
   return (
     <div style={containerStyle}>
-      {/* Header */}
+      {/* Header — dark green in both mini and full modes */}
       <div style={headerStyle}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          {mode === "full" && <img src="/joyn-logo.svg" alt="JOYN" style={{ height: "32px", filter: "brightness(0) invert(1)" }} />}
-          <h2 style={{ margin: 0, fontSize: mode === "full" ? "1.125rem" : "1.25rem", fontWeight: 700 }}>
-            {mode === "full" ? "Chat with Jo" : "Jo"}
-          </h2>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+          {/* Sunflower avatar */}
+          <div style={{
+            width: mode === "full" ? "36px" : "32px",
+            height: mode === "full" ? "36px" : "32px",
+            borderRadius: "50%",
+            backgroundColor: "rgba(255,255,255,0.15)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: mode === "full" ? "1.1rem" : "1rem",
+            flexShrink: 0,
+          }}>🌻</div>
+          <div>
+            <h2 style={{ margin: 0, fontSize: mode === "full" ? "1.1rem" : "1rem", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2 }}>
+              Jo
+            </h2>
+            <p style={{ margin: 0, fontSize: "0.7rem", color: "rgba(255,255,255,0.65)", lineHeight: 1 }}>
+              Joyn Guide · Online
+            </p>
+          </div>
         </div>
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           {mode === "mini" && onExpand && (
@@ -362,7 +381,7 @@ export function UnifiedChatUI({
                 cursor: "pointer",
                 padding: "4px",
                 fontSize: "1.2rem",
-                color: "#666",
+                color: "rgba(255,255,255,0.8)",
                 display: "flex",
                 alignItems: "center",
               }}
@@ -379,7 +398,7 @@ export function UnifiedChatUI({
               cursor: "pointer",
               padding: "4px",
               fontSize: "1.2rem",
-              color: mode === "full" ? "#FFFFFF" : "#666",
+              color: "rgba(255,255,255,0.8)",
               display: "flex",
               alignItems: "center",
             }}
@@ -396,7 +415,7 @@ export function UnifiedChatUI({
                 cursor: "pointer",
                 padding: "4px",
                 fontSize: "1.5rem",
-                color: "#666",
+                color: "rgba(255,255,255,0.8)",
                 lineHeight: 1,
               }}
             >
