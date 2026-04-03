@@ -5,6 +5,15 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Mic, Square, Send, Trash2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 interface UnifiedChatUIProps {
   mode: "mini" | "full";
@@ -34,6 +43,7 @@ export function UnifiedChatUI({
   const [isListening, setIsListening] = useState(false);
   const [suggestedOptions, setSuggestedOptions] = useState<Array<{ label: string; text: string }>>([]);
   const [conversationState, setConversationState] = useState<any>(null);
+  const [showClearDialog, setShowClearDialog] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
@@ -224,21 +234,20 @@ export function UnifiedChatUI({
   }
 
   function handleClearChat() {
-    if (!confirm("Clear all messages? This cannot be undone.")) return;
+    setShowClearDialog(true);
+  }
 
-    async function clearChat() {
-      try {
-        await fetch(`/api/ai/jo/clear-conversation`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ conversationId }),
-        });
-      } catch (error) {
-        console.error("Error clearing chat:", error);
-      }
+  async function confirmClearChat() {
+    setShowClearDialog(false);
+    try {
+      await fetch(`/api/ai/jo/clear-conversation`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversationId }),
+      });
+    } catch (error) {
+      console.error("Error clearing chat:", error);
     }
-
-    clearChat();
     if (onClear) onClear();
   }
 
@@ -510,6 +519,32 @@ export function UnifiedChatUI({
           <Send size={20} />
         </button>
       </div>
+
+      {/* Clear Confirmation Dialog */}
+      <Dialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Clear chat history?</DialogTitle>
+            <DialogDescription>
+              This will delete all messages in this conversation. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowClearDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmClearChat}
+            >
+              Clear
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
