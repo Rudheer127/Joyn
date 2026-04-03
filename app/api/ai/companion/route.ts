@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { DEMO_USER, DEMO_EVENTS } from "@/lib/demo/demoData";
+import { getConversationState } from "@/lib/supabase/jo";
 
 export const maxDuration = 30;
 
@@ -18,7 +19,7 @@ interface UserProfile {
   health_goals: string[];
 }
 
-function buildSystemPrompt(pageContext?: string, userProfile?: UserProfile, events?: typeof DEMO_EVENTS): string {
+function buildSystemPrompt(pageContext?: string, userProfile?: UserProfile, events?: typeof DEMO_EVENTS, statePhase?: string): string {
   const pageHint = pageContext
     ? `\n\nCURRENT PAGE CONTEXT: ${pageContext}`
     : "";
@@ -40,6 +41,15 @@ IMPORTANT: When greeting them, use their first name warmly. If they ask about ev
       .map(e => `- ${e.title} on ${e.date} at ${e.time} (${e.location})`)
       .join("\n");
     eventsContext = `\n\nAVAILABLE EVENTS IN THEIR AREA:\n${eventsList}`;
+  }
+
+  let stateInstructions = "";
+  if (statePhase) {
+    stateInstructions = `\n\nCONVERSATION STATE: ${statePhase}
+${statePhase === "greeting" ? "You are in the greeting phase. Welcome them warmly and ask how you can help." : ""}
+${statePhase === "clarifying" ? "You are clarifying their intent. Ask follow-up questions to understand what they need." : ""}
+${statePhase === "active" ? "You are in active conversation. Help them with their request, provide context-aware suggestions, and be ready to navigate them." : ""}
+${statePhase === "awaiting_action" ? "You are waiting for them to act on a suggestion or navigate. Keep responses brief and supportive." : ""}`;
   }
 
   return `You are Jo, a warm and caring navigation assistant for Joyn — a companionship platform for older adults in Arizona.
@@ -69,7 +79,7 @@ GENERAL BEHAVIOUR:
 - Keep every response to 2–3 sentences maximum.
 - Use warm, simple language (Grade 6 reading level). No jargon.
 - Use gentle emojis occasionally (🌻 ☀️ 😊).
-- If a user expresses distress or crisis: respond with warmth and gently suggest calling 988 (Crisis Lifeline).${userContext}${eventsContext}`;
+- If a user expresses distress or crisis: respond with warmth and gently suggest calling 988 (Crisis Lifeline).${userContext}${eventsContext}${stateInstructions}`;
 }
 
 import { z } from "zod";
@@ -85,21 +95,35 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { messages, pageContext, isDemo }: { messages: UIMessage[]; pageContext?: string; isDemo?: boolean } = body;
+    const { messages, pageContext, isDemo, conversationId }: { messages: UIMessage[]; pageContext?: string; isDemo?: boolean; conversationId?: string } = body;
 
     // Skip auth for demo mode
+    let supabase: any = null;
     if (!isDemo) {
-      const supabase = await createClient();
+      supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         return new Response("Unauthorized", { status: 401 });
       }
     }
 
+    // Fetch conversation state
+    let statePhase = "greeting";
+    if (conversationId && !isDemo && supabase) {
+      try {
+        const state = await getConversationState(conversationId);
+        if (state) {
+          statePhase = state.state_phase || "greeting";
+        }
+      } catch (error) {
+        console.error("Error fetching conversation state:", error);
+      }
+    }
+
     // Build system prompt with user profile context if in demo mode
-    let systemPrompt = buildSystemPrompt(pageContext);
+    let systemPrompt = buildSystemPrompt(pageContext, undefined, undefined, statePhase);
     if (isDemo) {
-      systemPrompt = buildSystemPrompt(pageContext, DEMO_USER as UserProfile, DEMO_EVENTS);
+      systemPrompt = buildSystemPrompt(pageContext, DEMO_USER as UserProfile, DEMO_EVENTS, statePhase);
     }
 
     const result = streamText({
