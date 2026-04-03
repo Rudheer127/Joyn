@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const testimonials = [
   {
-    quote: "I was lonely after my husband passed. Joyn matched me with Dorothy — we call each other every single morning now. I don't know what I'd do without her.",
+    quote: "I was lonely after my husband passed. Joyn matched me with Margaret — we call each other every single morning now. I don't know what I'd do without her.",
     name: "Barbara M.",
     age: 71,
     city: "Scottsdale",

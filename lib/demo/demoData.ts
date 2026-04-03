@@ -6,7 +6,7 @@ export const DEMO_KEY = "joyn_demo_mode";
 
 export const DEMO_USER = {
   id: "demo-user-001",
-  full_name: "Margaret",
+  full_name: "Dorothy",
   age: 68,
   city: "Scottsdale",
   gender: "female",
@@ -24,7 +24,7 @@ export const DEMO_USER = {
 export const DEMO_MATCHES = [
   {
     id: "dm-001",
-    name: "Dorothy",
+    name: "Margaret",
     age: 71,
     city: "Scottsdale",
     gender: "female",
@@ -33,7 +33,7 @@ export const DEMO_MATCHES = [
     fitness: "Moderate",
     interests: ["Walking", "Gardening", "Reading", "Cooking"],
     bio: "Retired librarian who loves early morning walks and cooking for friends. I lost my husband three years ago and found that staying connected keeps me going.",
-    whyFit: "You both love morning walks and quiet one-on-one conversations. Dorothy is also a passionate gardener — you two will have a lot to talk about over tea.",
+    whyFit: "You both love morning walks and quiet one-on-one conversations. Margaret is also a passionate gardener — you two will have a lot to talk about over tea.",
     connectionSuggestion: "coffee",
     avatarUrl: "/avatars/demo-1-dorothy.jpg", photoPublic: true,
   },
@@ -118,14 +118,14 @@ export const DEMO_MESSAGES = [
   {
     id: "conv-001",
     matchId: "dm-001",
-    matchName: "Dorothy",
+    matchName: "Margaret",
     matchGender: "female",
     lastMessage: "That sounds lovely! I know a great trail near Camelback that's perfect for mornings.",
     lastTime: "Yesterday",
     unread: 1,
     messages: [
-      { from: "them", text: "Hello Margaret! I saw that we were matched on Joyn. I love your bio — I'm a gardener too!", time: "Mon 9:14am" },
-      { from: "me", text: "Dorothy! Yes, I was so excited to see your profile. What do you like to grow?", time: "Mon 9:32am" },
+      { from: "them", text: "Hello Dorothy! I saw that we were matched on Joyn. I love your bio — I'm a gardener too!", time: "Mon 9:14am" },
+      { from: "me", text: "Margaret! Yes, I was so excited to see your profile. What do you like to grow?", time: "Mon 9:32am" },
       { from: "them", text: "Mostly herbs and roses. I have this little patch that I'm very proud of 😊 Do you like walking?", time: "Mon 9:48am" },
       { from: "me", text: "I do! I try to walk every morning. It's one of my favourite ways to start the day.", time: "Mon 10:03am" },
       { from: "them", text: "That sounds lovely! I know a great trail near Camelback that's perfect for mornings.", time: "Yesterday 8:21am" },
