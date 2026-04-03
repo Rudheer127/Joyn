@@ -58,15 +58,11 @@ export function CompanionWidget() {
   const [inputValue, setInputValue] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const [demoMode, setDemoMode] = useState(false);
+  const [demoMode] = useState(() => isDemoMode());
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
-
-  useEffect(() => {
-    setDemoMode(isDemoMode());
-  }, []);
 
   const WELCOME_MESSAGE: UIMessage = {
     id: "companion-welcome",
@@ -138,21 +134,16 @@ export function CompanionWidget() {
     if (!lastMessage || lastMessage.role !== "assistant") return;
     if (lastMessage.id === lastNavRef.current) return;
 
-    // ── Primary: tool-invocation detection ──
-    const toolParts = lastMessage.parts?.filter((p: any) => p.type === "tool-invocation") || [];
+    // ── Primary: tool invocation detection (v6 pattern: tool-<toolName>) ──
+    const toolParts = lastMessage.parts?.filter((p: any) => p.type?.startsWith("tool-")) || [];
     if (toolParts.length > 0) {
-      const navPart = toolParts.find((p: any) => p.toolInvocation?.toolName === "navigateTo");
+      const navPart = toolParts.find((p: any) => p.type === "tool-navigateTo");
       if (navPart) {
-        const inv = navPart.toolInvocation;
-        // SDK v6: state === 'result';  older: 'result' key exists
-        const isDone = inv?.state === "result" || (inv && "result" in inv);
-        if (isDone) {
-          const route = inv.args?.route;
-          if (route) {
-            lastNavRef.current = lastMessage.id;
-            setTimeout(() => { router.push(route); setIsOpen(false); }, 800);
-            return;
-          }
+        const route = (navPart as any).result?.route || (navPart as any).args?.route;
+        if (route) {
+          lastNavRef.current = lastMessage.id;
+          setTimeout(() => { router.push(route); setIsOpen(false); }, 800);
+          return;
         }
       }
     }
@@ -385,7 +376,7 @@ export function CompanionWidget() {
                     display: (!text && isBot && index === messages.length - 1 && isStreaming) ? "none" : undefined,
                   }}>
                     {text || (
-                      (message as any).parts?.some((p: any) => p.type === "tool-invocation")
+                      (message as any).parts?.some((p: any) => p.type?.startsWith("tool-"))
                         ? "🌻 Taking you there now…"
                         : isBot ? "🌻 One moment…" : ""
                     )}

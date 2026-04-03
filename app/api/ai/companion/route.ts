@@ -3,15 +3,44 @@ import { streamText, convertToModelMessages, UIMessage, tool } from "ai";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
+import { DEMO_USER, DEMO_EVENTS } from "@/lib/demo/demoData";
 
 export const maxDuration = 30;
 
 const COMPANION_MODEL = groq("llama-3.1-8b-instant");
 
-function buildSystemPrompt(pageContext?: string): string {
+interface UserProfile {
+  full_name: string;
+  age: number;
+  city: string;
+  gender: string;
+  interests: string[];
+  health_goals: string[];
+}
+
+function buildSystemPrompt(pageContext?: string, userProfile?: UserProfile, events?: typeof DEMO_EVENTS): string {
   const pageHint = pageContext
     ? `\n\nCURRENT PAGE CONTEXT: ${pageContext}`
     : "";
+
+  let userContext = "";
+  if (userProfile) {
+    userContext = `\n\nUSER PROFILE:
+You are talking to ${userProfile.full_name}, a ${userProfile.age}-year-old from ${userProfile.city}.
+They identify as ${userProfile.gender}.
+Their interests: ${userProfile.interests.join(", ")}.
+Their goals on Joyn: ${userProfile.health_goals.join(", ")}.
+
+IMPORTANT: When greeting them, use their first name warmly. If they ask about events, matches, or activities, reference their specific interests. If they ask you to summarize events, use the event data you know about.`;
+  }
+
+  let eventsContext = "";
+  if (events && events.length > 0) {
+    const eventsList = events
+      .map(e => `- ${e.title} on ${e.date} at ${e.time} (${e.location})`)
+      .join("\n");
+    eventsContext = `\n\nAVAILABLE EVENTS IN THEIR AREA:\n${eventsList}`;
+  }
 
   return `You are Jo, a warm and caring navigation assistant for Joyn — a companionship platform for older adults in Arizona.
 
@@ -40,7 +69,7 @@ GENERAL BEHAVIOUR:
 - Keep every response to 2–3 sentences maximum.
 - Use warm, simple language (Grade 6 reading level). No jargon.
 - Use gentle emojis occasionally (🌻 ☀️ 😊).
-- If a user expresses distress or crisis: respond with warmth and gently suggest calling 988 (Crisis Lifeline).`;
+- If a user expresses distress or crisis: respond with warmth and gently suggest calling 988 (Crisis Lifeline).${userContext}${eventsContext}`;
 }
 
 import { z } from "zod";
@@ -55,13 +84,6 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      return new Response("Unauthorized", { status: 401 });
-    }
-
     const body = await req.json();
     const { messages, pageContext, isDemo }: { messages: UIMessage[]; pageContext?: string; isDemo?: boolean } = body;
 
@@ -74,9 +96,15 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Build system prompt with user profile context if in demo mode
+    let systemPrompt = buildSystemPrompt(pageContext);
+    if (isDemo) {
+      systemPrompt = buildSystemPrompt(pageContext, DEMO_USER as UserProfile, DEMO_EVENTS);
+    }
+
     const result = streamText({
       model: COMPANION_MODEL,
-      system: buildSystemPrompt(pageContext),
+      system: systemPrompt,
       messages: await convertToModelMessages(messages),
       tools: {
         navigateTo: tool({
