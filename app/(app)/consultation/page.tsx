@@ -112,7 +112,7 @@ function ConsultationInner() {
 
   return (
     <div style={{
-      minHeight: "100vh", backgroundColor: "#F8F3E8",
+      flex: 1, backgroundColor: "#F8F3E8",
       fontFamily: "var(--font-lexend), sans-serif", color: "#173124",
       display: "flex", flexDirection: "column"
     }}>

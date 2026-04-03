@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 import { z } from "zod";
 
-const CONSULTATION_MODEL = groq("llama-3.1-8b-instant");
+const CONSULTATION_MODEL = groq("llama-3.3-70b-versatile");
 
 // ─── Real community events embedded in the prompt ─────────────────────────────
 const ARIZONA_EVENTS = `

@@ -78,7 +78,7 @@ export function CompanionWidget() {
   };
 
   const { messages, sendMessage, status } = useChat({
-    id: pathname,
+    id: "companion-chat",
     transport: new DefaultChatTransport({
       api: "/api/ai/companion",
       body: { pageContext: pageHint, isDemo: demoMode },
@@ -120,7 +120,7 @@ export function CompanionWidget() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen]);
 
-  const lastNavRef = useRef<string | null>(null);
+
 
   // ── Text-based navigation keywords (fallback if tool call doesn't fire) ──
   const NAV_KEYWORDS: { patterns: RegExp[]; route: string }[] = [
@@ -133,48 +133,7 @@ export function CompanionWidget() {
     { patterns: [/\bdashboard\b/i, /\/dashboard\b/i],                 route: "/dashboard" },
   ];
 
-  useEffect(() => {
-    const lastMessage = messages[messages.length - 1] as any;
-    if (!lastMessage || lastMessage.role !== "assistant") return;
-    if (lastMessage.id === lastNavRef.current) return;
-
-    // ── Primary: tool-invocation detection ──
-    const toolParts = lastMessage.parts?.filter((p: any) => p.type === "tool-invocation") || [];
-    if (toolParts.length > 0) {
-      const navPart = toolParts.find((p: any) => p.toolInvocation?.toolName === "navigateTo");
-      if (navPart) {
-        const inv = navPart.toolInvocation;
-        // SDK v6: state === 'result';  older: 'result' key exists
-        const isDone = inv?.state === "result" || (inv && "result" in inv);
-        if (isDone) {
-          const route = inv.args?.route;
-          if (route) {
-            lastNavRef.current = lastMessage.id;
-            setTimeout(() => { router.push(route); setIsOpen(false); }, 800);
-            return;
-          }
-        }
-      }
-    }
-
-    // ── Fallback: keyword scan in message text ──
-    const text = (lastMessage.parts ?? [])
-      .filter((p: any) => p.type === "text")
-      .map((p: any) => p.text ?? "")
-      .join(" ");
-
-    // Only act on navigation-intent phrases (avoid false positives)
-    const isNavIntent = /taking you|heading (there|over)|opening|navigating|going to|let.?s go/i.test(text);
-    if (isNavIntent) {
-      for (const { patterns, route } of NAV_KEYWORDS) {
-        if (patterns.some((rx) => rx.test(text)) && pathname !== route) {
-          lastNavRef.current = lastMessage.id;
-          setTimeout(() => { router.push(route); setIsOpen(false); }, 1200);
-          return;
-        }
-      }
-    }
-  }, [messages, router, pathname]);
+  // Navigation is handled entirely client-side in handleSend (no server-side tool)
 
   function handleSend(text?: string) {
     const msg = (text ?? inputValue).trim();
@@ -244,9 +203,10 @@ export function CompanionWidget() {
 
   const sendDisabled = !inputValue.trim() || isStreaming;
 
+  const bannerOffset = demoMode ? 40 : 0;
   const panelStyle: React.CSSProperties = isMobile
-    ? { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, width: "100vw", height: "100vh", borderRadius: 0, zIndex: 200 }
-    : { position: "fixed", bottom: "24px", right: "24px", width: "min(400px, calc(100vw - 48px))", height: "min(580px, calc(100vh - 48px))", borderRadius: "2rem", zIndex: 200 };
+    ? { position: "fixed", top: bannerOffset, left: 0, right: 0, bottom: 0, width: "100vw", height: `calc(100vh - ${bannerOffset}px)`, borderRadius: 0, zIndex: 200 }
+    : { position: "fixed", bottom: "24px", right: "24px", width: "min(400px, calc(100vw - 48px))", height: `min(560px, calc(100vh - ${48 + bannerOffset}px))`, borderRadius: "2rem", zIndex: 200 };
 
   return (
     <>
@@ -350,7 +310,11 @@ export function CompanionWidget() {
               const text = message.parts
                 .filter((p): p is { type: "text"; text: string } => p.type === "text")
                 .map((p) => p.text)
-                .join("");
+                .join("")
+                .replace(/<function=[^>]*>[\s\S]*?<\/function>/g, "")
+                .replace(/\{"route":"[^"]*"\}/g, "")
+                .replace(/^[\s🌻☀️😊]*(?:one moment|just a moment|let me check|sure!?|just a sec)[.…!]*\s*/i, "")
+                .trim();
 
               return (
                 <div key={message.id} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
@@ -384,11 +348,7 @@ export function CompanionWidget() {
                     // hide the bubble entirely if it has no content yet (streaming dots cover it)
                     display: (!text && isBot && index === messages.length - 1 && isStreaming) ? "none" : undefined,
                   }}>
-                    {text || (
-                      (message as any).parts?.some((p: any) => p.type === "tool-invocation")
-                        ? "🌻 Taking you there now…"
-                        : isBot ? "🌻 One moment…" : ""
-                    )}
+                    {text}
                   </div>
                 </div>
 

@@ -181,6 +181,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         marginLeft: "272px", flex: 1,
         backgroundColor: "#FEF9ED", minHeight: "100vh",
         paddingTop: demoMode ? "40px" : "0",  // space for demo banner
+        display: "flex", flexDirection: "column",
       }}>
         <DemoBanner />
         {children}
