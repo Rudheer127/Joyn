@@ -128,35 +128,10 @@ export async function POST(req: NextRequest) {
 
     const systemPrompt = buildJoSystemPrompt(systemPromptContext);
 
-    // Determine if navigate action should be gated
-    const shouldGate = shouldGateIntent(currentIntent, currentIntentConfidence);
-    const canNavigate = currentIntent === "navigate_page" && !shouldGate;
-
-    // Prepare tools: only enable navigateTo if intent is clear AND confident
-    const tools: Record<string, any> = {};
-
-    if (canNavigate) {
-      const navigationRoute = extractNavigationIntent(userMessageText);
-
-      tools.navigateTo = tool({
-        description: "Navigates the user to a specific page within the Joyn app when they explicitly ask to go somewhere.",
-        inputSchema: z.object({
-          route: z.enum(["/dashboard", "/match", "/messages", "/profile", "/events", "/sessions", "/onboard"])
-            .describe("The route to navigate the user to based on their request.")
-        }),
-        execute: async ({ route }) => {
-          // Log this action for regression testing
-          console.log(`[Action] navigateTo(${route}) - intent: ${currentIntent}, confidence: ${currentIntentConfidence}`);
-          return `Redirecting user to ${route}. Respond briefly with "Taking you there now! 🌻"`;
-        }
-      });
-    }
-
     const result = streamText({
       model: COMPANION_MODEL,
       system: systemPrompt,
       messages: await convertToModelMessages(messages),
-      tools,
     });
 
     return result.toUIMessageStreamResponse();

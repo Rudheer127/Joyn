@@ -28,12 +28,11 @@ interface UnifiedChatUIProps {
   initialMessages?: UIMessage[];
 }
 
-// Preset quick-reply options for the welcome state
 const PRESET_OPTIONS = [
-  "Take me to my matches",
-  "Open my messages",
-  "I recently moved to a new place",
-  "I'm looking for a friend to stay in touch with",
+  "Help me find a friend",
+  "I'm new, how does this work?",
+  "Check my messages",
+  "I just want to talk",
 ];
 
 /**
@@ -464,20 +463,24 @@ export function UnifiedChatUI({
               key={msg.id || idx}
               style={{
                 display: "flex",
+                width: "100%",
                 justifyContent: isUser ? "flex-end" : "flex-start",
+                marginBottom: "8px",
               }}
             >
               <div
                 style={{
+                  display: "inline-block",
                   maxWidth: mode === "full" ? "78%" : "85%",
                   padding: mode === "full" ? "1rem 1.25rem" : "10px 14px",
                   borderRadius: mode === "full" ? "1.5rem" : "12px",
-                  backgroundColor: isUser ? "#173124" : (mode === "full" ? "#FFFFFF" : "#f0f0f0"),
+                  backgroundColor: isUser ? "#173124" : (mode === "full" ? "#FFFFFF" : "#F7F4EF"),
                   color: isUser ? "#FFFFFF" : "#173124",
                   wordWrap: "break-word",
                   border: !isUser && mode === "full" ? "1px solid #E7E2D7" : "none",
                   fontSize: mode === "full" ? "1.05rem" : "0.95rem",
                   lineHeight: 1.6,
+                  boxShadow: !isUser && mode === "full" ? "0 2px 8px rgba(0,0,0,0.02)" : "none",
                 }}
               >
                 {textContent || (!isUser && <span style={{ fontStyle: "italic", color: "#999" }}>Processing...</span>)}
