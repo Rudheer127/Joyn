@@ -5,6 +5,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { isDemoMode } from "@/lib/demo/demoData";
+import { createClient } from "@/lib/supabase/client";
 
 // ─── Page-aware context labels ────────────────────────────────────────────────
 const PAGE_CONTEXT: Record<string, { label: string; hint: string }> = {
@@ -59,10 +60,13 @@ export function CompanionWidget() {
   const [isMobile, setIsMobile] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [demoMode] = useState(() => isDemoMode());
+  const [conversationId, setConversationId] = useState<string | null>(null);
+  const [isLoadingConversation, setIsLoadingConversation] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const supabaseRef = useRef(demoMode ? null : createClient());
 
   const WELCOME_MESSAGE: UIMessage = {
     id: "companion-welcome",
@@ -73,11 +77,59 @@ export function CompanionWidget() {
     }],
   };
 
+  // Initialize conversation on mount
+  useEffect(() => {
+    async function initializeConversation() {
+      try {
+        if (demoMode) {
+          // Demo mode: use a demo conversation ID
+          setConversationId("demo-" + pathname.replace(/\//g, "-"));
+          setIsLoadingConversation(false);
+          return;
+        }
+
+        const supabase = supabaseRef.current;
+        if (!supabase) {
+          setIsLoadingConversation(false);
+          return;
+        }
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setIsLoadingConversation(false);
+          return;
+        }
+
+        // Start conversation via API
+        const response = await fetch("/api/ai/jo/start-conversation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pageContext: pathname }),
+        });
+
+        if (!response.ok) {
+          console.error("Failed to start conversation:", response.statusText);
+          setIsLoadingConversation(false);
+          return;
+        }
+
+        const data = await response.json();
+        setConversationId(data.conversation_id);
+      } catch (error) {
+        console.error("Error initializing conversation:", error);
+      } finally {
+        setIsLoadingConversation(false);
+      }
+    }
+
+    initializeConversation();
+  }, [demoMode, pathname]);
+
   const { messages, sendMessage, status } = useChat({
     id: pathname,
     transport: new DefaultChatTransport({
       api: "/api/ai/companion",
-      body: { pageContext: pageHint, isDemo: demoMode },
+      body: { pageContext: pageHint, isDemo: demoMode, conversationId },
     }),
     messages: [WELCOME_MESSAGE],
   });
@@ -90,6 +142,35 @@ export function CompanionWidget() {
     window.addEventListener("resize", check);
     return () => window.removeEventListener("resize", check);
   }, []);
+
+  // Sync messages to database
+  useEffect(() => {
+    if (!conversationId || isLoadingConversation || demoMode) return;
+
+    async function syncMessages() {
+      for (const msg of messages) {
+        // Skip welcome message and already-synced messages
+        if (msg.id === "companion-welcome" || msg.id?.startsWith("__")) continue;
+
+        try {
+          await fetch("/api/ai/jo/send-message", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              conversationId,
+              sender: msg.role === "user" ? "user" : "assistant",
+              messageText: msg.parts?.[0]?.text || (msg.parts as any)?.[0] || "",
+              metadata: { parts: msg.parts },
+            }),
+          });
+        } catch (error) {
+          console.error("Error syncing message:", error);
+        }
+      }
+    }
+
+    syncMessages();
+  }, [messages, conversationId, isLoadingConversation, demoMode]);
 
   useEffect(() => {
     if (isOpen) bottomRef.current?.scrollIntoView({ behavior: "smooth" });
