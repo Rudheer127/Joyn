@@ -84,7 +84,9 @@
       "Bash(node -e \":*)",
       "Read(//mnt/c/Users/rudhe/Downloads/**)",
       "Bash(git -C 'C:\\\\Users\\\\rudhe\\\\Downloads\\\\Joyn' add -A)",
-      "Bash(git -C 'C:\\\\Users\\\\rudhe\\\\Downloads\\\\Joyn' commit -m \"fix: database migrations applied, intent classifier patterns corrected, tests passing\")"
+      "Bash(git -C 'C:\\\\Users\\\\rudhe\\\\Downloads\\\\Joyn' commit -m \"fix: database migrations applied, intent classifier patterns corrected, tests passing\")",
+      "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__deploy_to_vercel",
+      "mcp__0a1487ff-5588-496f-b109-16361a8d1f57__get_deployment_build_logs"
     ]
   }
 }

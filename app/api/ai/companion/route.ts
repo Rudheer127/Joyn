@@ -54,16 +54,16 @@ export async function POST(req: NextRequest) {
 
     // Fetch conversation state (database source of truth)
     let statePhase = "greeting";
-    let lastIntent = null;
-    let lastTopic = null;
+    let lastIntent: string | undefined = undefined;
+    let lastTopic: string | undefined = undefined;
     let intentConfidence = 0;
     if (conversationId && !isDemo && supabase) {
       try {
         const state = await getConversationState(conversationId);
         if (state) {
           statePhase = state.state_phase || "greeting";
-          lastIntent = state.last_intent || null;
-          lastTopic = state.last_topic || null;
+          lastIntent = state.last_intent || undefined;
+          lastTopic = state.last_topic || undefined;
           intentConfidence = state.intent_confidence || 0;
         }
       } catch (error) {
